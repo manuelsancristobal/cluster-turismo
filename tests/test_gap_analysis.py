@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import Polygon
 
-from tourism_gaps import gap_analysis
+from cluster_turismo import gap_analysis
 
 
 @pytest.fixture

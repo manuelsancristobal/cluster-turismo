@@ -2,7 +2,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/manuelsancristobal/chile-tourism-gaps/workflows/CI/badge.svg)](https://github.com/manuelsancristobal/chile-tourism-gaps/actions)
+[![Tests](https://github.com/manuelsancristobal/cluster-turismo/workflows/CI/badge.svg)](https://github.com/manuelsancristobal/cluster-turismo/actions)
 
 A data science project analyzing Chilean tourism attractions to identify geographic clusters and investment gaps using HDBSCAN spatial clustering.
 
@@ -37,12 +37,12 @@ This project analyzes 4,048 permanent Chilean tourism attractions from the 2020 
 ## Project Structure
 
 ```
-chile-tourism-gaps/
+cluster-turismo/
 ├── README.md                           # This file
 ├── index.html                          # Portfolio page (GitHub Pages)
 ├── pyproject.toml                      # Project configuration
 │
-├── src/tourism_gaps/                   # Main Python package
+├── src/cluster_turismo/                   # Main Python package
 │   ├── data_loader.py                  # Load Excel & KMZ files
 │   ├── preprocessing.py                # Data cleaning & validation
 │   ├── clustering.py                   # HDBSCAN spatial clustering
@@ -83,8 +83,8 @@ chile-tourism-gaps/
 
 ```bash
 # Clone repository
-git clone https://github.com/manuelsancristobal/chile-tourism-gaps.git
-cd chile-tourism-gaps
+git clone https://github.com/manuelsancristobal/cluster-turismo.git
+cd cluster-turismo
 
 # Install package in development mode
 make install-dev
@@ -112,7 +112,7 @@ jupyter lab notebooks/
 ### Python API
 
 ```python
-from tourism_gaps import clustering, preprocessing, gap_analysis, data_loader
+from cluster_turismo import clustering, preprocessing, gap_analysis, data_loader
 
 # Load and preprocess attractions
 df = data_loader.load_attractions_excel("data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
@@ -217,18 +217,18 @@ pytest -k "anchor" -v
 
 - **[README_es.md](README_es.md)** - Spanish documentation with bilingual narrative
 - **[docs/methodology.md](docs/methodology.md)** - Detailed methodology & algorithm explanations
-- **[Inline docstrings](src/tourism_gaps/)** - Google-style docstrings for all functions
+- **[Inline docstrings](src/cluster_turismo/)** - Google-style docstrings for all functions
 
 ## Citation
 
 If you use this analysis in research or policy contexts, please cite:
 
 ```
-@misc{chile-tourism-gaps,
+@misc{cluster-turismo,
   title={Identifying Tourism Investment Gaps in Chile Through Spatial Clustering},
   author={Tourism Data Analysis},
   year={2024},
-  url={https://github.com/manuelsancristobal/chile-tourism-gaps}
+  url={https://github.com/manuelsancristobal/cluster-turismo}
 }
 ```
 
@@ -266,9 +266,9 @@ Free for academic, government, and commercial use.
 
 ## Contact & Support
 
-- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/chile-tourism-gaps/issues)
+- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/cluster-turismo/issues)
 - **Email**: msancristo@fen.uchile.cl
-- **Web**: https://github.com/manuelsancristobal/chile-tourism-gaps
+- **Web**: https://github.com/manuelsancristobal/cluster-turismo
 
 ---
 

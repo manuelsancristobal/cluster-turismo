@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 
-from tourism_gaps import visualization, preprocessing
+from cluster_turismo import visualization, preprocessing
 
 
 @pytest.fixture

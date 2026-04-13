@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from shapely.geometry import Polygon
 
-from tourism_gaps import clustering, preprocessing, gap_analysis, data_loader
+from cluster_turismo import clustering, preprocessing, gap_analysis, data_loader
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -220,7 +220,7 @@ plt.close(fig)
 if df_lagging_clustered is not None:
     print("Generating overlap type donut chart...")
     # Compute real overlap between lagging cluster hulls and main cluster hulls
-    from tourism_gaps.gap_analysis import compute_lagging_overlap_type
+    from cluster_turismo.gap_analysis import compute_lagging_overlap_type
 
     # Build Shapely polygons from main cluster hulls
     main_hulls_polys = {}

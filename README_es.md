@@ -37,14 +37,14 @@ Este proyecto analiza **~3,996 atractivos turísticos permanentes** del registro
 ## Estructura del Proyecto
 
 ```
-chile-tourism-gaps/
+cluster-turismo/
 ├── README.md                           # Documentación en inglés
 ├── README_es.md                        # Este archivo
 ├── LICENSE                             # Licencia MIT
 ├── pyproject.toml                      # Configuración del proyecto
 ├── Makefile                            # Automatización
 │
-├── src/tourism_gaps/                   # Paquete Python principal
+├── src/cluster_turismo/                   # Paquete Python principal
 │   ├── data_loader.py                  # Carga de archivos Excel & KMZ
 │   ├── preprocessing.py                # Limpieza y validación
 │   ├── clustering.py                   # Clustering HDBSCAN
@@ -84,8 +84,8 @@ chile-tourism-gaps/
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/manuelsancristobal/chile-tourism-gaps.git
-cd chile-tourism-gaps
+git clone https://github.com/manuelsancristobal/cluster-turismo.git
+cd cluster-turismo
 
 # Instalar paquete en modo desarrollo
 make install-dev
@@ -113,7 +113,7 @@ jupyter lab notebooks/
 ### API Python
 
 ```python
-from tourism_gaps import clustering, preprocessing, gap_analysis
+from cluster_turismo import clustering, preprocessing, gap_analysis
 
 # Cargar y preprocesar atractivos
 df = preprocessing.load_attractions_excel("data/raw/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
@@ -217,18 +217,18 @@ pytest -k "anchor" -v
 ## Documentación
 
 - **[docs/methodology.md](docs/methodology.md)** - Metodología detallada y explicaciones de algoritmos
-- **[Docstrings inline](src/tourism_gaps/)** - Docstrings Google-style para todas las funciones
+- **[Docstrings inline](src/cluster_turismo/)** - Docstrings Google-style para todas las funciones
 
 ## Citación
 
 Si usa este análisis en investigación o contextos de política pública, cite como:
 
 ```
-@misc{chile-tourism-gaps,
+@misc{cluster-turismo,
   title={Identificación de Brechas Turísticas de Chile Mediante Clustering Espacial},
   author={Manuel San Cristóbal},
   year={2024},
-  url={https://github.com/manuelsancristobal/chile-tourism-gaps}
+  url={https://github.com/manuelsancristobal/cluster-turismo}
 }
 ```
 
@@ -266,9 +266,9 @@ Libre para uso académico, gubernamental y comercial.
 
 ## Contacto
 
-- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/chile-tourism-gaps/issues)
+- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/cluster-turismo/issues)
 - **Email**: msancristo@fen.uchile.cl
-- **Web**: https://github.com/manuelsancristobal/chile-tourism-gaps
+- **Web**: https://github.com/manuelsancristobal/cluster-turismo
 
 ---
 

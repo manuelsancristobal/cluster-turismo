@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import pytest
 
-from tourism_gaps import preprocessing
+from cluster_turismo import preprocessing
 
 
 @pytest.fixture

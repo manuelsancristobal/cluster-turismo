@@ -7,7 +7,7 @@ import zipfile
 import pandas as pd
 import pytest
 
-from tourism_gaps import data_loader
+from cluster_turismo import data_loader
 
 
 def test_load_attractions_excel(tmp_path):

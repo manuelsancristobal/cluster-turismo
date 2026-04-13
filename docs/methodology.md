@@ -298,7 +298,7 @@ Compare HDBSCAN clusters with **official SERNATUR destinations** (78 zones):
 
 ### 9.1 Python Implementation
 
-All analysis implemented in modular Python (see `/src/tourism_gaps/`):
+All analysis implemented in modular Python (see `/src/cluster_turismo/`):
 
 - `data_loader.py`: Load Excel & KMZ files
 - `preprocessing.py`: Data cleaning & validation
@@ -321,7 +321,7 @@ pip install -e .
 
 # Run clustering
 python -c "
-  from tourism_gaps import clustering, preprocessing, data_loader
+  from cluster_turismo import clustering, preprocessing, data_loader
   df = data_loader.load_attractions_excel('data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx')
   df = preprocessing.filter_permanent_attractions(df)
   df = clustering.run_hdbscan_spatial(df)

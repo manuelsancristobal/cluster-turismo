@@ -1,1 +1,1 @@
-"""Test suite for chile-tourism-gaps."""
+"""Test suite for cluster-turismo."""

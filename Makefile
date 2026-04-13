@@ -26,7 +26,7 @@ test:
 	pytest tests/ -v
 
 coverage:
-	pytest tests/ -v --cov=src/tourism_gaps --cov-report=html --cov-report=term-missing
+	pytest tests/ -v --cov=src/cluster_turismo --cov-report=html --cov-report=term-missing
 	@echo "\nCoverage report generated in htmlcov/index.html"
 
 maps:

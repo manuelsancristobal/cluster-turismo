@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import Polygon
 
-from tourism_gaps import geo_utils
+from cluster_turismo import geo_utils
 
 
 def test_build_shapely_polygons():

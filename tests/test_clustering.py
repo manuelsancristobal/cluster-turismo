@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from tourism_gaps import clustering
+from cluster_turismo import clustering
 
 
 @pytest.fixture
