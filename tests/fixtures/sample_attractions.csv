@@ -1,0 +1,17 @@
+NOMBRE,COD_COM,CATEGORIA,JERARQUÍA,REGION,POINT_Y,POINT_X
+Atractivo Test 1,01001,Cultura,INTERNACIONAL,Región Metropolitana,-33.5,- 70.5
+Atractivo Test 2,01001,Naturaleza,NACIONAL,Región Metropolitana,-33.6,-70.6
+Atractivo Test 3,02001,Cultura,REGIONAL,Valparaíso,-33.0,-71.5
+Atractivo Test 4,02001,Deporte,LOCAL,Valparaíso,-33.1,-71.6
+Atractivo Test 5,03001,Eventos,INTERNACIONAL,Atacama,-27.0,-70.0
+Atractivo Test 6,03001,Gastonomía,NACIONAL,Atacama,-27.1,-70.1
+Atractivo Test 7,04001,Naturaleza,REGIONAL,La Araucanía,-37.0,-72.0
+Atractivo Test 8,04001,Cultura,LOCAL,La Araucanía,-37.1,-72.1
+Atractivo Test 9,05001,Deporte,NACIONAL,Aysén,-44.0,-72.5
+Atractivo Test 10,05001,Eventos,REGIONAL,Aysén,-44.1,-72.6
+Atractivo Test 11,01002,Naturaleza,INTERNACIONAL,Región Metropolitana,-34.0,-70.0
+Atractivo Test 12,01002,Cultura,LOCAL,Región Metropolitana,-34.1,-70.1
+Evento Programado,06001,ACONTECIMIENTOS PROGRAMADOS,LOCAL,Magallanes,-53.0,-71.0
+Atractivo Test 13,07001,Naturaleza,NACIONAL,Coquimbo,-30.0,-71.0
+Atractivo Test 14,07001,Cultura,REGIONAL,Coquimbo,-30.1,-71.1
+Atractivo Test 15,08001,Deporte,LOCAL,O'Higgins,-34.5,-71.0

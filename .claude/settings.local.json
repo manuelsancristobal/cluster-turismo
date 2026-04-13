@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la *.xlsx *.kmz)",
+      "Bash(unzip -q Destinos_Nacional-Publico.kmz -d /tmp/kmz_extract)",
+      "Read(//tmp/kmz_extract/**)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(sed 's/<[^>]*>//g')",
+      "Read(//tmp/**)",
+      "WebSearch",
+      "WebFetch(domain:python-visualization.github.io)",
+      "WebFetch(domain:github.com)",
+      "Bash(file *)",
+      "Bash(unzip -l \"Destinos_Nacional-Publico.kmz\")",
+      "Bash(du -sh *)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
