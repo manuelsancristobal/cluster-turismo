@@ -1,5 +1,5 @@
 NOMBRE,COD_COM,CATEGORIA,JERARQUÍA,REGION,POINT_Y,POINT_X
-Atractivo Test 1,01001,Cultura,INTERNACIONAL,Región Metropolitana,-33.5,- 70.5
+Atractivo Test 1,01001,Cultura,INTERNACIONAL,Región Metropolitana,-33.5,-70.5
 Atractivo Test 2,01001,Naturaleza,NACIONAL,Región Metropolitana,-33.6,-70.6
 Atractivo Test 3,02001,Cultura,REGIONAL,Valparaíso,-33.0,-71.5
 Atractivo Test 4,02001,Deporte,LOCAL,Valparaíso,-33.1,-71.6

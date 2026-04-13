@@ -105,7 +105,9 @@ def test_get_cluster_color_palette():
     """Test cluster color generation."""
     colors = preprocessing.get_cluster_color_palette(30)
 
-    assert len(colors) == 30
+    # 30 clusters + 1 noise entry (-1)
+    assert len(colors) == 31
+    assert -1 in colors
     # Check format
     for cluster_id, color in colors.items():
         assert len(color) == 3
@@ -120,6 +122,23 @@ def test_assign_cluster_colors(sample_data):
 
     assert "cluster_color" in df.columns
     assert len(df) == len(sample_data)
+
+
+def test_merge_attractions_destinations():
+    """Test merging attractions with destinations."""
+    attractions = pd.DataFrame({
+        "NOMBRE": ["A", "B", "C"],
+        "COD_COM": ["01", "02", "03"],
+    })
+    destinations = pd.DataFrame({
+        "nombre": ["Dest1", "Dest2"],
+        "codigo": ["01", "02"],
+    })
+    result = preprocessing.merge_attractions_destinations(attractions, destinations)
+    assert len(result) == 3
+    assert result.iloc[0]["nombre"] == "Dest1"
+    assert result.iloc[1]["nombre"] == "Dest2"
+    assert pd.isna(result.iloc[2]["nombre"])
 
 
 def test_get_anchor_color_map():

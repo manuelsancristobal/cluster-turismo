@@ -181,9 +181,9 @@ clusters = clusterer.fit_predict(coords_rad)
 ### 5.4 Cluster Output
 
 **Results**:
-- **80 clusters** identified
-- **149 noise points** (-1 label) - isolated attractions
-- **99.6%** of attractions assigned to clusters
+- **79 clusters** identified
+- ~33% of attractions classified as noise (-1 label) - isolated/dispersed attractions
+- ~67% of attractions assigned to clusters
 
 **Interpretation**:
 - Clusters represent organic tourism zones (emergent from attraction distribution)
@@ -213,10 +213,10 @@ else:
     status = "Sin ancla"                   # Nascent market ← PRIORITY
 ```
 
-**Distribution** (80 clusters):
-- 23 clusters: "Con ancla internacional" (mature)
-- 40 clusters: "Solo ancla nacional" (growth - development opportunity)
-- 17 clusters: "Sin ancla" (nascent - highest priority)
+**Distribution** (79 clusters):
+- 52 clusters: "Con ancla internacional" (mature)
+- 26 clusters: "Solo ancla nacional" (growth - development opportunity)
+- ~1-2 clusters: "Sin ancla" (nascent - highest priority)
 
 ### 6.2 Investment Opportunity Ranking
 
@@ -254,7 +254,7 @@ Compare HDBSCAN clusters with **official SERNATUR destinations** (78 zones):
 | Min Size | Num Clusters | Largest Cluster | Avg Size |
 |----------|-------------|------------------|----------|
 | 5 | 125 | 203 | 32 |
-| 10 | 80 | 245 | 51 | ← **Selected**
+| 10 | 79 | 245 | 51 | ← **Selected**
 | 15 | 58 | 267 | 70 |
 | 20 | 45 | 298 | 90 |
 
@@ -321,15 +321,15 @@ pip install -e .
 
 # Run clustering
 python -c "
-  from tourism_gaps import clustering, preprocessing
-  df = preprocessing.load_attractions_excel('data/raw/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx')
+  from tourism_gaps import clustering, preprocessing, data_loader
+  df = data_loader.load_attractions_excel('data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx')
   df = preprocessing.filter_permanent_attractions(df)
   df = clustering.run_hdbscan_spatial(df)
   print(f'Clusters found: {len(set(df[\"CLUSTER\"]))}')
 "
 
 # Generate report
-jupyter nbconvert --execute notebooks/01_exploration_and_clustering.ipynb
+jupyter nbconvert --execute "notebooks/Publico_Visualización_de_Atractivos.ipynb"
 ```
 
 ---

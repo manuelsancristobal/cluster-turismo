@@ -6,6 +6,13 @@ import pandas as pd
 from shapely.geometry import Polygon
 
 
+def _hier_col(df: pd.DataFrame) -> str:
+    """Return the hierarchy column name present in the dataframe."""
+    if "JERARQUIA" in df.columns:
+        return "JERARQUIA"
+    return "JERARQUÍA"
+
+
 def classify_anchor_status(df: pd.DataFrame, n_int_col: str = "n_internacional", n_nat_col: str = "n_nacional") -> pd.DataFrame:
     """
     Classify clusters by anchor attraction status.
@@ -29,6 +36,10 @@ def classify_anchor_status(df: pd.DataFrame, n_int_col: str = "n_internacional",
     pd.DataFrame
         Input dataframe with added 'anchor_status' column
     """
+
+    for col in [n_int_col, n_nat_col]:
+        if col not in df.columns:
+            raise KeyError(f"Column '{col}' not found in dataframe. Available columns: {list(df.columns)}")
 
     def classify(row):
         if row[n_int_col] > 0:
@@ -76,7 +87,7 @@ def identify_investment_opportunities(df: pd.DataFrame, cluster_summary: pd.Data
     )
 
     opportunities["commune_names"] = opportunities["communes"].apply(
-        lambda x: " - ".join(sorted(x.astype(str).unique())) if len(x) > 0 else ""
+        lambda x: " - ".join(sorted(set(str(c) for c in x))) if len(x) > 0 else ""
     )
 
     # Calculate category diversity
@@ -174,13 +185,18 @@ def compute_cluster_overlap_analysis(
 
         lagging_poly = Polygon(df_cluster_hulls[cluster_id])
 
-        # Check overlap with each official destination
+        # Check overlap with each official destination, keeping the best match
         best_overlap = None
         best_overlap_type = None
+        best_overlap_area = -1.0
+
+        overlap_rank = {"Contenido": 3, "Parcialmente superpuesto": 2, "Genuinamente rezagado": 1, "Separado": 0}
 
         for dest_name, dest_poly in dest_polygons.items():
             overlap_type = compute_lagging_overlap_type(lagging_poly, dest_poly)
-            if best_overlap is None:
+            overlap_score = overlap_rank.get(overlap_type, 0)
+            if overlap_score > best_overlap_area:
+                best_overlap_area = overlap_score
                 best_overlap = dest_name
                 best_overlap_type = overlap_type
 
@@ -188,11 +204,11 @@ def compute_cluster_overlap_analysis(
             {
                 "cluster_id": cluster_id,
                 "n_attractions": len(cluster_data),
-                "main_region": cluster_data["REGION"].value_counts().index[0] if len(cluster_data) > 0 else None,
+                "main_region": cluster_data["REGION"].value_counts().index[0] if len(cluster_data) > 0 and len(cluster_data["REGION"].value_counts()) > 0 else None,
                 "overlap_type": best_overlap_type,
                 "nearest_destination": best_overlap,
-                "n_internacional": (cluster_data["JERARQUÍA"] == "INTERNACIONAL").sum(),
-                "n_nacional": (cluster_data["JERARQUÍA"] == "NACIONAL").sum(),
+                "n_internacional": (cluster_data[_hier_col(cluster_data)] == "INTERNACIONAL").sum(),
+                "n_nacional": (cluster_data[_hier_col(cluster_data)] == "NACIONAL").sum(),
             }
         )
 

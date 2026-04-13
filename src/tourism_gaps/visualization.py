@@ -64,7 +64,7 @@ def create_pydeck_hierarchy_map(
 
     # Create tooltip
     tooltip = {
-        "html": "<b>{NOMBRE}</b><br/>Jerarquía: {JERARQUÍA}<br/>Categoría: {CATEGORIA}",
+        "html": "<b>{NOMBRE}</b><br/>Jerarquía: {JERARQUIA}<br/>Categoría: {CATEGORIA}",
         "style": {"backgroundColor": "steelblue", "color": "white"},
     }
 
@@ -300,7 +300,7 @@ def add_attractions_to_folium(
     fg = folium.FeatureGroup(name=name)
 
     for idx, row in df.iterrows():
-        popup = f"{row.get('NOMBRE')}<br/>Jerarquía: {row.get('JERARQUÍA')}"
+        popup = f"{row.get('NOMBRE')}<br/>Jerarquía: {row.get('JERARQUIA', row.get('JERARQUÍA'))}"
         folium.CircleMarker(
             location=[row[lat_col], row[lon_col]],
             radius=3,

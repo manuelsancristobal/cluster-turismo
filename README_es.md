@@ -7,19 +7,20 @@ Proyecto de análisis de datos que identifica brechas geográficas en la distrib
 
 ## Descripción General
 
-Este proyecto analiza **4,048 atractivos turísticos permanentes** del registro nacional de SERNATUR 2020 para:
+Este proyecto analiza **~3,996 atractivos turísticos permanentes** del registro nacional de SERNATUR 2020 para:
 
-- **Identificar 80 clústeres espaciales** de atractivos turísticos usando HDBSCAN con métrica haversine
-- **Clasificar brechas de inversión**: 30% de los clústeres turísticos carecen de atractivos ancla de nivel internacional
+- **Identificar 79 clústeres espaciales** de atractivos turísticos usando HDBSCAN con métrica haversine
+- **Clasificar brechas de inversión**: ~33% de los clústeres turísticos carecen de atractivos ancla de nivel internacional
 - **Detectar oportunidades de desarrollo**: Regiones con infraestructura turística nacional pero sin atractivos de clase mundial
 - **Fundamentar decisiones de política pública**: Análisis basado en datos para estrategia de desarrollo turístico regional
 
 ## Hallazgos Clave
 
-- **80 clústeres territoriales** identificados a partir de 4,048 atractivos permanentes
-- **23 clústeres sin atractivos ancla** - prioridad máxima para inversión en desarrollo
-- **40+ clústeres con solo atractivos ancla nacional** - potencial de desarrollo moderado
-- **30% de infraestructura turística establecida carece de atractivos internacionales** - brecha estratégica
+- **79 clústeres territoriales** identificados a partir de ~3,996 atractivos permanentes
+- **52 clústeres con ancla internacional** - mercados turísticos maduros
+- **26 clústeres con solo ancla nacional** - potencial de desarrollo moderado
+- **2 clústeres sin atractivos ancla** - prioridad máxima para inversión
+- **~33% de los atractivos no asignados a ningún clúster** - brecha estratégica
 
 ## Stack Tecnológico
 
@@ -52,8 +53,8 @@ chile-tourism-gaps/
 │   └── geo_utils.py                    # Utilidades geoespaciales
 │
 ├── notebooks/                          # Notebooks Jupyter
-│   ├── 01_exploration_and_clustering.ipynb
-│   └── 02_destination_comparison.ipynb
+│   ├── Publico_Visualización_de_Atractivos.ipynb
+│   └── Comparacion_Atractivos_Destinos.ipynb
 │
 ├── tests/                              # Tests unitarios
 │   ├── test_preprocessing.py
@@ -83,7 +84,7 @@ chile-tourism-gaps/
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/usuario/chile-tourism-gaps.git
+git clone https://github.com/manuelsancristobal/chile-tourism-gaps.git
 cd chile-tourism-gaps
 
 # Instalar paquete en modo desarrollo
@@ -225,9 +226,9 @@ Si usa este análisis en investigación o contextos de política pública, cite 
 ```
 @misc{chile-tourism-gaps,
   title={Identificación de Brechas Turísticas de Chile Mediante Clustering Espacial},
-  author={Tourism Data Analysis},
+  author={Manuel San Cristóbal},
   year={2024},
-  url={https://github.com/usuario/chile-tourism-gaps}
+  url={https://github.com/manuelsancristobal/chile-tourism-gaps}
 }
 ```
 
@@ -265,9 +266,9 @@ Libre para uso académico, gubernamental y comercial.
 
 ## Contacto
 
-- **Issue Tracker**: [GitHub Issues](https://github.com/usuario/chile-tourism-gaps/issues)
-- **Email**: contacto@ejemplo.com
-- **Web**: https://github.com/usuario/chile-tourism-gaps
+- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/chile-tourism-gaps/issues)
+- **Email**: msancristo@fen.uchile.cl
+- **Web**: https://github.com/manuelsancristobal/chile-tourism-gaps
 
 ---
 

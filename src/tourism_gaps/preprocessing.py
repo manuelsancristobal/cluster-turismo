@@ -2,10 +2,9 @@
 
 from typing import List, Optional
 
-import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 import pandas as pd
-from matplotlib import cm
 
 
 def filter_permanent_attractions(df: pd.DataFrame) -> pd.DataFrame:
@@ -19,8 +18,6 @@ def filter_permanent_attractions(df: pd.DataFrame) -> pd.DataFrame:
     ----------
     df : pd.DataFrame
         Raw attractions dataframe
-    attraction_col : str
-        Column name for category classification (default: 'CATEGORIA')
 
     Returns
     -------
@@ -184,8 +181,9 @@ def assign_hierarchy_styling(df: pd.DataFrame) -> pd.DataFrame:
     color_map = get_hierarchy_color_map()
     radius_map = get_hierarchy_radius_map()
 
-    df_styled["color"] = df_styled["JERARQUÍA"].map(color_map)
-    df_styled["radius"] = df_styled["JERARQUÍA"].map(radius_map)
+    hierarchy_col = "JERARQUIA" if "JERARQUIA" in df_styled.columns else "JERARQUÍA"
+    df_styled["color"] = df_styled[hierarchy_col].map(color_map)
+    df_styled["radius"] = df_styled[hierarchy_col].map(radius_map)
 
     return df_styled
 
@@ -209,8 +207,8 @@ def get_cluster_color_palette(n_clusters: int) -> dict:
     colors = {}
 
     # Use tab20 (20 colors) and tab20b (20 colors) for up to 40 clusters
-    cmap_a = cm.get_cmap("tab20")
-    cmap_b = cm.get_cmap("tab20b")
+    cmap_a = matplotlib.colormaps.get_cmap("tab20")
+    cmap_b = matplotlib.colormaps.get_cmap("tab20b")
 
     for i in range(n_clusters):
         if i < 20:

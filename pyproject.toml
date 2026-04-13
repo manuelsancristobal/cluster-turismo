@@ -9,7 +9,7 @@ description = "Spatial clustering and gap analysis of Chilean tourism attraction
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Tourism Data Analysis", email = "contact@example.com"}
+    {name = "Manuel San Cristóbal", email = "msancristo@fen.uchile.cl"}
 ]
 requires-python = ">=3.10"
 classifiers = [
@@ -65,10 +65,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/chile-tourism-gaps"
-Documentation = "https://github.com/yourusername/chile-tourism-gaps/tree/main/docs"
-Repository = "https://github.com/yourusername/chile-tourism-gaps"
-"Bug Tracker" = "https://github.com/yourusername/chile-tourism-gaps/issues"
+Homepage = "https://github.com/manuelsancristobal/chile-tourism-gaps"
+Documentation = "https://github.com/manuelsancristobal/chile-tourism-gaps/tree/main/docs"
+Repository = "https://github.com/manuelsancristobal/chile-tourism-gaps"
+"Bug Tracker" = "https://github.com/manuelsancristobal/chile-tourism-gaps/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

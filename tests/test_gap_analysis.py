@@ -33,7 +33,8 @@ def test_classify_anchor_status_solo_nacional(cluster_summary):
     df = gap_analysis.classify_anchor_status(cluster_summary)
 
     assert df.loc[1, "anchor_status"] == "Solo ancla nacional"
-    assert df.loc[2, "anchor_status"] == "Solo ancla nacional"
+    # Cluster 2 has n_internacional=1, so it's "Con ancla internacional"
+    assert df.loc[2, "anchor_status"] == "Con ancla internacional"
 
 
 def test_classify_anchor_status_sin_ancla(cluster_summary):
@@ -65,11 +66,12 @@ def test_identify_investment_opportunities(cluster_summary):
     df_class = gap_analysis.classify_anchor_status(cluster_summary)
     opportunities = gap_analysis.identify_investment_opportunities(df_attr, df_class)
 
-    # Should exclude the cluster with international anchor
+    # Should exclude clusters with international anchor (0 and 2)
     assert 0 not in opportunities.index
+    assert 2 not in opportunities.index
 
-    # Should include others
-    assert 1 in opportunities.index or 2 in opportunities.index or 3 in opportunities.index
+    # Should include clusters without international anchor
+    assert 1 in opportunities.index or 3 in opportunities.index
 
     # Should have priority column
     assert "priority" in opportunities.columns
@@ -99,8 +101,8 @@ def test_identify_investment_opportunities_priority():
 
     # Priority 1 (Sin ancla) should come first
     assert opp.iloc[0]["anchor_status"] == "Sin ancla"
-    # Priority 2 (Solo nacional) should come second
-    assert opp.iloc[1]["anchor_status"] == "Solo ancla nacional"
+    # Priority 2 (Solo nacional) should come last (there are 2 Sin ancla clusters)
+    assert opp.iloc[-1]["anchor_status"] == "Solo ancla nacional"
 
 
 def test_compute_lagging_overlap_type_contained():
@@ -135,6 +137,46 @@ def test_compute_lagging_overlap_type_separate():
 
     result = gap_analysis.compute_lagging_overlap_type(lagging, official)
     assert result == "Separado"
+
+
+def test_compute_cluster_overlap_analysis():
+    """Test overlap analysis with actual polygon computation."""
+    # Create attractions data with clusters
+    df = pd.DataFrame({
+        "NOMBRE": [f"A{i}" for i in range(6)],
+        "CLUSTER": [0, 0, 0, 1, 1, 1],
+        "REGION": ["R1"] * 6,
+        "JERARQUIA": ["NACIONAL"] * 3 + ["LOCAL"] * 3,
+        "nombre": [None] * 6,  # All "lagging" (no destination match)
+    })
+
+    # Cluster hulls — cluster 0 contained inside dest, cluster 1 separate
+    cluster_hulls = {
+        0: [(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1), (-70.0, -33.0)],
+        1: [(-75.0, -50.0), (-75.1, -50.0), (-75.1, -50.1), (-75.0, -50.1), (-75.0, -50.0)],
+    }
+
+    # Destination polygons — large area around cluster 0
+    dest_polygons = {
+        "DestA": Polygon([(-71, -32), (-69, -32), (-69, -34), (-71, -34)]),
+    }
+
+    result = gap_analysis.compute_cluster_overlap_analysis(
+        df, cluster_hulls, pd.DataFrame(), dest_polygons
+    )
+
+    assert len(result) == 2
+    assert "overlap_type" in result.columns
+    assert "nearest_destination" in result.columns
+
+    # Cluster 0 should be "Contenido" (inside DestA)
+    row0 = result[result["cluster_id"] == 0].iloc[0]
+    assert row0["overlap_type"] == "Contenido"
+    assert row0["nearest_destination"] == "DestA"
+
+    # Cluster 1 should be "Separado" or "Genuinamente rezagado" (far away)
+    row1 = result[result["cluster_id"] == 1].iloc[0]
+    assert row1["overlap_type"] in ("Separado", "Genuinamente rezagado")
 
 
 def test_generate_opportunity_report(cluster_summary):

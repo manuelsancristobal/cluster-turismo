@@ -37,6 +37,11 @@ def run_hdbscan_spatial(
     pd.DataFrame
         Input dataframe with added 'CLUSTER' column containing cluster labels
     """
+    # Validate required columns exist
+    for col in [lat_col, lon_col]:
+        if col not in df.columns:
+            raise KeyError(f"Column '{col}' not found in dataframe. Available columns: {list(df.columns)}")
+
     # Extract coordinates and convert to radians (required for haversine metric)
     coords = np.radians(df[[lat_col, lon_col]].values)
 
@@ -85,7 +90,12 @@ def compute_cluster_convex_hulls(
     Dict[int, Polygon]
         Dictionary mapping cluster ID to Shapely Polygon (convex hull)
     """
+    # NOTE: ConvexHull operates in Euclidean space on raw lat/lon.
+    # For Chile's continental extent (~17°S–56°S) this is an acceptable
+    # approximation (<0.5% distortion). A UTM projection would be more
+    # rigorous but adds complexity without meaningful accuracy gain here.
     hulls = {}
+    n_failed = 0
 
     for cluster_id in df[cluster_col].unique():
         if cluster_id == -1:  # Skip noise points
@@ -102,7 +112,11 @@ def compute_cluster_convex_hulls(
                 hull_coords.append(hull_coords[0])  # Close the polygon
                 hulls[cluster_id] = hull_coords
             except Exception as e:
-                print(f"Could not compute hull for cluster {cluster_id}: {e}")
+                n_failed += 1
+                print(f"  WARNING: Could not compute hull for cluster {cluster_id}: {e}")
+
+    if n_failed > 0:
+        print(f"  {n_failed} cluster(s) failed hull computation out of {len(hulls) + n_failed}")
 
     return hulls
 
@@ -132,7 +146,7 @@ def summarize_clusters(
     cluster_col: str = "CLUSTER",
     region_col: str = "REGION",
     category_col: str = "CATEGORIA",
-    hierarchy_col: str = "JERARQUÍA",
+    hierarchy_col: str = "JERARQUIA",
 ) -> pd.DataFrame:
     """
     Generate summary statistics for each cluster.
@@ -161,25 +175,19 @@ def summarize_clusters(
     # Count attractions per cluster
     summary = df.groupby(cluster_col).agg(
         n_attractions=("NOMBRE", "count"),
-        region_principal=(region_col, lambda x: x.value_counts().index[0] if len(x) > 0 else None),
-        categoria_principal=(category_col, lambda x: x.value_counts().index[0] if len(x) > 0 else None),
-        jerarquia_principal=(hierarchy_col, lambda x: x.value_counts().index[0] if len(x) > 0 else None),
+        region_principal=(region_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
+        categoria_principal=(category_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
+        jerarquia_principal=(hierarchy_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
     )
 
-    # Calculate percentages by hierarchy
-    def pct_by_level(level):
-        return (df.groupby(cluster_col)[hierarchy_col] == level).sum() / df.groupby(cluster_col)[hierarchy_col].count()
-
-    summary["pct_internacional"] = (pct_by_level("INTERNACIONAL") * 100).round(1)
-    summary["pct_nacional"] = (pct_by_level("NACIONAL") * 100).round(1)
-    summary["pct_regional"] = (pct_by_level("REGIONAL") * 100).round(1)
-    summary["pct_local"] = (pct_by_level("LOCAL") * 100).round(1)
-
-    # Count by hierarchy level
-    summary["n_internacional"] = (df.groupby(cluster_col)[hierarchy_col] == "INTERNACIONAL").sum()
-    summary["n_nacional"] = (df.groupby(cluster_col)[hierarchy_col] == "NACIONAL").sum()
-    summary["n_regional"] = (df.groupby(cluster_col)[hierarchy_col] == "REGIONAL").sum()
-    summary["n_local"] = (df.groupby(cluster_col)[hierarchy_col] == "LOCAL").sum()
+    # Calculate counts and percentages by hierarchy level
+    for level in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
+        col_lower = level.lower()
+        counts = df[df[hierarchy_col] == level].groupby(cluster_col).size()
+        summary[f"n_{col_lower}"] = counts.reindex(summary.index, fill_value=0)
+        summary[f"pct_{col_lower}"] = (
+            (summary[f"n_{col_lower}"] / summary["n_attractions"]) * 100
+        ).round(1)
 
     return summary.sort_values("n_attractions", ascending=False)
 

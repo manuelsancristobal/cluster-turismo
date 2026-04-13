@@ -30,13 +30,13 @@ coverage:
 	@echo "\nCoverage report generated in htmlcov/index.html"
 
 maps:
-	jupyter nbconvert --execute --to html notebooks/01_exploration_and_clustering.ipynb --output-dir outputs/maps/
-	jupyter nbconvert --execute --to html notebooks/02_destination_comparison.ipynb --output-dir outputs/maps/
+	jupyter nbconvert --execute --to html "notebooks/Publico_Visualización_de_Atractivos.ipynb" --output-dir outputs/maps/
+	jupyter nbconvert --execute --to html "notebooks/Comparacion_Atractivos_Destinos.ipynb" --output-dir outputs/maps/
 	@echo "Maps exported to outputs/maps/"
 
 run-notebooks:
-	jupyter nbconvert --execute --to notebook notebooks/01_exploration_and_clustering.ipynb --output notebooks/01_exploration_and_clustering.ipynb
-	jupyter nbconvert --execute --to notebook notebooks/02_destination_comparison.ipynb --output notebooks/02_destination_comparison.ipynb
+	jupyter nbconvert --execute --to notebook "notebooks/Publico_Visualización_de_Atractivos.ipynb" --output "Publico_Visualización_de_Atractivos.ipynb"
+	jupyter nbconvert --execute --to notebook "notebooks/Comparacion_Atractivos_Destinos.ipynb" --output "Comparacion_Atractivos_Destinos.ipynb"
 
 clean:
 	rm -rf build/ dist/ *.egg-info

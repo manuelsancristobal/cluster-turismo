@@ -1,14 +1,10 @@
-# Data files (large, regenerable)
-data/raw/*.xlsx
-data/raw/*.kmz
-data/raw/*.csv
-!data/raw/.gitkeep
+# Data files are tracked in data/ (needed to reproduce results)
 
-# Generated outputs
-outputs/maps/*.html
-outputs/figures/*.png
-!outputs/maps/.gitkeep
-!outputs/figures/.gitkeep
+# Generated assets (regenerate with: python scripts/generate_assets.py)
+assets/
+
+# Notebooks
+notebooks/
 
 # Python
 __pycache__/

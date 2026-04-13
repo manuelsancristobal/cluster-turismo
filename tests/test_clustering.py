@@ -46,6 +46,11 @@ def test_run_hdbscan_spatial_cluster_range(sample_data):
     assert num_clusters >= 1
     assert num_clusters <= len(sample_data) / 2
 
+    # Noise points should be labeled -1
+    noise_mask = df["CLUSTER"] == -1
+    non_noise = df[~noise_mask]
+    assert all(c >= 0 for c in non_noise["CLUSTER"])
+
 
 def test_run_hdbscan_spatial_with_geographic_data():
     """Test HDBSCAN with actual geographic clustering."""
@@ -82,14 +87,17 @@ def test_compute_cluster_convex_hulls(sample_data):
     # Should exclude noise cluster (-1)
     assert -1 not in hulls
 
-    # Should have hulls for other clusters
+    # Should have hulls for clusters with 3+ points
     assert len(hulls) > 0
 
-    # Each hull should be a list of coordinates
+    # Each hull should be a closed polygon of coordinate tuples
     for hull_id, hull_coords in hulls.items():
         assert isinstance(hull_coords, list)
-        assert len(hull_coords) >= 3  # At least 3 points for a polygon
+        assert len(hull_coords) >= 4  # At least 3 vertices + closing point
         assert all(isinstance(coord, tuple) for coord in hull_coords)
+        assert all(len(coord) == 2 for coord in hull_coords)
+        # Hull should be closed (first == last)
+        assert hull_coords[0] == hull_coords[-1]
 
 
 def test_compute_cluster_convex_hulls_single_point():
@@ -120,17 +128,25 @@ def test_summarize_clusters(sample_data):
         hierarchy_col="JERARQUÍA",
     )
 
-    # Should have summary for each cluster (except -1)
+    # Should have summary for each cluster (including noise if present as a group)
     assert len(summary) > 0
 
     # Should have expected columns
-    assert "n_attractions" in summary.columns
-    assert "region_principal" in summary.columns
-    assert "n_internacional" in summary.columns
-    assert "pct_internacional" in summary.columns
+    expected_cols = ["n_attractions", "region_principal", "categoria_principal",
+                     "n_internacional", "n_nacional", "pct_internacional", "pct_nacional"]
+    for col in expected_cols:
+        assert col in summary.columns, f"Missing column: {col}"
 
-    # Should be sorted by n_attractions
+    # Should be sorted by n_attractions descending
     assert (summary["n_attractions"].iloc[:-1].values >= summary["n_attractions"].iloc[1:].values).all()
+
+    # Attraction counts should be positive
+    assert (summary["n_attractions"] > 0).all()
+
+    # Percentages should be between 0 and 100
+    for pct_col in [c for c in summary.columns if c.startswith("pct_")]:
+        assert (summary[pct_col] >= 0).all()
+        assert (summary[pct_col] <= 100).all()
 
 
 def test_summarize_clusters_percentages():
@@ -139,7 +155,7 @@ def test_summarize_clusters_percentages():
         "NOMBRE": ["A"] * 10,
         "REGION": ["TestRegion"] * 10,
         "CATEGORIA": ["TestCategory"] * 10,
-        "JERARQUÍA": ["INTERNACIONAL"] * 5 + ["NACIONAL"] * 5,
+        "JERARQUIA": ["INTERNACIONAL"] * 5 + ["NACIONAL"] * 5,
         "CLUSTER": [0] * 10,
     }
     df = pd.DataFrame(data)

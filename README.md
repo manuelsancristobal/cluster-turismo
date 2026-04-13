@@ -2,7 +2,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/yourusername/chile-tourism-gaps/workflows/CI/badge.svg)](https://github.com/yourusername/chile-tourism-gaps/actions)
+[![Tests](https://github.com/manuelsancristobal/chile-tourism-gaps/workflows/CI/badge.svg)](https://github.com/manuelsancristobal/chile-tourism-gaps/actions)
 
 A data science project analyzing Chilean tourism attractions to identify geographic clusters and investment gaps using HDBSCAN spatial clustering.
 
@@ -10,17 +10,17 @@ A data science project analyzing Chilean tourism attractions to identify geograp
 
 This project analyzes 4,048 permanent Chilean tourism attractions from the 2020 SERNATUR (Servicio Nacional de Turismo) registry to:
 
-- **Identify 80 spatial clusters** of tourism attractions using HDBSCAN with haversine metric
-- **Classify investment gaps**: 30% of tourism clusters lack international-level anchor attractions
+- **Identify 79 spatial clusters** of tourism attractions using HDBSCAN with haversine metric
+- **Classify investment gaps**: ~33% of tourism clusters lack international-level anchor attractions
 - **Pinpoint development opportunities**: Regions with national infrastructure but missing world-class attractions
 - **Support policy decisions**: Data-driven analysis for regional tourism development strategy
 
 ## Key Findings
 
-- **80 territorial clusters** identified from 4,048 permanent attractions across Chile
-- **23 clusters without anchor attractions** - highest priority for development investment
-- **40+ clusters with only national-level anchors** - moderate development potential
-- **30% of established tourism infrastructure lacks international attractions** - strategic gap
+- **79 territorial clusters** identified from ~3,996 permanent attractions across Chile
+- **52 clusters with international anchors** - mature tourism markets
+- **26 clusters with only national-level anchors** - moderate development potential
+- **~33% of clusters operate without international anchor attractions** - strategic gap for investment
 
 ## Tech Stack
 
@@ -39,10 +39,8 @@ This project analyzes 4,048 permanent Chilean tourism attractions from the 2020 
 ```
 chile-tourism-gaps/
 ├── README.md                           # This file
-├── README_es.md                        # Spanish documentation
-├── LICENSE                             # MIT License
+├── index.html                          # Portfolio page (GitHub Pages)
 ├── pyproject.toml                      # Project configuration
-├── Makefile                            # Build automation
 │
 ├── src/tourism_gaps/                   # Main Python package
 │   ├── data_loader.py                  # Load Excel & KMZ files
@@ -52,9 +50,12 @@ chile-tourism-gaps/
 │   ├── visualization.py                # PyDeck, Folium, Matplotlib
 │   └── geo_utils.py                    # Geospatial utilities
 │
+├── scripts/
+│   └── generate_assets.py             # Generate all charts & maps
+│
 ├── notebooks/                          # Jupyter analysis notebooks
-│   ├── 01_exploration_and_clustering.ipynb
-│   └── 02_destination_comparison.ipynb
+│   ├── Publico_Visualización_de_Atractivos.ipynb
+│   └── Comparacion_Atractivos_Destinos.ipynb
 │
 ├── tests/                              # Unit tests
 │   ├── test_preprocessing.py
@@ -62,16 +63,14 @@ chile-tourism-gaps/
 │   ├── test_gap_analysis.py
 │   └── fixtures/                       # Test data
 │
-├── data/
-│   └── raw/                            # (not committed) Original XLSX & KMZ files
+├── data/                               # (not committed) Original XLSX & KMZ files
 │
-├── outputs/                            # Generated analysis outputs
-│   ├── maps/                           # Interactive HTML maps
-│   └── figures/                        # Static visualizations
+├── assets/                             # Generated visual assets
+│   ├── mapa_interactivo.html           # Interactive Folium map
+│   └── img/                            # Static chart images
 │
 └── docs/                               # Documentation
-    ├── methodology.md                  # Detailed methodology
-    └── images/                         # Screenshots & diagrams
+    └── methodology.md                  # Detailed methodology
 ```
 
 ## Installation
@@ -84,7 +83,7 @@ chile-tourism-gaps/
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/chile-tourism-gaps.git
+git clone https://github.com/manuelsancristobal/chile-tourism-gaps.git
 cd chile-tourism-gaps
 
 # Install package in development mode
@@ -100,8 +99,8 @@ make lint
 ### Data Setup
 
 Download source data from SERNATUR:
-1. `ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx` → `data/raw/`
-2. `Destinos_Nacional-Publico.kmz` → `data/raw/`
+1. `ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx` → `data/`
+2. `Destinos_Nacional-Publico.kmz` → `data/`
 
 Then run notebooks:
 ```bash
@@ -113,10 +112,10 @@ jupyter lab notebooks/
 ### Python API
 
 ```python
-from tourism_gaps import clustering, preprocessing, gap_analysis
+from tourism_gaps import clustering, preprocessing, gap_analysis, data_loader
 
 # Load and preprocess attractions
-df = preprocessing.load_attractions_excel("data/raw/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
+df = data_loader.load_attractions_excel("data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
 df = preprocessing.filter_permanent_attractions(df)
 df = preprocessing.validate_coordinates(df)
 
@@ -195,7 +194,7 @@ The project uses **HDBSCAN** (Hierarchical Density-Based Spatial Clustering of A
 
 ## Testing
 
-Project includes comprehensive unit tests with 80%+ code coverage:
+Project includes unit tests for core modules:
 
 ```bash
 # Run tests with coverage
@@ -229,7 +228,7 @@ If you use this analysis in research or policy contexts, please cite:
   title={Identifying Tourism Investment Gaps in Chile Through Spatial Clustering},
   author={Tourism Data Analysis},
   year={2024},
-  url={https://github.com/yourusername/chile-tourism-gaps}
+  url={https://github.com/manuelsancristobal/chile-tourism-gaps}
 }
 ```
 
@@ -267,9 +266,9 @@ Free for academic, government, and commercial use.
 
 ## Contact & Support
 
-- **Issue Tracker**: [GitHub Issues](https://github.com/yourusername/chile-tourism-gaps/issues)
-- **Email**: contact@example.com
-- **Web**: https://github.com/yourusername/chile-tourism-gaps
+- **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/chile-tourism-gaps/issues)
+- **Email**: msancristo@fen.uchile.cl
+- **Web**: https://github.com/manuelsancristobal/chile-tourism-gaps
 
 ---
 
