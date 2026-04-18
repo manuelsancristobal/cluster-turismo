@@ -1,4 +1,4 @@
-"""Data preprocessing and validation functions."""
+"""Funciones de preprocesamiento y validación de datos."""
 
 from typing import List, Optional
 
@@ -9,20 +9,20 @@ import pandas as pd
 
 def filter_permanent_attractions(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Filter out temporary attractions and keep only permanent ones.
+    Filtra atractivos temporales y conserva solo los permanentes.
 
-    Removes all records with CATEGORIA == 'ACONTECIMIENTOS PROGRAMADOS'
-    (scheduled events that are not permanent attractions).
+    Elimina todos los registros con CATEGORIA == 'ACONTECIMIENTOS PROGRAMADOS'
+    (eventos programados que no son atractivos permanentes).
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Raw attractions dataframe
+        Dataframe de atractivos sin procesar
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Filtered dataframe with only permanent attractions
+        Dataframe filtrado con solo atractivos permanentes
     """
     df_filtered = df[df["CATEGORIA"] != "ACONTECIMIENTOS PROGRAMADOS"].copy()
     return df_filtered
@@ -32,27 +32,27 @@ def validate_coordinates(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
 ) -> pd.DataFrame:
     """
-    Validate and filter coordinates within Chilean continental bounds.
+    Valida y filtra coordenadas dentro de los límites continentales de Chile.
 
-    Chile continental bounds (approximately):
-    - Latitude: -17° to -56°
-    - Longitude: -66° to -75°
+    Límites continentales de Chile (aproximadamente):
+    - Latitud: -17° a -56°
+    - Longitud: -66° a -75°
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with coordinate columns
+        Dataframe con columnas de coordenadas
     lat_col : str
-        Name of latitude column (default: 'POINT_Y')
+        Nombre de la columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Name of longitude column (default: 'POINT_X')
+        Nombre de la columna de longitud (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Dataframe with only valid coordinate rows
+        Dataframe con solo filas de coordenadas válidas
     """
-    # Chilean continental bounds
+    # Límites continentales de Chile
     lat_min, lat_max = -56, -17
     lon_min, lon_max = -75, -66
 
@@ -66,26 +66,26 @@ def validate_coordinates(
     df_valid = df[mask].copy()
     n_removed = len(df) - len(df_valid)
     if n_removed > 0:
-        print(f"Removed {n_removed} records with invalid coordinates")
+        print(f"Se eliminaron {n_removed} registros con coordenadas inválidas")
 
     return df_valid
 
 
 def normalize_commune_codes(df: pd.DataFrame, col: str = "COD_COM") -> pd.DataFrame:
     """
-    Normalize commune codes by removing whitespace.
+    Normaliza códigos de comuna eliminando espacios en blanco.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with commune code column
+        Dataframe con columna de código de comuna
     col : str
-        Name of commune code column (default: 'COD_COM')
+        Nombre de la columna de código de comuna (por defecto: 'COD_COM')
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Dataframe with normalized codes
+        Dataframe con códigos normalizados
     """
     df_normalized = df.copy()
     df_normalized[col] = df_normalized[col].astype(str).str.strip()
@@ -99,23 +99,23 @@ def merge_attractions_destinations(
     dest_code_col: str = "codigo",
 ) -> pd.DataFrame:
     """
-    Merge attractions with official destinations by commune code.
+    Combina atractivos con destinos oficiales por código de comuna.
 
-    Parameters
+    Parámetros
     ----------
     df_attractions : pd.DataFrame
-        Attractions dataframe with commune code column
+        Dataframe de atractivos con columna de código de comuna
     df_destinations : pd.DataFrame
-        Destinations dataframe with code column
+        Dataframe de destinos con columna de código
     attr_code_col : str
-        Commune code column in attractions (default: 'COD_COM')
+        Columna de código de comuna en atractivos (por defecto: 'COD_COM')
     dest_code_col : str
-        Code column in destinations (default: 'codigo')
+        Columna de código en destinos (por defecto: 'codigo')
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Merged dataframe with attraction + destination info
+        Dataframe combinado con información de atractivo + destino
     """
     df_merged = df_attractions.merge(
         df_destinations, left_on=attr_code_col, right_on=dest_code_col, how="left"
@@ -123,19 +123,19 @@ def merge_attractions_destinations(
 
     n_with_dest = df_merged["nombre"].notna().sum()
     n_without_dest = df_merged["nombre"].isna().sum()
-    print(f"Matched attractions: {n_with_dest} / Unmatched: {n_without_dest}")
+    print(f"Atractivos coincidentes: {n_with_dest} / Sin coincidencia: {n_without_dest}")
 
     return df_merged
 
 
 def get_hierarchy_color_map() -> dict:
     """
-    Get color map for attraction hierarchy levels.
+    Obtiene el mapa de colores para niveles de jerarquía de atractivos.
 
-    Returns
+    Retorna
     -------
     dict
-        Mapping of hierarchy level to RGB color triplet
+        Mapeo de nivel de jerarquía a triplete de color RGB
     """
     return {
         "LOCAL": [180, 180, 180],
@@ -147,12 +147,12 @@ def get_hierarchy_color_map() -> dict:
 
 def get_hierarchy_radius_map() -> dict:
     """
-    Get radius (size) map for attraction hierarchy levels.
+    Obtiene el mapa de radio (tamaño) para niveles de jerarquía de atractivos.
 
-    Returns
+    Retorna
     -------
     dict
-        Mapping of hierarchy level to radius value
+        Mapeo de nivel de jerarquía a valor de radio
     """
     return {
         "LOCAL": 1,
@@ -164,17 +164,17 @@ def get_hierarchy_radius_map() -> dict:
 
 def assign_hierarchy_styling(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Assign color and radius based on attraction hierarchy level.
+    Asigna color y radio según el nivel de jerarquía del atractivo.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with JERARQUÍA column
+        Dataframe con columna JERARQUÍA
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Dataframe with added 'color' and 'radius' columns
+        Dataframe con columnas 'color' y 'radius' agregadas
     """
     df_styled = df.copy()
 
@@ -190,23 +190,23 @@ def assign_hierarchy_styling(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_cluster_color_palette(n_clusters: int) -> dict:
     """
-    Generate distinct colors for cluster visualization.
+    Genera colores distintos para visualización de clústeres.
 
-    Uses matplotlib's tab20 and tab20b colormaps to get up to 40 distinct colors.
+    Usa los mapas de colores tab20 y tab20b de matplotlib para obtener hasta 40 colores distintos.
 
-    Parameters
+    Parámetros
     ----------
     n_clusters : int
-        Number of clusters to assign colors
+        Número de clústeres a los que asignar colores
 
-    Returns
+    Retorna
     -------
     dict
-        Mapping of cluster ID to RGB color triplet
+        Mapeo de ID de clúster a triplete de color RGB
     """
     colors = {}
 
-    # Use tab20 (20 colors) and tab20b (20 colors) for up to 40 clusters
+    # Usar tab20 (20 colores) y tab20b (20 colores) para hasta 40 clústeres
     cmap_a = matplotlib.colormaps.get_cmap("tab20")
     cmap_b = matplotlib.colormaps.get_cmap("tab20b")
 
@@ -216,11 +216,11 @@ def get_cluster_color_palette(n_clusters: int) -> dict:
         else:
             rgba = cmap_b(i - 20)
 
-        # Convert RGBA to RGB in 0-255 range
+        # Convertir RGBA a RGB en rango 0-255
         rgb = [int(rgba[j] * 255) for j in range(3)]
         colors[i] = rgb
 
-    # Noise points (-1 cluster) get gray with transparency
+    # Los puntos de ruido (clúster -1) obtienen gris con transparencia
     colors[-1] = [150, 150, 150]
 
     return colors
@@ -228,19 +228,19 @@ def get_cluster_color_palette(n_clusters: int) -> dict:
 
 def assign_cluster_colors(df: pd.DataFrame, n_clusters: int) -> pd.DataFrame:
     """
-    Assign colors to dataframe rows based on cluster assignment.
+    Asigna colores a las filas del dataframe según la asignación de clúster.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with 'CLUSTER' column
+        Dataframe con columna 'CLUSTER'
     n_clusters : int
-        Number of clusters
+        Número de clústeres
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Dataframe with added 'cluster_color' column
+        Dataframe con columna 'cluster_color' agregada
     """
     df_colored = df.copy()
 
@@ -252,16 +252,16 @@ def assign_cluster_colors(df: pd.DataFrame, n_clusters: int) -> pd.DataFrame:
 
 def get_anchor_color_map() -> dict:
     """
-    Get color map for anchor classification.
+    Obtiene el mapa de colores para clasificación de ancla.
 
-    Returns
+    Retorna
     -------
     dict
-        Mapping of anchor status to RGB values
+        Mapeo de estado de ancla a valores RGB
     """
     return {
-        "Con ancla internacional": [46, 204, 113],  # Green
-        "Solo ancla nacional": [243, 156, 18],  # Orange
-        "Sin ancla": [231, 76, 60],  # Red
-        "Ruido": [150, 150, 150],  # Gray
+        "Con ancla internacional": [46, 204, 113],  # Verde
+        "Solo ancla nacional": [243, 156, 18],  # Naranja
+        "Sin ancla": [231, 76, 60],  # Rojo
+        "Ruido": [150, 150, 150],  # Gris
     }

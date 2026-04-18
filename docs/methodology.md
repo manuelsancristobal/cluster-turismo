@@ -1,374 +1,374 @@
-# Methodology: Spatial Clustering & Gap Analysis
+# Metodología: Clustering Espacial y Análisis de Brechas
 
-## 1. Executive Summary
+## 1. Resumen Ejecutivo
 
-This document describes the analytical methodology used to identify tourism investment gaps across Chile. The project combines **spatial clustering** (HDBSCAN) with **qualitative gap analysis** to prioritize regions for tourism development investment.
+Este documento describe la metodología analítica utilizada para identificar brechas de inversión turística en Chile. El proyecto combina **clustering espacial** (HDBSCAN) con **análisis cualitativo de brechas** para priorizar regiones para inversión en desarrollo turístico.
 
-**Key innovation**: Using "anchor attractions" (international-level attractions) as a proxy for market maturity to identify underserved regions.
-
----
-
-## 2. Conceptual Framework
-
-### 2.1 The "Anchor Attraction" Concept
-
-In retail geography, an **anchor tenant** is a major, well-known business that attracts customers to a shopping center, making secondary tenants viable. We apply this concept to tourism:
-
-An **anchor attraction** is a world-class, internationally-recognized tourism asset that:
-- Attracts visitors from outside the region
-- Creates economic demand for secondary attractions
-- Validates the region as a tourism destination
-
-**Classification:**
-- **International Anchor**: Globally recognized attractions (e.g., Atacama geysers, Patagonian trekking)
-- **National Anchor**: Known throughout Chile (e.g., regional wine routes, specific monuments)
-- **No Anchor**: Only regional/local attractions with limited external draw
-
-**Strategic insight**: A cluster with only "national" anchors may have developed tourism infrastructure but lacks the international appeal needed to compete globally—a gap opportunity.
-
-### 2.2 Tourism Development Model
-
-We posit a three-stage development model:
-
-| Stage | Anchor Type | Infrastructure | Market Maturity | Development Strategy |
-|-------|------------|-----------------|-----------------|---------------------|
-| **Mature** | International | High | Proven | Consolidation, expansion quality |
-| **Growth** | National only | Medium | Emerging | International positioning |
-| **Nascent** | None | Low | Early | Anchor development |
-
-This project focuses on identifying clusters in the "Growth" and "Nascent" stages for policy intervention.
+**Innovación clave**: Uso de "atractivos ancla" (atractivos de nivel internacional) como proxy de madurez de mercado para identificar regiones desatendidas.
 
 ---
 
-## 3. Data & Sources
+## 2. Marco Conceptual
 
-### 3.1 Primary Dataset: SERNATUR 2020
+### 2.1 El Concepto de "Atractivo Ancla"
 
-**Source**: Servicio Nacional de Turismo (SERNATUR), Chile's official tourism authority
+En geografía comercial, un **tenant ancla** es un negocio principal y reconocido que atrae clientes a un centro comercial, haciendo viables a los tenants secundarios. Aplicamos este concepto al turismo:
 
-**Coverage**:
-- 4,048 permanent attractions (excludes temporary events)
-- 16 attributes per attraction (name, category, region, coordinates, hierarchy, etc.)
-- Updated 2020
+Un **atractivo ancla** es un activo turístico de clase mundial, reconocido internacionalmente, que:
+- Atrae visitantes desde fuera de la región
+- Crea demanda económica para atractivos secundarios
+- Valida la región como destino turístico
 
-**Hierarchy Classification** (used for anchor determination):
-```
-JERARQUÍA (Hierarchy Level)
-├── LOCAL         (attracts within commune)
-├── REGIONAL      (attracts within region)
-├── NACIONAL      (attracts from other regions)
-└── INTERNACIONAL (attracts international visitors)
-```
+**Clasificación:**
+- **Ancla Internacional**: Atractivos reconocidos globalmente (ej., géiseres de Atacama, trekking en Patagonia)
+- **Ancla Nacional**: Conocidos en todo Chile (ej., rutas del vino regionales, monumentos específicos)
+- **Sin Ancla**: Solo atractivos regionales/locales con limitada atracción externa
 
-**Geographic Coverage**:
-- Continental Chile: -17° to -56° latitude, -66° to -75° longitude
-- Excludes Easter Island, Juan Fernández (non-continental)
+**Insight estratégico**: Un clúster con solo anclas "nacionales" puede tener infraestructura turística desarrollada pero carece del atractivo internacional necesario para competir globalmente—una oportunidad de brecha.
 
-### 3.2 Secondary Dataset: SERNATUR 2025 Destinations
+### 2.2 Modelo de Desarrollo Turístico
 
-**Source**: SERNATUR official tourism destinations (2025 update)
+Postulamos un modelo de desarrollo en tres etapas:
 
-**Coverage**:
-- 78 official tourism zones
-- Polygon boundaries (KMZ format - Google Earth)
-- Regional classification
+| Etapa | Tipo de Ancla | Infraestructura | Madurez de Mercado | Estrategia de Desarrollo |
+|-------|--------------|-----------------|---------------------|--------------------------|
+| **Maduro** | Internacional | Alta | Comprobada | Consolidación, expansión de calidad |
+| **Crecimiento** | Solo nacional | Media | Emergente | Posicionamiento internacional |
+| **Naciente** | Ninguna | Baja | Temprana | Desarrollo de ancla |
 
-**Usage**: Validation dataset to check how attractions align with official tourism development zones
-
-### 3.3 Data Quality
-
-- **Completeness**: >99% of records have valid coordinates
-- **Geographic Accuracy**: ±100m for urban attractions, ±1km for remote
-- **Temporal**: 2020-2025 data span (minimal seasonality in permanent attractions)
-- **Validation**: Coordinates validated against Chilean geographic bounds
+Este proyecto se enfoca en identificar clústeres en las etapas de "Crecimiento" y "Naciente" para intervención de política pública.
 
 ---
 
-## 4. Methodology: Data Processing
+## 3. Datos y Fuentes
 
-### 4.1 Data Cleaning Pipeline
+### 3.1 Dataset Primario: SERNATUR 2020
+
+**Fuente**: Servicio Nacional de Turismo (SERNATUR), autoridad oficial de turismo de Chile
+
+**Cobertura**:
+- 4.048 atractivos permanentes (excluye eventos temporales)
+- 16 atributos por atractivo (nombre, categoría, región, coordenadas, jerarquía, etc.)
+- Actualizado 2020
+
+**Clasificación de Jerarquía** (usada para determinación de ancla):
+```
+JERARQUÍA (Nivel de Jerarquía)
+├── LOCAL         (atrae dentro de la comuna)
+├── REGIONAL      (atrae dentro de la región)
+├── NACIONAL      (atrae desde otras regiones)
+└── INTERNACIONAL (atrae visitantes internacionales)
+```
+
+**Cobertura Geográfica**:
+- Chile continental: latitud -17° a -56°, longitud -66° a -75°
+- Excluye Isla de Pascua, Juan Fernández (no continentales)
+
+### 3.2 Dataset Secundario: Destinos SERNATUR 2025
+
+**Fuente**: Destinos turísticos oficiales SERNATUR (actualización 2025)
+
+**Cobertura**:
+- 78 zonas turísticas oficiales
+- L��mites de polígonos (formato KMZ - Google Earth)
+- Clasificación regional
+
+**Uso**: Dataset de validación para verificar cómo los atractivos se alinean con las zonas oficiales de desarrollo turístico
+
+### 3.3 Calidad de Datos
+
+- **Completitud**: >99% de registros tienen coordenadas válidas
+- **Precisión Geográfica**: ±100m para atractivos urbanos, ±1km para remotos
+- **Temporal**: Rango de datos 2020-2025 (mínima estacionalidad en atractivos permanentes)
+- **Validación**: Coordenadas validadas contra límites geográficos chilenos
+
+---
+
+## 4. Metodología: Procesamiento de Datos
+
+### 4.1 Pipeline de Limpieza de Datos
 
 ```
-Raw Excel → Filter Permanents → Validate Coordinates → Normalize Codes → Clustered Data
+Excel bruto → Filtrar Permanentes → Validar Coordenadas → Normalizar Códigos → Datos Clusterizados
 ```
 
-**Step 1: Filter Permanent Attractions**
+**Paso 1: Filtrar Atractivos Permanentes**
 ```python
 df = df[df['CATEGORIA'] != "ACONTECIMIENTOS PROGRAMADOS"]
 ```
-Removes ~150 temporary events (festivals, conferences), retaining only permanent attractions
+Elimina ~150 eventos temporales (festivales, conferencias), reteniendo solo atractivos permanentes
 
-**Step 2: Validate Geographic Coordinates**
-- Latitude: -56° ≤ lat ≤ -17°
-- Longitude: -75° ≤ lon ≤ -66°
-- Removes: 0.2% invalid records (non-continental outliers)
+**Paso 2: Validar Coordenadas Geográficas**
+- Latitud: -56° ≤ lat ≤ -17°
+- Longitud: -75° ≤ lon ≤ -66°
+- Elimina: 0.2% registros inválidos (outliers no continentales)
 
-**Step 3: Normalize Commune Codes**
-- Strips whitespace from COD_COM (commune identifier)
-- Ensures consistent merge with destination polygons
+**Paso 3: Normalizar Códigos de Comuna**
+- Elimina espacios en blanco de COD_COM (identificador de comuna)
+- Asegura merge consistente con polígonos de destino
 
-**Result**: 4,048 clean, geo-validated attractions ready for clustering
+**Resultado**: 4.048 atractivos limpios y geo-validados listos para clustering
 
-### 4.2 Feature Engineering
+### 4.2 Ingeniería de Variables
 
-**Hierarchy Encoding** (for visualization and anchor classification):
+**Codificación de Jerarquía** (para visualización y clasificación de ancla):
 ```
-LOCAL: RGB [180, 180, 180], Size Radius 1.0
-REGIONAL: RGB [130, 170, 210], Size Radius 1.5
-NACIONAL: RGB [70, 130, 180], Size Radius 2.0
-INTERNACIONAL: RGB [220, 30, 120], Size Radius 3.0
+LOCAL: RGB [180, 180, 180], Radio 1.0
+REGIONAL: RGB [130, 170, 210], Radio 1.5
+NACIONAL: RGB [70, 130, 180], Radio 2.0
+INTERNACIONAL: RGB [220, 30, 120], Radio 3.0
 ```
 
-**Region Extraction**:
-- Each attraction belongs to one of 16 administrative regions
-- Clustered regionally to match policy jurisdictions
+**Extracción Regional**:
+- Cada atractivo pertenece a una de 16 regiones administrativas
+- Agrupados regionalmente para coincidir con jurisdicciones de política pública
 
 ---
 
-## 5. Methodology: Spatial Clustering
+## 5. Metodología: Clustering Espacial
 
-### 5.1 Algorithm Selection: HDBSCAN
+### 5.1 Selección de Algoritmo: HDBSCAN
 
-We chose **HDBSCAN** over alternatives (k-means, DBSCAN) because:
+Elegimos **HDBSCAN** sobre alternativas (k-means, DBSCAN) porque:
 
-| Algorithm | Pros | Cons | Suitable? |
-|-----------|------|------|-----------|
-| **K-means** | Fast, simple | Requires pre-specified k; spherical clusters | ❌ |
-| **DBSCAN** | Finds arbitrary clusters | Eps parameter hard to tune; single scale | ⚠️ |
-| **HDBSCAN** | Multi-scale, no k required, robust | Slightly slower | ✅ |
+| Algoritmo | Pros | Contras | ¿Adecuado? |
+|-----------|------|---------|-------------|
+| **K-means** | Rápido, simple | Requiere k pre-especificado; clústeres esféricos | ❌ |
+| **DBSCAN** | Encuentra clústeres arbitrarios | Parámetro eps difícil de ajustar; escala única | ⚠️ |
+| **HDBSCAN** | Multi-escala, no requiere k, robusto | Ligeramente más lento | ✅ |
 
-**HDBSCAN Advantages for Tourism**:
-1. **No pre-specified cluster count**: We don't know how many tourism clusters exist
-2. **Density-based**: Finds areas of high concentration (tourist hotspots)
-3. **Noise handling**: Identifies isolated attractions (potential development sites)
-4. **Hierarchical**: Can visualize multi-scale structures
+**Ventajas de HDBSCAN para Turismo**:
+1. **Sin conteo de clústeres pre-especificado**: No sabemos cuántos clústeres turísticos existen
+2. **Basado en densidad**: Encuentra áreas de alta concentración (hotspots turísticos)
+3. **Manejo de ruido**: Identifica atractivos aislados (sitios potenciales de desarrollo)
+4. **Jerárquico**: Puede visualizar estructuras multi-escala
 
-### 5.2 Distance Metric: Haversine
+### 5.2 Métrica de Distancia: Haversine
 
-**Why Haversine over Euclidean?**
+**¿Por qué Haversine sobre Euclidiana?**
 
-Euclidean distance on lat/lon is incorrect for geographic data because:
-- Assumes flat surface (Earth is spherical)
-- Distorts distances at high latitudes
+La distancia euclidiana en lat/lon es incorrecta para datos geográficos porque:
+- Asume superficie plana (la Tierra es esférica)
+- Distorsiona distancias en latitudes altas
 
-Haversine distance:
+Distancia haversine:
 $$d = 2R \arcsin\left(\sqrt{\sin^2\left(\frac{\phi_2 - \phi_1}{2}\right) + \cos(\phi_1) \cos(\phi_2) \sin^2\left(\frac{\lambda_2 - \lambda_1}{2}\right)}\right)$$
 
-Where:
-- R = Earth's radius (6,371 km)
-- φ = latitude (radians)
-- λ = longitude (radians)
+Donde:
+- R = Radio de la Tierra (6.371 km)
+- φ = latitud (radianes)
+- λ = longitud (radianes)
 
-**Implementation**:
+**Implementación**:
 ```python
-# Convert to radians
+# Convertir a radianes
 coords_rad = np.radians(df[['POINT_Y', 'POINT_X']].values)
 
-# HDBSCAN with haversine
+# HDBSCAN con haversine
 clusterer = hdbscan.HDBSCAN(metric='haversine', min_cluster_size=10)
 clusters = clusterer.fit_predict(coords_rad)
 ```
 
-### 5.3 Parameter Tuning
+### 5.3 Ajuste de Parámetros
 
 **min_cluster_size = 10**:
-- Too small (<5): Creates spurious micro-clusters
-- Optimal (10): ~80 clusters (matches policy regions)
-- Too large (>20): Over-aggregates distinct tourism zones
+- Muy pequeño (<5): Crea micro-clústeres espurios
+- Óptimo (10): ~80 clústeres (coincide con regiones de política pública)
+- Muy grande (>20): Sobre-agrega zonas turísticas distintas
 
-**Rationale**: 10 attractions represent a viable local economy (assuming 1 major + 9 secondary attractions)
+**Fundamento**: 10 atractivos representan una economía local viable (asumiendo 1 principal + 9 atractivos secundarios)
 
-### 5.4 Cluster Output
+### 5.4 Resultado del Clustering
 
-**Results**:
-- **79 clusters** identified
-- ~33% of attractions classified as noise (-1 label) - isolated/dispersed attractions
-- ~67% of attractions assigned to clusters
+**Resultados**:
+- **79 clústeres** identificados
+- ~33% de atractivos clasificados como ruido (etiqueta -1) - atractivos aislados/dispersos
+- ~67% de atractivos asignados a clústeres
 
-**Interpretation**:
-- Clusters represent organic tourism zones (emergent from attraction distribution)
-- Noise points represent isolated gems or underserved areas
+**Interpretación**:
+- Los clústeres representan zonas turísticas orgánicas (emergentes de la distribución de atractivos)
+- Los puntos de ruido representan joyas aisladas o áreas desatendidas
 
 ---
 
-## 6. Methodology: Gap Analysis
+## 6. Metodología: Análisis de Brechas
 
-### 6.1 Anchor Status Classification
+### 6.1 Clasificación de Estado de Ancla
 
-For each cluster, count attractions by hierarchy level:
+Para cada clúster, contar atractivos por nivel de jerarquía:
 
 ```python
 n_internacional = (df[df['CLUSTER']==i]['JERARQUÍA'] == 'INTERNACIONAL').sum()
 n_nacional = (df[df['CLUSTER']==i]['JERARQUÍA'] == 'NACIONAL').sum()
 ```
 
-Then classify:
+Luego clasificar:
 
 ```python
 if n_internacional > 0:
-    status = "Con ancla internacional"     # Mature market
+    status = "Con ancla internacional"     # Mercado maduro
 elif n_nacional > 0:
-    status = "Solo ancla nacional"         # Growth market ← PRIORITY
+    status = "Solo ancla nacional"         # Mercado en crecimiento ← PRIORIDAD
 else:
-    status = "Sin ancla"                   # Nascent market ← PRIORITY
+    status = "Sin ancla"                   # Mercado naciente ← PRIORIDAD
 ```
 
-**Distribution** (79 clusters):
-- 52 clusters: "Con ancla internacional" (mature)
-- 26 clusters: "Solo ancla nacional" (growth - development opportunity)
-- ~1-2 clusters: "Sin ancla" (nascent - highest priority)
+**Distribución** (79 clústeres):
+- 52 clústeres: "Con ancla internacional" (maduros)
+- 26 clústeres: "Solo ancla nacional" (crecimiento - oportunidad de desarrollo)
+- ~1-2 clústeres: "Sin ancla" (nacientes - mayor prioridad)
 
-### 6.2 Investment Opportunity Ranking
+### 6.2 Ranking de Oportunidades de Inversión
 
-Within "growth" and "nascent" clusters, rank by:
+Dentro de los clústeres de "crecimiento" y "nacientes", rankear por:
 
-1. **Priority 1 (Highest)**: No anchor attractions
-   - Greenfield development potential
-   - Requires anchor investment
+1. **Prioridad 1 (Máxima)**: Sin atractivos ancla
+   - Potencial de desarrollo greenfield
+   - Requiere inversión en ancla
 
-2. **Priority 2 (Medium)**: National anchor only
-   - Emerging regional market
-   - Needs international positioning
+2. **Prioridad 2 (Media)**: Solo ancla nacional
+   - Mercado regional emergente
+   - Necesita posicionamiento internacional
 
-3. **Priority 3 (Lower)**: Clusters with infrastructure maturity
-   - Less urgent, existing investment zones
+3. **Prioridad 3 (Menor)**: Clústeres con madurez de infraestructura
+   - Menos urgente, zonas de inversión existentes
 
-### 6.3 Geographic Overlap Analysis
+### 6.3 Análisis de Superposición Geográfica
 
-Compare HDBSCAN clusters with **official SERNATUR destinations** (78 zones):
+Comparar clústeres HDBSCAN con **destinos oficiales SERNATUR** (78 zonas):
 
-**Categories**:
-- **Contenido**: Cluster 90%+ inside official destination (aligned)
-- **Parcialmente superpuesto**: 10-90% overlap (partial alignment)
-- **Genuinamente rezagado**: <10% overlap (outside official zones - development opportunity)
+**Categorías**:
+- **Contenido**: Clúster 90%+ dentro de destino oficial (alineado)
+- **Parcialmente superpuesto**: 10-90% superposición (alineación parcial)
+- **Genuinamente rezagado**: <10% superposición (fuera de zonas oficiales - oportunidad de desarrollo)
 
-**Finding**: ~35% of lagging attractions fall outside official destinations, suggesting missed opportunities in the official designation process.
+**Hallazgo**: ~35% de los atractivos rezagados caen fuera de destinos oficiales, sugiriendo oportunidades perdidas en el proceso de designación oficial.
 
 ---
 
-## 7. Validation & Sensitivity
+## 7. Validación y Sensibilidad
 
-### 7.1 Robustness Checks
+### 7.1 Verificaciones de Robustez
 
-**Min cluster size sensitivity**:
-| Min Size | Num Clusters | Largest Cluster | Avg Size |
-|----------|-------------|------------------|----------|
+**Sensibilidad de tamaño mínimo de clúster**:
+| Tamaño Mín | Núm Clústeres | Clúster Mayor | Tamaño Promedio |
+|------------|---------------|---------------|-----------------|
 | 5 | 125 | 203 | 32 |
-| 10 | 79 | 245 | 51 | ← **Selected**
+| 10 | 79 | 245 | 51 | ← **Seleccionado**
 | 15 | 58 | 267 | 70 |
 | 20 | 45 | 298 | 90 |
 
-**Conclusion**: min_cluster_size=10 provides reasonable balance between granularity and stability
+**Conclusión**: min_cluster_size=10 provee un balance razonable entre granularidad y estabilidad
 
-### 7.2 Geographic Validation
+### 7.2 Validación Geográfica
 
-- Clusters align with known tourism regions (Atacama, Patagonia, Central)
-- No spurious clusters in uninhabited regions
-- Coastal vs. interior clustering makes geographic sense
+- Los clústeres se alinean con regiones turísticas conocidas (Atacama, Patagonia, Central)
+- No hay clústeres espurios en regiones deshabitadas
+- El clustering costero vs. interior tiene sentido geográfico
 
-### 7.3 Policy Alignment
+### 7.3 Alineación con Política Pública
 
-80 HDBSCAN clusters vs. 16 administrative regions:
-- Average 5 clusters per region
-- Suggests sub-regional tourism heterogeneity worth addressing
-
----
-
-## 8. Limitations & Future Work
-
-### 8.1 Known Limitations
-
-1. **Static snapshot**: 2020 data; doesn't capture COVID-19 recovery
-2. **Hierarchy classification**: Based on SERNATUR categorization (subjective)
-3. **Economic impact**: No weighting by visitor numbers, revenue
-4. **Accessibility**: Doesn't account for distance to population centers
-5. **Seasonality**: Assumes uniform year-round attraction
-
-### 8.2 Future Enhancements
-
-- **Dynamic clustering**: Real-time data with quarterly updates
-- **Visitor flow analysis**: Integrate SERNATUR visitor statistics
-- **Network analysis**: Model attraction combinations (bundling potential)
-- **Economic impact**: Estimate employment & revenue by cluster
-- **Accessibility mapping**: Include infrastructure (distance to highways, airports)
+80 clústeres HDBSCAN vs. 16 regiones administrativas:
+- Promedio 5 clústeres por región
+- Sugiere heterogeneidad turística sub-regional que vale la pena abordar
 
 ---
 
-## 9. Reproducibility
+## 8. Limitaciones y Trabajo Futuro
 
-### 9.1 Python Implementation
+### 8.1 Limitaciones Conocidas
 
-All analysis implemented in modular Python (see `/src/cluster_turismo/`):
+1. **Foto estática**: Datos 2020; no captura la recuperación post-COVID-19
+2. **Clasificación de jerarquía**: Basada en categorización SERNATUR (subjetiva)
+3. **Impacto económico**: Sin ponderación por número de visitantes o ingresos
+4. **Accesibilidad**: No considera distancia a centros poblados
+5. **Estacionalidad**: Asume atracción uniforme todo el año
 
-- `data_loader.py`: Load Excel & KMZ files
-- `preprocessing.py`: Data cleaning & validation
-- `clustering.py`: HDBSCAN + convex hulls
-- `gap_analysis.py`: Anchor classification & opportunity ranking
-- `visualization.py`: PyDeck, Folium, Matplotlib outputs
+### 8.2 Mejoras Futuras
 
-### 9.2 Version Information
+- **Clustering dinámico**: Datos en tiempo real con actualizaciones trimestrales
+- **Análisis de flujo de visitantes**: Integrar estadísticas de visitantes SERNATUR
+- **Análisis de redes**: Modelar combinaciones de atractivos (potencial de bundling)
+- **Impacto económico**: Estimar empleo e ingresos por clúster
+- **Mapeo de accesibilidad**: Incluir infraestructura (distancia a carreteras, aeropuertos)
+
+---
+
+## 9. Reproducibilidad
+
+### 9.1 Implementación en Python
+
+Todo el análisis implementado en Python modular (ver `/src/cluster_turismo/`):
+
+- `data_loader.py`: Carga de archivos Excel y KMZ
+- `preprocessing.py`: Limpieza y validación de datos
+- `clustering.py`: HDBSCAN + cascos convexos
+- `gap_analysis.py`: Clasificación de ancla y ranking de oportunidades
+- `visualization.py`: Salidas PyDeck, Folium, Matplotlib
+
+### 9.2 Información de Versiones
 
 - Python 3.10+
 - hdbscan 0.8.33+
 - pandas 2.0+
 - shapely 2.0+
 
-### 9.3 Running the Analysis
+### 9.3 Ejecutar el Análisis
 
 ```bash
-# Install
+# Instalar
 pip install -e .
 
-# Run clustering
+# Ejecutar clustering
 python -c "
   from cluster_turismo import clustering, preprocessing, data_loader
   df = data_loader.load_attractions_excel('data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx')
   df = preprocessing.filter_permanent_attractions(df)
   df = clustering.run_hdbscan_spatial(df)
-  print(f'Clusters found: {len(set(df[\"CLUSTER\"]))}')
+  print(f'Clústeres encontrados: {len(set(df[\"CLUSTER\"]))}')
 "
 
-# Generate report
+# Generar reporte
 jupyter nbconvert --execute "notebooks/Publico_Visualización_de_Atractivos.ipynb"
 ```
 
 ---
 
-## 10. References
+## 10. Referencias
 
-### Key Papers
+### Artículos Clave
 - Campello, R. J., Moulavi, D., & Sander, J. (2013). "Density-Based Clustering Based on Hierarchical Density Estimates." ICDM.
-- Haversine formula: Haversine - Wikipedia
+- Fórmula Haversine: Haversine - Wikipedia
 
-### Policy Context
+### Contexto de Política Pública
 - SERNATUR (2024): "Estrategia Nacional de Turismo 2024-2028"
-- Regional Tourism Development Plans (various regions)
+- Planes Regionales de Desarrollo Turístico (varias regiones)
 
-### Data Sources
-- SERNATUR Official: https://www.sernatur.cl
-- Google Earth KMZ format: https://support.google.com/earth/answer/7365595
+### Fuentes de Datos
+- SERNATUR Oficial: https://www.sernatur.cl
+- Formato KMZ Google Earth: https://support.google.com/earth/answer/7365595
 
 ---
 
-## Appendix: Mathematical Details
+## Apéndice: Detalles Matemáticos
 
-### A.1 Haversine Distance Formula
+### A.1 Fórmula de Distancia Haversine
 
-For two points (φ₁, λ₁) and (φ₂, λ₂):
+Para dos puntos (φ₁, λ₁) y (φ₂, λ₂):
 
 $$d = 2R \arcsin\left(\sqrt{\sin^2\left(\frac{\phi_2 - \phi_1}{2}\right) + \cos(\phi_1) \cos(\phi_2) \sin^2\left(\frac{\lambda_2 - \lambda_1}{2}\right)}\right)$$
 
-### A.2 HDBSCAN Algorithm Steps
+### A.2 Pasos del Algoritmo HDBSCAN
 
-1. Compute k-distance graph (k=5 neighbors)
-2. Compute mutual reachability distance
-3. Build minimum spanning tree
-4. Compute cluster stability scores
-5. Extract clusters by pruning dendrogram
+1. Calcular grafo de k-distancias (k=5 vecinos)
+2. Calcular distancia de alcanzabilidad mutua
+3. Construir árbol de expansión mínima
+4. Calcular puntajes de estabilidad de clústeres
+5. Extraer clústeres podando dendrograma
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2024
-**Author**: Tourism Data Analysis
-**License**: MIT
+**Versión del Documento**: 1.0
+**Última Actualización**: 2024
+**Autor**: Manuel San Cristóbal
+**Licencia**: MIT

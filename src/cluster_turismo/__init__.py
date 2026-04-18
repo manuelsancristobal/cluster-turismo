@@ -1,12 +1,13 @@
 """
-Chile Tourism Gaps Analysis.
+Análisis de Brechas en Turismo de Chile.
 
-A comprehensive spatial clustering and gap analysis of Chilean tourism attractions
-using HDBSCAN to identify investment opportunities in underserved regions.
+Análisis integral de agrupamiento espacial y brechas de atractivos turísticos
+chilenos usando HDBSCAN para identificar oportunidades de inversión en regiones
+desatendidas.
 """
 
 __version__ = "0.1.0"
-__author__ = "Tourism Data Analysis"
+__author__ = "Manuel San Cristóbal"
 
 from . import clustering
 from . import data_loader

@@ -1,4 +1,4 @@
-"""Data loading and parsing functions for tourism attractions and destinations."""
+"""Funciones de carga y análisis de datos para atractivos turísticos y destinos."""
 
 import re
 import zipfile
@@ -9,17 +9,17 @@ import pandas as pd
 
 def load_attractions_excel(filepath: str) -> pd.DataFrame:
     """
-    Load Chilean tourism attractions from SERNATUR Excel file.
+    Cargar atractivos turísticos chilenos desde archivo Excel de SERNATUR.
 
-    Parameters
+    Parámetros
     ----------
     filepath : str
-        Path to ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx
+        Ruta a ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        DataFrame with all attractions data including hierarchy, category, coordinates
+        DataFrame con todos los datos de atractivos incluyendo jerarquía, categoría, coordenadas
     """
     df = pd.read_excel(filepath)
     return df
@@ -27,20 +27,20 @@ def load_attractions_excel(filepath: str) -> pd.DataFrame:
 
 def load_kmz_destinations(filepath: str) -> pd.DataFrame:
     """
-    Load tourist destinations from KMZ (compressed KML) file.
+    Cargar destinos turísticos desde archivo KMZ (KML comprimido).
 
-    Extracts KML from the KMZ archive, parses Placemark elements,
-    and returns a DataFrame with destination boundaries and metadata.
+    Extrae el KML del archivo KMZ, analiza los elementos Placemark
+    y retorna un DataFrame con los límites y metadatos de los destinos.
 
-    Parameters
+    Parámetros
     ----------
     filepath : str
-        Path to Destinos_Nacional-Publico.kmz
+        Ruta a Destinos_Nacional-Publico.kmz
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        DataFrame with destination names, codes, regions, and polygon coordinates
+        DataFrame con nombres de destinos, códigos, regiones y coordenadas de polígonos
     """
     kml_string = extract_kml_from_kmz(filepath)
     placemarks = parse_kml_placemarks(kml_string)
@@ -63,22 +63,22 @@ def load_kmz_destinations(filepath: str) -> pd.DataFrame:
 
 def extract_kml_from_kmz(kmz_path: str) -> str:
     """
-    Extract KML content from KMZ (ZIP) archive.
+    Extraer contenido KML de archivo KMZ (ZIP).
 
-    Parameters
+    Parámetros
     ----------
     kmz_path : str
-        Path to .kmz file
+        Ruta al archivo .kmz
 
-    Returns
+    Retorna
     -------
     str
-        Raw KML XML content
+        Contenido XML KML sin procesar
 
-    Raises
-    ------
+    Lanza
+    -----
     FileNotFoundError
-        If doc.kml not found in archive
+        Si doc.kml no se encuentra en el archivo comprimido
     """
     with zipfile.ZipFile(kmz_path, "r") as zip_ref:
         kml_bytes = zip_ref.read("doc.kml")
@@ -87,40 +87,40 @@ def extract_kml_from_kmz(kmz_path: str) -> str:
 
 def parse_kml_placemarks(kml_string: str) -> List[Dict]:
     """
-    Parse KML Placemark elements to extract destination metadata and boundaries.
+    Analizar elementos Placemark del KML para extraer metadatos y límites de destinos.
 
-    Parameters
+    Parámetros
     ----------
     kml_string : str
-        Raw KML XML content
+        Contenido XML KML sin procesar
 
-    Returns
+    Retorna
     -------
     List[Dict]
-        List of dictionaries with placemark data (nombre, codigo, region, coordinates)
+        Lista de diccionarios con datos de placemark (nombre, codigo, region, coordinates)
     """
     placemarks = []
 
-    # Find all Placemark blocks
+    # Buscar todos los bloques Placemark
     placemark_pattern = r"<Placemark>(.*?)</Placemark>"
     placemark_matches = re.finditer(placemark_pattern, kml_string, re.DOTALL)
 
     for match in placemark_matches:
         pm_content = match.group(1)
 
-        # Extract name
+        # Extraer nombre
         name_match = re.search(r"<name>(.*?)</name>", pm_content)
         nombre = name_match.group(1) if name_match else None
 
-        # Extract extended data fields (codes, regions from SimpleData elements)
+        # Extraer campos de datos extendidos (códigos, regiones de elementos SimpleData)
         codigo = extract_kml_field(pm_content, "codigo")
         region = extract_kml_field(pm_content, "region")
         tipo = extract_kml_field(pm_content, "tipo")
 
-        # Extract coordinates from LinearRing
+        # Extraer coordenadas de LinearRing
         coords = extract_coordinates_from_linearring(pm_content)
 
-        if nombre and coords:  # Only include if has name and geometry
+        if nombre and coords:  # Solo incluir si tiene nombre y geometría
             placemarks.append(
                 {
                     "nombre": nombre,
@@ -136,19 +136,19 @@ def parse_kml_placemarks(kml_string: str) -> List[Dict]:
 
 def extract_kml_field(pm_content: str, field_name: str) -> str:
     """
-    Extract SimpleData field value from KML Placemark extended data.
+    Extraer valor de campo SimpleData de los datos extendidos del Placemark KML.
 
-    Parameters
+    Parámetros
     ----------
     pm_content : str
-        Placemark XML content
+        Contenido XML del Placemark
     field_name : str
-        Name of the field to extract
+        Nombre del campo a extraer
 
-    Returns
+    Retorna
     -------
-    str or None
-        Field value if found, else None
+    str o None
+        Valor del campo si se encuentra, sino None
     """
     pattern = rf'<SimpleData name="{field_name}">(.*?)</SimpleData>'
     match = re.search(pattern, pm_content)
@@ -157,19 +157,19 @@ def extract_kml_field(pm_content: str, field_name: str) -> str:
 
 def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
     """
-    Extract coordinate pairs from KML LinearRing element.
+    Extraer pares de coordenadas del elemento KML LinearRing.
 
-    Parameters
+    Parámetros
     ----------
     pm_content : str
-        Placemark XML content with Polygon/LinearRing
+        Contenido XML del Placemark con Polygon/LinearRing
 
-    Returns
+    Retorna
     -------
     List[tuple]
-        List of (lon, lat) tuples, or empty list if not found
+        Lista de tuplas (lon, lat), o lista vacía si no se encuentra
     """
-    # Find coordinates text in LinearRing
+    # Buscar texto de coordenadas en LinearRing
     coords_match = re.search(
         r"<LinearRing>.*?<coordinates>(.*?)</coordinates>", pm_content, re.DOTALL
     )
@@ -196,30 +196,30 @@ def simplify_polygon_coordinates(
     coordinates: List[tuple], max_points: int = 80
 ) -> List[tuple]:
     """
-    Simplify polygon by reducing number of coordinate points.
+    Simplificar polígono reduciendo el número de puntos de coordenadas.
 
-    Uses a basic thinning algorithm to reduce complexity while preserving shape.
+    Usa un algoritmo básico de raleo para reducir la complejidad preservando la forma.
 
-    Parameters
+    Parámetros
     ----------
     coordinates : List[tuple]
-        List of (lon, lat) coordinate tuples
+        Lista de tuplas de coordenadas (lon, lat)
     max_points : int
-        Maximum number of points to keep (default 80)
+        Número máximo de puntos a conservar (por defecto 80)
 
-    Returns
+    Retorna
     -------
     List[tuple]
-        Simplified coordinate list
+        Lista de coordenadas simplificada
     """
     if len(coordinates) <= max_points:
         return coordinates
 
-    # Simple thinning: keep first, last, and evenly spaced points
+    # Raleo simple: conservar primer punto, último y puntos equidistantes
     step = len(coordinates) // max_points
     simplified = coordinates[::step]
 
-    # Ensure last point is included
+    # Asegurar que el último punto esté incluido
     if simplified[-1] != coordinates[-1]:
         simplified.append(coordinates[-1])
 

@@ -1,28 +1,28 @@
 """
-Generate portfolio assets: interactive maps and static charts.
+Generar assets del portafolio: mapas interactivos y gráficos estáticos.
 
-Run this script to create all visual assets for the GitHub Pages portfolio.
-Output: assets/
+Ejecutar este script para crear todos los assets visuales.
+Salida: assets/
 """
 
 import sys
 import os
 
-# Add project to path
+# Agregar proyecto al path
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "src"))
 
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")  # Non-interactive backend
+matplotlib.use("Agg")  # Backend no interactivo
 import matplotlib.pyplot as plt
 import seaborn as sns
 from shapely.geometry import Polygon
 
 from cluster_turismo import clustering, preprocessing, gap_analysis, data_loader
 
-# ── Paths ──────────────────────────────────────────────────────────────────
+# ── Rutas ──────────────────────────────────────────────────────────────────
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets")
 IMG_DIR = os.path.join(ASSETS_DIR, "img")
@@ -31,25 +31,25 @@ os.makedirs(IMG_DIR, exist_ok=True)
 EXCEL_PATH = os.path.join(DATA_DIR, "ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
 KMZ_PATH = os.path.join(DATA_DIR, "Destinos_Nacional-Publico.kmz")
 
-# ── 1. Load & Preprocess ──────────────────────────────────────────────────
-print("Loading data...")
+# ── 1. Carga y preprocesamiento ──────────────────────────────────────────
+print("Cargando datos...")
 df_raw = pd.read_excel(EXCEL_PATH)
 df = preprocessing.filter_permanent_attractions(df_raw)
 df = preprocessing.validate_coordinates(df)
-print(f"  {len(df)} permanent attractions loaded")
+print(f"  {len(df)} atractivos permanentes cargados")
 
 # ── 2. Clustering ──────────────────────────────────────────────────────────
-print("Running HDBSCAN clustering...")
+print("Ejecutando clustering HDBSCAN...")
 df_clustered = clustering.run_hdbscan_spatial(df, min_cluster_size=10)
 
 n_clusters = len(set(df_clustered["CLUSTER"])) - (1 if -1 in df_clustered["CLUSTER"].values else 0)
 
-# ── 3. Cluster Summary ────────────────────────────────────────────────────
-print("Summarizing clusters...")
+# ── 3. Resumen de clústeres ────────────────────────────────────────────────
+print("Resumiendo clústeres...")
 summary = clustering.summarize_clusters(df_clustered, hierarchy_col="JERARQUIA")
 summary_classified = gap_analysis.classify_anchor_status(summary)
 
-# Build cluster labels from comunas
+# Construir etiquetas de clúster desde comunas
 def _build_label(comunas_series):
     ranked = comunas_series.value_counts().index.tolist()
     ranked = [c.title() for c in ranked]
@@ -62,41 +62,40 @@ for cluster_id in summary_classified.index:
     comunas = df_clustered[df_clustered["CLUSTER"] == cluster_id]["COMUNA"]
     cluster_labels[cluster_id] = _build_label(comunas)
 
-# ── 3b. Identify noise points as "lagging" attractions ──────────────────
-# (In a fuller implementation, these would be matched against official destinations)
+# ── 3b. Identificar puntos de ruido como atractivos "rezagados" ──────────
 df_lagging = df_clustered[df_clustered["CLUSTER"] == -1].copy()
 n_lagging = len(df_lagging)
 pct_lagging = (n_lagging / len(df_clustered)) * 100
-print(f"Noise/unassigned attractions: {n_lagging} ({pct_lagging:.1f}%)")
+print(f"Atractivos ruido/no asignados: {n_lagging} ({pct_lagging:.1f}%)")
 
-# Cluster lagging attractions
+# Clusterizar atractivos rezagados
 if n_lagging > 10:
-    print("Clustering noise attractions...")
+    print("Clusterizando atractivos de ruido...")
     df_lagging_clustered = clustering.run_hdbscan_spatial(df_lagging, min_cluster_size=10)
     lagging_hulls = clustering.compute_cluster_convex_hulls(df_lagging_clustered)
     lagging_labels = {}
     for cid in df_lagging_clustered[df_lagging_clustered["CLUSTER"] != -1]["CLUSTER"].unique():
         comunas = df_lagging_clustered[df_lagging_clustered["CLUSTER"] == cid]["COMUNA"]
         lagging_labels[cid] = _build_label(comunas)
-    print(f"  {len(lagging_hulls)} noise clusters identified")
+    print(f"  {len(lagging_hulls)} clústeres de ruido identificados")
 else:
     df_lagging_clustered = None
     lagging_hulls = {}
     lagging_labels = {}
 
-# ── 3c. Load official destinations from KMZ ──────────────────────────────
-print("Loading official destinations from KMZ...")
+# ── 3c. Cargar destinos oficiales desde KMZ ──────────────────────────────
+print("Cargando destinos oficiales desde KMZ...")
 if os.path.exists(KMZ_PATH):
     df_destinations = data_loader.load_kmz_destinations(KMZ_PATH)
-    print(f"  {len(df_destinations)} official destinations loaded")
+    print(f"  {len(df_destinations)} destinos oficiales cargados")
 else:
-    print(f"  WARNING: KMZ file not found at {KMZ_PATH}, skipping destination comparison")
+    print(f"  ADVERTENCIA: Archivo KMZ no encontrado en {KMZ_PATH}, omitiendo comparación de destinos")
     df_destinations = pd.DataFrame()
 
-# Compute cluster convex hulls (used by charts and map)
+# Calcular cascos convexos de clústeres (usado por gráficos y mapa)
 hulls = clustering.compute_cluster_convex_hulls(df_clustered)
 
-# ── 4. Generate Charts ────────────────────────────────────────────────────
+# ── 4. Generar gráficos ────────────────────────────────────────────────────
 plt.rcParams.update({
     "font.family": "sans-serif",
     "font.size": 12,
@@ -106,8 +105,8 @@ plt.rcParams.update({
     "savefig.bbox": "tight",
 })
 
-# ── Chart 1: Coordinate distribution histograms ──
-print("Generating histograms...")
+# ── Gráfico 1: Histogramas de distribución de coordenadas ──
+print("Generando histogramas...")
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 axes[0].hist(df["POINT_X"], bins=50, color="#2980b9", edgecolor="white", alpha=0.9)
 axes[0].set_xlabel("Longitud (°O)")
@@ -125,8 +124,8 @@ plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "histogramas_coordenadas.png"))
 plt.close(fig)
 
-# ── Chart 2: Cluster size bar chart ──
-print("Generating cluster bar chart...")
+# ── Gráfico 2: Barras de tamaño de clústeres ──
+print("Generando gráfico de barras de clústeres...")
 top_clusters = summary.head(15).sort_values("n_attractions")
 
 fig, ax = plt.subplots(figsize=(10, 7))
@@ -142,7 +141,7 @@ ax.set_xlabel("Cantidad de Atractivos")
 ax.set_title("Top 15 Clústeres por Cantidad de Atractivos")
 ax.grid(axis="x", alpha=0.3)
 
-# Legend
+# Leyenda
 from matplotlib.patches import Patch
 legend_elements = [
     Patch(facecolor="#2ecc71", label="Con ancla internacional"),
@@ -155,8 +154,8 @@ plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "top_clusters.png"))
 plt.close(fig)
 
-# ── Chart 3: Anchor donut chart ──
-print("Generating anchor donut chart...")
+# ── Gráfico 3: Donut de anclas ──
+print("Generando gráfico donut de anclas...")
 anchor_counts = summary_classified["anchor_status"].value_counts()
 
 color_map = {
@@ -187,8 +186,8 @@ plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "donut_anclas.png"))
 plt.close(fig)
 
-# ── Chart 4: Hierarchy distribution ──
-print("Generating hierarchy chart...")
+# ── Gráfico 4: Distribución de jerarquía ──
+print("Generando gráfico de jerarquías...")
 hierarchy_counts = df["JERARQUIA"].value_counts()
 hier_colors = {
     "LOCAL": "#bdc3c7",
@@ -216,13 +215,13 @@ plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "jerarquias.png"))
 plt.close(fig)
 
-# ── Chart 5: Lagging cluster overlap type donut ──
+# ── Gráfico 5: Donut de tipo de superposición de clústeres rezagados ──
 if df_lagging_clustered is not None:
-    print("Generating overlap type donut chart...")
-    # Compute real overlap between lagging cluster hulls and main cluster hulls
+    print("Generando gráfico donut de superposición...")
+    # Calcular superposición real entre cascos de clústeres rezagados y principales
     from cluster_turismo.gap_analysis import compute_lagging_overlap_type
 
-    # Build Shapely polygons from main cluster hulls
+    # Construir polígonos Shapely desde cascos de clústeres principales
     main_hulls_polys = {}
     for cid, coords in hulls.items():
         try:
@@ -243,7 +242,7 @@ if df_lagging_clustered is not None:
         except Exception:
             continue
 
-        # Find best overlap with any main cluster hull
+        # Buscar mejor superposición con cualquier casco de clúster principal
         best_type = "Genuinamente rezagado"
         best_score = 0
         for main_cid, main_poly in main_hulls_polys.items():
@@ -253,20 +252,20 @@ if df_lagging_clustered is not None:
                 best_score = score
                 best_type = otype
 
-        # Map "Separado" to "Genuinamente rezagado" for the chart
+        # Mapear "Separado" a "Genuinamente rezagado" para el gráfico
         if best_type == "Separado":
             best_type = "Genuinamente rezagado"
         if best_type in overlap_counts:
             overlap_counts[best_type] += 1
 
-    # Only generate chart if there are results
+    # Solo generar gráfico si hay resultados
     if sum(overlap_counts.values()) > 0:
         color_map_overlap = {
             "Contenido": "#a8e6cf",
             "Parcialmente superpuesto": "#ffd3b6",
             "Genuinamente rezagado": "#ffaaa5",
         }
-        # Filter out zero-count categories for cleaner chart
+        # Filtrar categorías con conteo cero para gráfico más limpio
         overlap_counts = {k: v for k, v in overlap_counts.items() if v > 0}
         donut_colors_overlap = [color_map_overlap.get(k, "#999") for k in overlap_counts.keys()]
 
@@ -291,11 +290,11 @@ if df_lagging_clustered is not None:
         fig.savefig(os.path.join(IMG_DIR, "donut_superposicion.png"))
         plt.close(fig)
     else:
-        print("  WARNING: No overlap results computed, skipping donut_superposicion chart")
+        print("  ADVERTENCIA: Sin resultados de superposición, omitiendo gráfico donut_superposicion")
 
-# ── Chart 6: Lagging attractions by region ──
+# ── Gráfico 6: Atractivos rezagados por región ��─
 if df_lagging_clustered is not None:
-    print("Generating lagging attractions by region chart...")
+    print("Generando gráfico de atractivos rezagados por región...")
     region_counts = df_lagging["REGION"].value_counts().head(12)
 
     fig, ax = plt.subplots(figsize=(10, 7))
@@ -306,7 +305,7 @@ if df_lagging_clustered is not None:
     ax.set_title("Top 12 Regiones con Atractivos sin Destino Oficial")
     ax.grid(axis="x", alpha=0.3)
 
-    # Add value labels
+    # Agregar etiquetas de valor
     for i, (bar, count) in enumerate(zip(bars, region_counts.values)):
         ax.text(count + 2, i, str(count), va="center", fontweight="bold")
 
@@ -314,14 +313,14 @@ if df_lagging_clustered is not None:
     fig.savefig(os.path.join(IMG_DIR, "rezagados_por_region.png"))
     plt.close(fig)
 
-# ── Chart 7: Boxplot comparison of official vs lagging cluster sizes ──
+# ── Gráfico 7: Boxplot comparativo de tamaños oficiales vs rezagados ──
 if df_lagging_clustered is not None and len(summary) > 0:
-    print("Generating boxplot comparison...")
+    print("Generando boxplot comparativo...")
 
-    # Get sizes of official clusters
+    # Obtener tamaños de clústeres oficiales
     official_sizes = summary["n_attractions"].values
 
-    # Get sizes of lagging clusters
+    # Obtener tamaños de clústeres rezagados
     lagging_cluster_summary = clustering.summarize_clusters(df_lagging_clustered, hierarchy_col="JERARQUIA")
     lagging_sizes = lagging_cluster_summary["n_attractions"].values
 
@@ -329,7 +328,7 @@ if df_lagging_clustered is not None and len(summary) > 0:
     bp = ax.boxplot([official_sizes, lagging_sizes], labels=["Destinos Oficiales", "Clústeres Rezagados"],
                      patch_artist=True, widths=0.6)
 
-    # Color the boxes
+    # Colorear las cajas
     colors = ["#2ecc71", "#e74c3c"]
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
@@ -343,15 +342,15 @@ if df_lagging_clustered is not None and len(summary) > 0:
     fig.savefig(os.path.join(IMG_DIR, "comparativa_boxplot.png"))
     plt.close(fig)
 
-# ── 5. Generate Interactive Folium Map ─────────────────────────────────────
-print("Generating interactive Folium map...")
+# ── 5. Generar mapa interactivo Folium ─────────────────────────────────────
+print("Generando mapa interactivo Folium...")
 import folium
 from folium.plugins import MarkerCluster, Search, GroupedLayerControl
 
-# Create base map
+# Crear mapa base
 m = folium.Map(location=[-35.6751, -71.5430], zoom_start=5, tiles="CartoDB positron")
 
-# Color by hierarchy
+# Color por jerarquía
 HIER_COLORS = {
     "INTERNACIONAL": "#dc1e78",
     "NACIONAL": "#4682b4",
@@ -359,7 +358,7 @@ HIER_COLORS = {
     "LOCAL": "#bdc3c7",
 }
 
-# Add hierarchy layers
+# Agregar capas de jerarquía
 hierarchy_groups = []
 for hier in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
     fg = folium.FeatureGroup(name=hier.capitalize(), show=(hier in ["INTERNACIONAL", "NACIONAL"]))
@@ -392,7 +391,7 @@ for hier in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
     fg.add_to(m)
     hierarchy_groups.append(fg)
 
-# Add cluster hulls
+# Agregar cascos de clústeres
 fg_hulls = folium.FeatureGroup(name="Límites de Clústeres", show=False)
 
 for cluster_id, hull_coords in hulls.items():
@@ -411,10 +410,7 @@ for cluster_id, hull_coords in hulls.items():
 
 fg_hulls.add_to(m)
 
-# Add official destinations layer (placeholder - data would come from KMZ)
-# To include official destinations, implement proper KMZ parsing in data_loader.py
-
-# Add lagging clusters layer
+# Agregar capa de clústeres rezagados
 if df_lagging_clustered is not None and len(lagging_hulls) > 0:
     fg_lagging = folium.FeatureGroup(name="Clústeres Rezagados", show=False)
 
@@ -431,7 +427,7 @@ if df_lagging_clustered is not None and len(lagging_hulls) > 0:
 
     fg_lagging.add_to(m)
 
-    # Add lagging attraction points as a separate layer
+    # Agregar puntos de atractivos rezagados como capa separada
     fg_lagging_points = folium.FeatureGroup(name="Atractivos sin Destino", show=False)
     for _, row in df_lagging_clustered.iterrows():
         lagging_name = lagging_labels.get(row.get('CLUSTER'), f"Clúster {row.get('CLUSTER', '?')}")
@@ -457,7 +453,7 @@ if df_lagging_clustered is not None and len(lagging_hulls) > 0:
 
     fg_lagging_points.add_to(m)
 
-# Layer control — grouped checkboxes
+# Control de capas — checkboxes agrupados
 cluster_layers = [fg_hulls]
 if df_lagging_clustered is not None and len(lagging_hulls) > 0:
     cluster_layers.extend([fg_lagging, fg_lagging_points])
@@ -471,7 +467,7 @@ GroupedLayerControl(
     collapsed=False,
 ).add_to(m)
 
-# Legend
+# Leyenda
 legend_html = """
 <div style="position: fixed; bottom: 50px; left: 50px; z-index: 1000;
      background-color: white; padding: 15px; border-radius: 8px;
@@ -494,26 +490,26 @@ legend_html = """
 """
 m.get_root().html.add_child(folium.Element(legend_html))
 
-# Save
+# Guardar
 map_path = os.path.join(ASSETS_DIR, "mapa_interactivo.html")
 m.save(map_path)
-print(f"  Map saved: {map_path}")
+print(f"  Mapa guardado: {map_path}")
 
-# ── 6. Summary stats for the page ─────────────────────────────────────────
+# ── 6. Estadísticas resumen para la página ─────────────────────────────────
 print("\n" + "=" * 50)
-print("STATS FOR PORTFOLIO PAGE:")
-print(f"  Total attractions: {len(df)}")
-print(f"  Clusters found: {n_clusters}")
-print(f"  Noise/unassigned attractions: {n_lagging} ({pct_lagging:.1f}%)")
+print("ESTAD��STICAS PARA PÁGINA DE PORTAFOLIO:")
+print(f"  Total de atractivos: {len(df)}")
+print(f"  Clústeres encontrados: {n_clusters}")
+print(f"  Atractivos ruido/no asignados: {n_lagging} ({pct_lagging:.1f}%)")
 if df_lagging_clustered is not None:
-    print(f"  Noise clusters identified: {len(lagging_hulls)}")
-print(f"  Anchor distribution:")
+    print(f"  Clústeres de ruido identificados: {len(lagging_hulls)}")
+print(f"  Distribución de anclas:")
 for status, count in anchor_counts.items():
     print(f"    {status}: {count}")
 print("=" * 50)
 
-print(f"\nAll assets saved to: {ASSETS_DIR}")
-print("Files generated:")
+print(f"\nTodos los assets guardados en: {ASSETS_DIR}")
+print("Archivos generados:")
 for root, dirs, files in os.walk(ASSETS_DIR):
     for f in files:
         full = os.path.join(root, f)

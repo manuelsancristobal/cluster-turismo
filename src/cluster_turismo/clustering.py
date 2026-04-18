@@ -1,4 +1,4 @@
-"""Spatial clustering functions using HDBSCAN with haversine metric."""
+"""Funciones de agrupamiento espacial usando HDBSCAN con métrica haversine."""
 
 from typing import Dict, List, Tuple
 
@@ -16,51 +16,51 @@ def run_hdbscan_spatial(
     min_cluster_size: int = 10,
 ) -> pd.DataFrame:
     """
-    Perform HDBSCAN spatial clustering using haversine metric.
+    Realizar agrupamiento espacial HDBSCAN usando métrica haversine.
 
-    Converts latitude/longitude to radians and clusters using the haversine distance
-    metric, which is appropriate for geographic coordinates on a sphere.
+    Convierte latitud/longitud a radianes y agrupa usando la métrica de distancia
+    haversine, apropiada para coordenadas geográficas en una esfera.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with latitude and longitude columns
+        DataFrame con columnas de latitud y longitud
     lat_col : str
-        Column name for latitude (default: 'POINT_Y')
+        Nombre de la columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Column name for longitude (default: 'POINT_X')
+        Nombre de la columna de longitud (por defecto: 'POINT_X')
     min_cluster_size : int
-        Minimum size for a cluster in HDBSCAN (default: 10)
+        Tamaño mínimo de un clúster en HDBSCAN (por defecto: 10)
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Input dataframe with added 'CLUSTER' column containing cluster labels
+        DataFrame de entrada con columna 'CLUSTER' añadida conteniendo las etiquetas de clúster
     """
-    # Validate required columns exist
+    # Validar que existan las columnas requeridas
     for col in [lat_col, lon_col]:
         if col not in df.columns:
-            raise KeyError(f"Column '{col}' not found in dataframe. Available columns: {list(df.columns)}")
+            raise KeyError(f"Columna '{col}' no encontrada en el dataframe. Columnas disponibles: {list(df.columns)}")
 
-    # Extract coordinates and convert to radians (required for haversine metric)
+    # Extraer coordenadas y convertir a radianes (requerido para métrica haversine)
     coords = np.radians(df[[lat_col, lon_col]].values)
 
-    # Run HDBSCAN with haversine metric (appropriate for lat/lon)
+    # Ejecutar HDBSCAN con métrica haversine (apropiada para lat/lon)
     clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, metric="haversine")
     cluster_labels = clusterer.fit_predict(coords)
 
-    # Add cluster labels to dataframe
+    # Añadir etiquetas de clúster al dataframe
     df_clustered = df.copy()
     df_clustered["CLUSTER"] = cluster_labels
 
-    # Print clustering summary
+    # Imprimir resumen del agrupamiento
     n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
     n_noise = list(cluster_labels).count(-1)
 
-    print(f"Clustering Results:")
-    print(f"  Number of clusters: {n_clusters}")
-    print(f"  Number of noise points: {n_noise}")
-    print(f"  Percentage assigned: {((len(cluster_labels) - n_noise) / len(cluster_labels) * 100):.1f}%")
+    print(f"Resultados del agrupamiento:")
+    print(f"  Número de clústeres: {n_clusters}")
+    print(f"  Número de puntos de ruido: {n_noise}")
+    print(f"  Porcentaje asignado: {((len(cluster_labels) - n_noise) / len(cluster_labels) * 100):.1f}%")
 
     return df_clustered
 
@@ -72,33 +72,33 @@ def compute_cluster_convex_hulls(
     lon_col: str = "POINT_X",
 ) -> Dict[int, Polygon]:
     """
-    Compute convex hull for each cluster.
+    Calcular el casco convexo para cada clúster.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Clustered dataframe with cluster assignments
+        DataFrame agrupado con asignaciones de clúster
     cluster_col : str
-        Name of cluster column (default: 'CLUSTER')
+        Nombre de la columna de clúster (por defecto: 'CLUSTER')
     lat_col : str
-        Latitude column name (default: 'POINT_Y')
+        Nombre de la columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column name (default: 'POINT_X')
+        Nombre de la columna de longitud (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     Dict[int, Polygon]
-        Dictionary mapping cluster ID to Shapely Polygon (convex hull)
+        Diccionario que mapea ID de clúster a Polygon de Shapely (casco convexo)
     """
-    # NOTE: ConvexHull operates in Euclidean space on raw lat/lon.
-    # For Chile's continental extent (~17°S–56°S) this is an acceptable
-    # approximation (<0.5% distortion). A UTM projection would be more
-    # rigorous but adds complexity without meaningful accuracy gain here.
+    # NOTA: ConvexHull opera en espacio euclidiano sobre lat/lon crudos.
+    # Para la extensión continental de Chile (~17°S–56°S) esta es una aproximación
+    # aceptable (<0.5% de distorsión). Una proyección UTM sería más rigurosa
+    # pero añade complejidad sin ganancia significativa de precisión aquí.
     hulls = {}
     n_failed = 0
 
     for cluster_id in df[cluster_col].unique():
-        if cluster_id == -1:  # Skip noise points
+        if cluster_id == -1:  # Omitir puntos de ruido
             continue
 
         cluster_points = df[df[cluster_col] == cluster_id][[lat_col, lon_col]].values
@@ -107,33 +107,33 @@ def compute_cluster_convex_hulls(
             try:
                 hull = ConvexHull(cluster_points)
                 hull_vertices = cluster_points[hull.vertices]
-                # Create polygon as list of coordinate tuples
+                # Crear polígono como lista de tuplas de coordenadas
                 hull_coords = [tuple(pt) for pt in hull_vertices]
-                hull_coords.append(hull_coords[0])  # Close the polygon
+                hull_coords.append(hull_coords[0])  # Cerrar el polígono
                 hulls[cluster_id] = hull_coords
             except Exception as e:
                 n_failed += 1
-                print(f"  WARNING: Could not compute hull for cluster {cluster_id}: {e}")
+                print(f"  ADVERTENCIA: No se pudo calcular el casco convexo para el clúster {cluster_id}: {e}")
 
     if n_failed > 0:
-        print(f"  {n_failed} cluster(s) failed hull computation out of {len(hulls) + n_failed}")
+        print(f"  {n_failed} clúster(es) fallaron en el cálculo del casco convexo de {len(hulls) + n_failed}")
 
     return hulls
 
 
 def get_hull_as_geojson(hull_coords: List[Tuple[float, float]]) -> dict:
     """
-    Convert hull coordinate list to GeoJSON format.
+    Convertir lista de coordenadas del casco a formato GeoJSON.
 
-    Parameters
+    Parámetros
     ----------
     hull_coords : List[Tuple[float, float]]
-        List of (lat, lon) tuples forming a polygon
+        Lista de tuplas (lat, lon) que forman un polígono
 
-    Returns
+    Retorna
     -------
     dict
-        GeoJSON Feature with Polygon geometry
+        Feature GeoJSON con geometría Polygon
     """
     return {
         "type": "Feature",
@@ -149,30 +149,30 @@ def summarize_clusters(
     hierarchy_col: str = "JERARQUIA",
 ) -> pd.DataFrame:
     """
-    Generate summary statistics for each cluster.
+    Generar estadísticas resumidas para cada clúster.
 
-    Computes per-cluster aggregations including size, primary region/category,
-    and percentage by hierarchy level.
+    Calcula agregaciones por clúster incluyendo tamaño, región/categoría principal
+    y porcentaje por nivel de jerarquía.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Clustered dataframe
+        DataFrame agrupado
     cluster_col : str
-        Cluster column name (default: 'CLUSTER')
+        Nombre de la columna de clúster (por defecto: 'CLUSTER')
     region_col : str
-        Region column name (default: 'REGION')
+        Nombre de la columna de región (por defecto: 'REGION')
     category_col : str
-        Category column name (default: 'CATEGORIA')
+        Nombre de la columna de categoría (por defecto: 'CATEGORIA')
     hierarchy_col : str
-        Hierarchy column name (default: 'JERARQUÍA')
+        Nombre de la columna de jerarquía (por defecto: 'JERARQUÍA')
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Summary statistics per cluster
+        Estadísticas resumidas por clúster
     """
-    # Count attractions per cluster
+    # Contar atractivos por clúster
     summary = df.groupby(cluster_col).agg(
         n_attractions=("NOMBRE", "count"),
         region_principal=(region_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
@@ -180,7 +180,7 @@ def summarize_clusters(
         jerarquia_principal=(hierarchy_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
     )
 
-    # Calculate counts and percentages by hierarchy level
+    # Calcular conteos y porcentajes por nivel de jerarquía
     for level in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
         col_lower = level.lower()
         counts = df[df[hierarchy_col] == level].groupby(cluster_col).size()
@@ -194,27 +194,27 @@ def summarize_clusters(
 
 def identify_cluster_quality(summary_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Classify cluster quality based on hierarchy distribution.
+    Clasificar la calidad del clúster según la distribución de jerarquía.
 
-    Parameters
+    Parámetros
     ----------
     summary_df : pd.DataFrame
-        Cluster summary dataframe from summarize_clusters()
+        DataFrame resumen de clústeres generado por summarize_clusters()
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Input dataframe with added 'quality' column
+        DataFrame de entrada con columna 'quality' añadida
     """
     summary_df_copy = summary_df.copy()
 
     def classify_quality(row):
         if row["pct_internacional"] > 0:
-            return "High - Has international anchor"
+            return "Alta - Tiene ancla internacional"
         elif row["pct_nacional"] > 0:
-            return "Medium - Has national anchor"
+            return "Media - Tiene ancla nacional"
         else:
-            return "Low - No anchor attractions"
+            return "Baja - Sin atractivos ancla"
 
     summary_df_copy["quality"] = summary_df_copy.apply(classify_quality, axis=1)
 

@@ -1,4 +1,4 @@
-"""Tests for clustering module."""
+"""Tests para el módulo de clustering."""
 
 import os
 
@@ -11,56 +11,56 @@ from cluster_turismo import clustering
 
 @pytest.fixture
 def sample_data():
-    """Load sample attractions CSV."""
+    """Cargar CSV de atractivos de ejemplo."""
     fixtures_dir = os.path.dirname(__file__)
     return pd.read_csv(os.path.join(fixtures_dir, "fixtures/sample_attractions.csv"))
 
 
 def test_run_hdbscan_spatial_output_shape(sample_data):
-    """Test that HDBSCAN returns correct label count."""
+    """Verificar que HDBSCAN retorne la cantidad correcta de etiquetas."""
     df = clustering.run_hdbscan_spatial(
         sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=3
     )
 
-    # Should have same length
+    # Debe tener la misma longitud
     assert len(df) == len(sample_data)
 
-    # Should have CLUSTER column
+    # Debe tener columna CLUSTER
     assert "CLUSTER" in df.columns
 
-    # Cluster labels should be integers
+    # Las etiquetas de clúster deben ser enteros
     assert df["CLUSTER"].dtype in [np.int32, np.int64, int]
 
 
 def test_run_hdbscan_spatial_cluster_range(sample_data):
-    """Test that clustering produces reasonable number of clusters."""
+    """Verificar que el clustering produzca un número razonable de clústeres."""
     df = clustering.run_hdbscan_spatial(
         sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=2
     )
 
     unique_clusters = set(df["CLUSTER"].unique())
-    # Remove noise (-1) for count
+    # Quitar ruido (-1) para contar
     num_clusters = len([c for c in unique_clusters if c != -1])
 
-    # Should have at least 1 cluster and not more than half the data points
+    # Debe tener al menos 1 clúster y no más de la mitad de los puntos
     assert num_clusters >= 1
     assert num_clusters <= len(sample_data) / 2
 
-    # Noise points should be labeled -1
+    # Los puntos de ruido deben estar etiquetados como -1
     noise_mask = df["CLUSTER"] == -1
     non_noise = df[~noise_mask]
     assert all(c >= 0 for c in non_noise["CLUSTER"])
 
 
 def test_run_hdbscan_spatial_with_geographic_data():
-    """Test HDBSCAN with actual geographic clustering."""
-    # Create data with two distinct geographic clusters
+    """Verificar HDBSCAN con clustering geográfico real."""
+    # Crear datos con dos clústeres geográficos distintos
     data = {
         "NOMBRE": [f"A{i}" for i in range(20)],
         "POINT_Y": (
             [-33.0] * 10 + [-45.0] * 10
-        ),  # Two distinct latitude regions
-        "POINT_X": [-70.5] * 10 + [-72.5] * 10,  # Two distinct longitude regions
+        ),  # Dos regiones de latitud distintas
+        "POINT_X": [-70.5] * 10 + [-72.5] * 10,  # Dos regiones de longitud distintas
         "JERARQUÍA": ["NACIONAL"] * 20,
     }
     df = pd.DataFrame(data)
@@ -69,39 +69,39 @@ def test_run_hdbscan_spatial_with_geographic_data():
         df, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=5
     )
 
-    # Should find at least 2 clusters
+    # Debe encontrar al menos 2 clústeres
     unique_clusters = set(df_clustered["CLUSTER"].unique())
     num_clusters = len([c for c in unique_clusters if c != -1])
-    assert num_clusters >= 1  # At minimum, finds one cluster
+    assert num_clusters >= 1  # Al mínimo, encuentra un clúster
 
 
 def test_compute_cluster_convex_hulls(sample_data):
-    """Test convex hull computation."""
-    # Add cluster assignments first
+    """Verificar cálculo de cascos convexos."""
+    # Agregar asignaciones de clúster primero
     sample_data["CLUSTER"] = [0, 0, 1, 1, 0, 1, 2, 2, 1, 2, 0, 0, -1, 1, 2, 0]
 
     hulls = clustering.compute_cluster_convex_hulls(
         sample_data, cluster_col="CLUSTER", lat_col="POINT_Y", lon_col="POINT_X"
     )
 
-    # Should exclude noise cluster (-1)
+    # Debe excluir el clúster de ruido (-1)
     assert -1 not in hulls
 
-    # Should have hulls for clusters with 3+ points
+    # Debe tener cascos para clústeres con 3+ puntos
     assert len(hulls) > 0
 
-    # Each hull should be a closed polygon of coordinate tuples
+    # Cada casco debe ser un polígono cerrado de tuplas de coordenadas
     for hull_id, hull_coords in hulls.items():
         assert isinstance(hull_coords, list)
-        assert len(hull_coords) >= 4  # At least 3 vertices + closing point
+        assert len(hull_coords) >= 4  # Al menos 3 vértices + punto de cierre
         assert all(isinstance(coord, tuple) for coord in hull_coords)
         assert all(len(coord) == 2 for coord in hull_coords)
-        # Hull should be closed (first == last)
+        # El casco debe estar cerrado (primero == último)
         assert hull_coords[0] == hull_coords[-1]
 
 
 def test_compute_cluster_convex_hulls_single_point():
-    """Test that single-point clusters are skipped."""
+    """Verificar que los clústeres de un solo punto se omitan."""
     data = {
         "NOMBRE": ["A", "B"],
         "POINT_Y": [-33.0, -45.0],
@@ -112,12 +112,12 @@ def test_compute_cluster_convex_hulls_single_point():
 
     hulls = clustering.compute_cluster_convex_hulls(df)
 
-    # Should not include clusters with fewer than 3 points
+    # No debe incluir clústeres con menos de 3 puntos
     assert len(hulls) == 0
 
 
 def test_summarize_clusters(sample_data):
-    """Test cluster summarization."""
+    """Verificar resumen de clústeres."""
     sample_data["CLUSTER"] = [0, 0, 1, 1, 0, 1, 2, 2, 1, 2, 0, 0, -1, 1, 2, 0]
 
     summary = clustering.summarize_clusters(
@@ -128,29 +128,29 @@ def test_summarize_clusters(sample_data):
         hierarchy_col="JERARQUÍA",
     )
 
-    # Should have summary for each cluster (including noise if present as a group)
+    # Debe tener resumen para cada clúster
     assert len(summary) > 0
 
-    # Should have expected columns
+    # Debe tener las columnas esperadas
     expected_cols = ["n_attractions", "region_principal", "categoria_principal",
                      "n_internacional", "n_nacional", "pct_internacional", "pct_nacional"]
     for col in expected_cols:
-        assert col in summary.columns, f"Missing column: {col}"
+        assert col in summary.columns, f"Falta columna: {col}"
 
-    # Should be sorted by n_attractions descending
+    # Debe estar ordenado por n_attractions descendente
     assert (summary["n_attractions"].iloc[:-1].values >= summary["n_attractions"].iloc[1:].values).all()
 
-    # Attraction counts should be positive
+    # Los conteos de atractivos deben ser positivos
     assert (summary["n_attractions"] > 0).all()
 
-    # Percentages should be between 0 and 100
+    # Los porcentajes deben estar entre 0 y 100
     for pct_col in [c for c in summary.columns if c.startswith("pct_")]:
         assert (summary[pct_col] >= 0).all()
         assert (summary[pct_col] <= 100).all()
 
 
 def test_summarize_clusters_percentages():
-    """Test that percentages are calculated correctly."""
+    """Verificar que los porcentajes se calculen correctamente."""
     data = {
         "NOMBRE": ["A"] * 10,
         "REGION": ["TestRegion"] * 10,
@@ -162,13 +162,13 @@ def test_summarize_clusters_percentages():
 
     summary = clustering.summarize_clusters(df)
 
-    # Should have correct percentages
+    # Debe tener los porcentajes correctos
     assert summary.loc[0, "pct_internacional"] == 50.0
     assert summary.loc[0, "pct_nacional"] == 50.0
 
 
 def test_identify_cluster_quality():
-    """Test cluster quality classification."""
+    """Verificar clasificación de calidad de clústeres."""
     summary_data = {
         "n_attractions": [10, 5, 8],
         "pct_internacional": [50, 0, 25],
@@ -181,5 +181,5 @@ def test_identify_cluster_quality():
     df_quality = clustering.identify_cluster_quality(df)
 
     assert "quality" in df_quality.columns
-    assert df_quality.loc[0, "quality"] == "High - Has international anchor"
-    assert df_quality.loc[1, "quality"] == "Medium - Has national anchor"
+    assert df_quality.loc[0, "quality"] == "Alta - Tiene ancla internacional"
+    assert df_quality.loc[1, "quality"] == "Media - Tiene ancla nacional"

@@ -1,4 +1,4 @@
-"""Geospatial utility functions using Shapely."""
+"""Funciones utilitarias geoespaciales usando Shapely."""
 
 from typing import Dict, List, Tuple
 
@@ -8,19 +8,19 @@ from shapely.geometry import Point, Polygon
 
 def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") -> Dict[str, Polygon]:
     """
-    Build Shapely Polygon objects from coordinate data.
+    Construir objetos Polygon de Shapely a partir de datos de coordenadas.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with coordinate information (typically from data_loader.load_kmz_destinations)
+        DataFrame con información de coordenadas (típicamente de data_loader.load_kmz_destinations)
     coords_col : str
-        Column name containing coordinate list (default: 'coordinates')
+        Nombre de la columna que contiene la lista de coordenadas (por defecto: 'coordinates')
 
-    Returns
+    Retorna
     -------
     Dict[str, Polygon]
-        Dictionary mapping destination names to Shapely Polygon objects
+        Diccionario que mapea nombres de destinos a objetos Polygon de Shapely
     """
     polygons = {}
 
@@ -34,7 +34,7 @@ def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") ->
                 if polygon.is_valid:
                     polygons[name] = polygon
             except Exception as e:
-                print(f"Could not create polygon for {name}: {e}")
+                print(f"No se pudo crear polígono para {name}: {e}")
 
     return polygons
 
@@ -46,28 +46,28 @@ def point_in_polygon_check(
     lon_col: str = "POINT_X",
 ) -> pd.DataFrame:
     """
-    Determine if each attraction point falls within any destination polygon.
+    Determinar si cada punto de atractivo cae dentro de algún polígono de destino.
 
-    Parameters
+    Parámetros
     ----------
     df_points : pd.DataFrame
-        Attractions dataframe with coordinates
+        DataFrame de atractivos con coordenadas
     df_polygons : pd.DataFrame
-        Destinations dataframe with polygon coordinates
+        DataFrame de destinos con coordenadas de polígonos
     lat_col : str
-        Latitude column in points (default: 'POINT_Y')
+        Columna de latitud en puntos (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column in points (default: 'POINT_X')
+        Columna de longitud en puntos (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     pd.DataFrame
-        Input points dataframe with added 'in_destination' and 'destination_name' columns
+        DataFrame de puntos de entrada con columnas añadidas 'in_destination' y 'destination_name'
     """
-    # Build polygons from destinations
+    # Construir polígonos desde destinos
     polygons = build_shapely_polygons(df_polygons)
 
-    # Check each attraction
+    # Verificar cada atractivo
     in_destination_list = []
     destination_names = []
 
@@ -94,21 +94,21 @@ def compute_cluster_centroid(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
 ) -> Tuple[float, float]:
     """
-    Compute centroid (center) of cluster points.
+    Calcular centroide (centro) de los puntos del clúster.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with coordinate columns
+        DataFrame con columnas de coordenadas
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     Tuple[float, float]
-        (latitude, longitude) of cluster centroid
+        (latitud, longitud) del centroide del clúster
     """
     lat = df[lat_col].mean()
     lon = df[lon_col].mean()
@@ -119,21 +119,21 @@ def compute_geographic_bounds(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
 ) -> dict:
     """
-    Compute geographic bounding box of points.
+    Calcular el cuadro delimitador geográfico de los puntos.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Dataframe with coordinates
+        DataFrame con coordenadas
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     dict
-        Dictionary with 'north', 'south', 'east', 'west' bounds
+        Diccionario con límites 'north', 'south', 'east', 'west'
     """
     return {
         "north": df[lat_col].max(),
@@ -147,19 +147,19 @@ def haversine_distance(
     lat1: float, lon1: float, lat2: float, lon2: float
 ) -> float:
     """
-    Calculate haversine distance between two coordinate pairs.
+    Calcular distancia haversine entre dos pares de coordenadas.
 
-    Parameters
+    Parámetros
     ----------
     lat1, lon1 : float
-        First coordinate pair in degrees
+        Primer par de coordenadas en grados
     lat2, lon2 : float
-        Second coordinate pair in degrees
+        Segundo par de coordenadas en grados
 
-    Returns
+    Retorna
     -------
     float
-        Distance in kilometers
+        Distancia en kilómetros
     """
     from math import asin, cos, radians, sin, sqrt
 
@@ -168,5 +168,5 @@ def haversine_distance(
     dlat = lat2 - lat1
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
     c = 2 * asin(sqrt(a))
-    r = 6371  # Radius of earth in kilometers
+    r = 6371  # Radio de la Tierra en kilómetros
     return c * r

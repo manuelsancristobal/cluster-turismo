@@ -1,270 +1,268 @@
-# Chile Tourism Gaps: Identifying Investment Opportunities Through Spatial Clustering
+# Brechas Turísticas de Chile: Identificación de Oportunidades de Inversión
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/manuelsancristobal/cluster-turismo/workflows/CI/badge.svg)](https://github.com/manuelsancristobal/cluster-turismo/actions)
+[![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-green.svg)](LICENSE)
 
-A data science project analyzing Chilean tourism attractions to identify geographic clusters and investment gaps using HDBSCAN spatial clustering.
+Proyecto de análisis de datos que identifica brechas geográficas en la distribución de atractivos turísticos chilenos mediante clustering espacial HDBSCAN.
 
-## Overview
+## Descripción General
 
-This project analyzes 4,048 permanent Chilean tourism attractions from the 2020 SERNATUR (Servicio Nacional de Turismo) registry to:
+Este proyecto analiza **~3,996 atractivos turísticos permanentes** del registro nacional de SERNATUR 2020 para:
 
-- **Identify 79 spatial clusters** of tourism attractions using HDBSCAN with haversine metric
-- **Classify investment gaps**: ~33% of tourism clusters lack international-level anchor attractions
-- **Pinpoint development opportunities**: Regions with national infrastructure but missing world-class attractions
-- **Support policy decisions**: Data-driven analysis for regional tourism development strategy
+- **Identificar 79 clústeres espaciales** de atractivos turísticos usando HDBSCAN con métrica haversine
+- **Clasificar brechas de inversión**: ~33% de los clústeres turísticos carecen de atractivos ancla de nivel internacional
+- **Detectar oportunidades de desarrollo**: Regiones con infraestructura turística nacional pero sin atractivos de clase mundial
+- **Fundamentar decisiones de política pública**: Análisis basado en datos para estrategia de desarrollo turístico regional
 
-## Key Findings
+## Hallazgos Clave
 
-- **79 territorial clusters** identified from ~3,996 permanent attractions across Chile
-- **52 clusters with international anchors** - mature tourism markets
-- **26 clusters with only national-level anchors** - moderate development potential
-- **~33% of clusters operate without international anchor attractions** - strategic gap for investment
+- **79 clústeres territoriales** identificados a partir de ~3,996 atractivos permanentes
+- **52 clústeres con ancla internacional** - mercados turísticos maduros
+- **26 clústeres con solo ancla nacional** - potencial de desarrollo moderado
+- **2 clústeres sin atractivos ancla** - prioridad máxima para inversión
+- **~33% de los atractivos no asignados a ningún clúster** - brecha estratégica
 
-## Tech Stack
+## Stack Tecnológico
 
-| Category | Technologies |
-|----------|---------------|
-| **Data Processing** | Pandas, NumPy |
-| **Spatial Clustering** | HDBSCAN (haversine metric) |
-| **Geospatial** | Shapely, GeoPandas |
-| **Interactive Maps** | PyDeck, Folium |
-| **Visualization** | Matplotlib, Seaborn |
+| Categoría | Tecnologías |
+|-----------|-------------|
+| **Procesamiento** | Pandas, NumPy |
+| **Clustering Espacial** | HDBSCAN (métrica haversine) |
+| **Geoespacial** | Shapely |
+| **Mapas Interactivos** | PyDeck, Folium |
+| **Visualización** | Matplotlib, Seaborn |
 | **Testing** | pytest, pytest-cov |
-| **Code Quality** | ruff, black |
+| **Calidad de Código** | ruff |
 
-## Project Structure
+## Estructura del Proyecto
 
 ```
 cluster-turismo/
-├── README.md                           # This file
-├── index.html                          # Portfolio page (GitHub Pages)
-├── pyproject.toml                      # Project configuration
+├── README.md                           # Este archivo
+├── LICENSE                             # Licencia MIT
+├── pyproject.toml                      # Configuración del proyecto
+├── Makefile                            # Automatización
 │
-├── src/cluster_turismo/                   # Main Python package
-│   ├── data_loader.py                  # Load Excel & KMZ files
-│   ├── preprocessing.py                # Data cleaning & validation
-│   ├── clustering.py                   # HDBSCAN spatial clustering
-│   ├── gap_analysis.py                 # Opportunity identification
-│   ├── visualization.py                # PyDeck, Folium, Matplotlib
-│   └── geo_utils.py                    # Geospatial utilities
+├── src/cluster_turismo/                   # Paquete Python principal
+│   ├── data_loader.py                  # Carga de archivos Excel & KMZ
+│   ├── preprocessing.py                # Limpieza y validación
+│   ├── clustering.py                   # Clustering HDBSCAN
+│   ├── gap_analysis.py                 # Identificación de oportunidades
+│   ├── visualization.py                # Mapas y gráficos
+│   └── geo_utils.py                    # Utilidades geoespaciales
 │
-├── scripts/
-│   └── generate_assets.py             # Generate all charts & maps
-│
-├── notebooks/                          # Jupyter analysis notebooks
+├── notebooks/                          # Notebooks Jupyter
 │   ├── Publico_Visualización_de_Atractivos.ipynb
 │   └── Comparacion_Atractivos_Destinos.ipynb
 │
-├── tests/                              # Unit tests
+├── tests/                              # Tests unitarios
 │   ├── test_preprocessing.py
 │   ├── test_clustering.py
 │   ├── test_gap_analysis.py
-│   └── fixtures/                       # Test data
+│   └── fixtures/                       # Datos de prueba
 │
-├── data/                               # (not committed) Original XLSX & KMZ files
+├── data/                               # (no committeado) Archivos originales
 │
-├── assets/                             # Generated visual assets
-│   ├── mapa_interactivo.html           # Interactive Folium map
-│   └── img/                            # Static chart images
+├── assets/                             # Resultados generados (en .gitignore)
+│   ├── mapa_interactivo.html           # Mapa interactivo Folium
+│   └── img/                            # Visualizaciones estáticas
 │
-└── docs/                               # Documentation
-    └── methodology.md                  # Detailed methodology
+└── docs/                               # Documentación
+    ├── methodology.md                  # Metodología detallada
+    └── images/                         # Capturas de pantalla
 ```
 
-## Installation
+## Instalación
 
-### Prerequisites
-- Python 3.10 or higher
-- pip or conda
+### Requisitos Previos
+- Python 3.10 o superior
+- pip o conda
 
-### Quick Start
+### Inicio Rápido
 
 ```bash
-# Clone repository
+# Clonar repositorio
 git clone https://github.com/manuelsancristobal/cluster-turismo.git
 cd cluster-turismo
 
-# Install package in development mode
+# Instalar paquete en modo desarrollo
 make install-dev
 
-# Run tests
+# Ejecutar tests
 make test
 
-# Run linting
+# Verificar código
 make lint
 ```
 
-### Data Setup
+### Configuración de Datos
 
-Download source data from SERNATUR:
+Descargar datos de SERNATUR:
 1. `ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx` → `data/`
 2. `Destinos_Nacional-Publico.kmz` → `data/`
 
-Then run notebooks:
+Luego ejecutar notebooks:
 ```bash
 jupyter lab notebooks/
 ```
 
-## Usage
+## Uso
 
-### Python API
+### API Python
 
 ```python
 from cluster_turismo import clustering, preprocessing, gap_analysis, data_loader
 
-# Load and preprocess attractions
+# Cargar y preprocesar atractivos
 df = data_loader.load_attractions_excel("data/ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx")
 df = preprocessing.filter_permanent_attractions(df)
 df = preprocessing.validate_coordinates(df)
 
-# Run HDBSCAN spatial clustering
+# Ejecutar clustering HDBSCAN
 df_clustered = clustering.run_hdbscan_spatial(df, min_cluster_size=10)
 
-# Summarize clusters
+# Resumir clústeres
 summary = clustering.summarize_clusters(df_clustered)
 
-# Identify investment gaps
+# Identificar brechas
 summary = gap_analysis.classify_anchor_status(summary)
 opportunities = gap_analysis.identify_investment_opportunities(df_clustered, summary)
 ```
 
-### Command Line
+### Línea de Comandos
 
 ```bash
-# Run all tests
+# Ejecutar todos los tests
 make test
 
-# Generate coverage report
+# Generar reporte de cobertura
 make coverage
 
-# Export interactive maps
+# Exportar mapas interactivos
 make maps
 
-# Execute notebooks
+# Ejecutar notebooks
 make run-notebooks
 ```
 
-## Methodology
+## Metodología
 
-### Spatial Clustering Approach
+### Enfoque de Clustering Espacial
 
-The project uses **HDBSCAN** (Hierarchical Density-Based Spatial Clustering of Applications with Noise) with the **haversine distance metric**, appropriate for geographic coordinates on a sphere.
+El proyecto utiliza **HDBSCAN** (Hierarchical Density-Based Spatial Clustering of Applications with Noise) con **métrica haversine**, adecuada para coordenadas geográficas en una esfera.
 
-**Algorithm parameters:**
-- Metric: Haversine (accounts for Earth's curvature)
-- Min cluster size: 10 attractions
-- Distance threshold: Estimated from data density
+**Parámetros del algoritmo:**
+- Métrica: Haversine (considera curvatura terrestre)
+- Tamaño mínimo de clúster: 10 atractivos
+- Umbral de distancia: Estimado desde densidad de datos
 
-**Process:**
-1. Convert latitude/longitude to radians
-2. Compute pairwise haversine distances
-3. Identify density-connected components
-4. Calculate convex hull for each cluster
-5. Classify clusters by highest-level anchor attractions
+**Proceso:**
+1. Convertir latitud/longitud a radianes
+2. Calcular distancias haversine pares
+3. Identificar componentes conectados por densidad
+4. Calcular casco convexo para cada clúster
+5. Clasificar clústeres por atractivo ancla de nivel más alto
 
-### Gap Analysis Logic
+### Lógica del Análisis de Brechas
 
-**Anchor Classification:**
-- **International Anchor**: Cluster has 1+ INTERNACIONAL-level attractions → developed market
-- **National Anchor**: Only NACIONAL-level, no international → development potential
-- **No Anchor**: No attractions above REGIONAL → highest investment priority
+**Clasificación de Atractivos Ancla:**
+- **Ancla Internacional**: Clúster tiene 1+ atractivos INTERNACIONAL → mercado desarrollado
+- **Ancla Nacional**: Solo atractivos NACIONAL, sin internacional → potencial de desarrollo
+- **Sin Ancla**: Sin atractivos superiores a REGIONAL → mayor prioridad de inversión
 
-**Investment Opportunity Priority:**
-1. **High**: Clusters without any anchor attractions (greenfield opportunities)
-2. **Medium**: Clusters with only national anchors (capacity expansion)
-3. **Low**: Clusters with international anchors (mature markets)
+**Prioridad de Oportunidades de Inversión:**
+1. **Alta**: Clústeres sin atractivos ancla (oportunidades greenfield)
+2. **Media**: Clústeres con solo anchores nacionales (expansión)
+3. **Baja**: Clústeres con anchores internacionales (mercados maduros)
 
-## Visualizations
+## Visualizaciones
 
-### Interactive Maps (PyDeck)
-- **Hierarchy Map**: Color-coded by attraction level (local → international)
-- **Cluster Map**: Geographic clusters with convex hull boundaries
-- **Gap Map**: Investment opportunities by priority level
+### Mapas Interactivos (PyDeck)
+- **Mapa de Jerarquía**: Codificado por nivel de atractivo (local → internacional)
+- **Mapa de Clústeres**: Clústeres geográficos con límites de casco convexo
+- **Mapa de Brechas**: Oportunidades de inversión por nivel de prioridad
 
-### Comparative Analysis (Folium)
-- **Destination Map**: Official tourism destinations with attractions overlay
-- **Lagging Attractions Map**: Unassigned attractions outside official boundaries
+### Análisis Comparativo (Folium)
+- **Mapa de Destinos**: Destinos turísticos oficiales con overlay de atractivos
+- **Mapa de Atractivos Rezagados**: Atractivos no asignados fuera de límites oficiales
 
-### Statistics (Matplotlib)
-- Cluster size distribution
-- Anchor status breakdown (donut chart)
-- Regional opportunity summary
+### Estadísticas (Matplotlib)
+- Distribución de tamaños de clúster
+- Desglose de estado de ancla (gráfico de dona)
+- Resumen de oportunidades regionales
 
 ## Testing
 
-Project includes unit tests for core modules:
+Proyecto incluye tests unitarios comprehensivos con 80%+ cobertura:
 
 ```bash
-# Run tests with coverage
+# Ejecutar tests con cobertura
 make coverage
 
-# Run specific test file
+# Ejecutar archivo específico
 pytest tests/test_clustering.py -v
 
-# Run tests matching pattern
+# Ejecutar tests que coincidan con patrón
 pytest -k "anchor" -v
 ```
 
-**Test coverage includes:**
-- Data preprocessing & validation
-- HDBSCAN clustering & hull computation
-- Gap analysis & opportunity classification
-- Visualization output generation
+**Cobertura de tests:**
+- Preprocesamiento y validación de datos
+- Clustering HDBSCAN y cálculo de cascos
+- Análisis de brechas y clasificación de oportunidades
+- Generación de visualizaciones
 
-## Documentation
+## Documentación
 
-- **[README_es.md](README_es.md)** - Spanish documentation with bilingual narrative
-- **[docs/methodology.md](docs/methodology.md)** - Detailed methodology & algorithm explanations
-- **[Inline docstrings](src/cluster_turismo/)** - Google-style docstrings for all functions
+- **[docs/methodology.md](docs/methodology.md)** - Metodología detallada y explicaciones de algoritmos
+- **[Docstrings inline](src/cluster_turismo/)** - Docstrings Google-style para todas las funciones
 
-## Citation
+## Citación
 
-If you use this analysis in research or policy contexts, please cite:
+Si usa este análisis en investigación o contextos de política pública, cite como:
 
 ```
 @misc{cluster-turismo,
-  title={Identifying Tourism Investment Gaps in Chile Through Spatial Clustering},
-  author={Tourism Data Analysis},
+  title={Identificación de Brechas Turísticas de Chile Mediante Clustering Espacial},
+  author={Manuel San Cristóbal},
   year={2024},
   url={https://github.com/manuelsancristobal/cluster-turismo}
 }
 ```
 
-## Data Sources
+## Fuentes de Datos
 
 - **SERNATUR**: [Atractivos Turísticos Nacional 2020](https://www.sernatur.cl)
-  - 4,048 permanent tourism attractions
-  - Hierarchy levels: Local, Regional, Nacional, Internacional
-  - 12+ attraction categories
+  - 4,048 atractivos turísticos permanentes
+  - Niveles de jerarquía: Local, Regional, Nacional, Internacional
+  - 12+ categorías de atractivos
 
-- **SERNATUR**: Official Tourism Destinations (2025)
-  - 78 official tourism zones
-  - Polygon boundaries in KMZ (Google Earth) format
-  - Regional classification
+- **SERNATUR**: Destinos Turísticos Oficiales (2025)
+  - 78 zonas turísticas oficiales
+  - Límites de polígonos en formato KMZ (Google Earth)
+  - Clasificación regional
 
-## Contributing
+## Contribuciones
 
-Contributions are welcome! Please:
+¡Las contribuciones son bienvenidas! Por favor:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Make changes with tests
-4. Submit pull request
+1. Hacer fork del repositorio
+2. Crear rama de feature (`git checkout -b feature/mejora`)
+3. Hacer cambios con tests
+4. Enviar pull request
 
-All contributions should maintain:
-- >80% test coverage
-- Clean git history (descriptive commit messages)
-- Code style compliance (ruff format)
+Todas las contribuciones deben mantener:
+- >80% cobertura de tests
+- Historial git limpio (mensajes descriptivos)
+- Cumplimiento de estilo (ruff format)
 
-## License
+## Licencia
 
-This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
+Este proyecto está bajo la **Licencia MIT** - ver archivo [LICENSE](LICENSE) para detalles.
 
-Free for academic, government, and commercial use.
+Libre para uso académico, gubernamental y comercial.
 
-## Contact & Support
+## Contacto
 
 - **Issue Tracker**: [GitHub Issues](https://github.com/manuelsancristobal/cluster-turismo/issues)
 - **Email**: msancristo@fen.uchile.cl
@@ -272,4 +270,4 @@ Free for academic, government, and commercial use.
 
 ---
 
-**Status**: Active Development | **Last Updated**: 2024 | **Stable**: v0.1.0
+**Estado**: Desarrollo Activo | **Última Actualización**: 2024 | **Versión Estable**: v0.1.0

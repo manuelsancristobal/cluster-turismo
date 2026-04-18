@@ -1,6 +1,6 @@
-# Data files are tracked in data/ (needed to reproduce results)
+# Los archivos de datos se rastrean en data/ (necesarios para reproducir resultados)
 
-# Generated assets (regenerate with: python scripts/generate_assets.py)
+# Assets generados (regenerar con: python scripts/generate_assets.py)
 assets/
 
 # Notebooks
@@ -20,7 +20,7 @@ build/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Virtual environments
+# Entornos virtuales
 venv/
 .venv/
 env/
@@ -32,18 +32,18 @@ env/
 *.swo
 *~
 
-# OS
+# Sistema operativo
 .DS_Store
 Thumbs.db
 
-# Environment
+# Variables de entorno
 .env
 .env.local
 
-# Cache
+# Caché
 .ruff_cache/
 .pytest_cache/
 
-# Coverage
+# Cobertura
 .coverage
 htmlcov/

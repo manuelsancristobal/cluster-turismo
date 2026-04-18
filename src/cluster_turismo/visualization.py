@@ -1,4 +1,4 @@
-"""Visualization functions for maps and charts."""
+"""Funciones de visualización para mapas y gráficos."""
 
 from typing import Dict, List, Optional
 
@@ -20,32 +20,32 @@ def create_pydeck_hierarchy_map(
     radius_col: str = "radius",
 ) -> pdk.Deck:
     """
-    Create PyDeck scatter map colored by attraction hierarchy.
+    Crea un mapa de dispersión PyDeck coloreado por jerarquía de atractivos.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Attractions dataframe with color and radius columns
+        Dataframe de atractivos con columnas de color y radio
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
     color_col : str
-        Color assignment column (default: 'color')
+        Columna de asignación de color (por defecto: 'color')
     radius_col : str
-        Radius assignment column (default: 'radius')
+        Columna de asignación de radio (por defecto: 'radius')
 
-    Returns
+    Retorna
     -------
     pdk.Deck
-        Interactive PyDeck map object
+        Objeto de mapa PyDeck interactivo
     """
-    # Compute viewport centered on Chile
+    # Calcular vista centrada en Chile
     viewport = pdk.ViewState(
         latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
     )
 
-    # Create scatterplot layer
+    # Crear capa de dispersión
     layer = pdk.Layer(
         "ScatterplotLayer",
         data=df,
@@ -62,7 +62,7 @@ def create_pydeck_hierarchy_map(
         get_line_color=[0, 0, 0],
     )
 
-    # Create tooltip
+    # Crear tooltip
     tooltip = {
         "html": "<b>{NOMBRE}</b><br/>Jerarquía: {JERARQUIA}<br/>Categoría: {CATEGORIA}",
         "style": {"backgroundColor": "steelblue", "color": "white"},
@@ -86,32 +86,32 @@ def create_pydeck_cluster_map(
     cluster_col: str = "CLUSTER",
 ) -> pdk.Deck:
     """
-    Create PyDeck map showing clusters with convex hull boundaries.
+    Crea un mapa PyDeck mostrando clústeres con límites de envolvente convexa.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Clustered attractions dataframe
+        Dataframe de atractivos agrupados en clústeres
     cluster_hulls : Dict[int, List]
-        Dictionary mapping cluster ID to hull coordinate lists
+        Diccionario que mapea ID de clúster a listas de coordenadas de envolvente
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
     cluster_col : str
-        Cluster column name (default: 'CLUSTER')
+        Nombre de columna de clúster (por defecto: 'CLUSTER')
 
-    Returns
+    Retorna
     -------
     pdk.Deck
-        Interactive map with points and polygon boundaries
+        Mapa interactivo con puntos y límites poligonales
     """
-    # Compute viewport
+    # Calcular vista
     viewport = pdk.ViewState(
         latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
     )
 
-    # Scatterplot layer for points
+    # Capa de dispersión para puntos
     points_layer = pdk.Layer(
         "ScatterplotLayer",
         data=df,
@@ -124,7 +124,7 @@ def create_pydeck_cluster_map(
         get_radius=150,
     )
 
-    # Polygon layer for cluster hulls
+    # Capa de polígonos para envolventes de clústeres
     hull_features = []
     for cluster_id, hull_coords in cluster_hulls.items():
         hull_features.append(
@@ -170,32 +170,32 @@ def create_pydeck_gap_map(
     color_col: str = "anchor_color",
 ) -> pdk.Deck:
     """
-    Create PyDeck map showing investment gaps by anchor status.
+    Crea un mapa PyDeck mostrando brechas de inversión por estado de ancla.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Clustered dataframe with anchor_color column
+        Dataframe agrupado con columna anchor_color
     cluster_hulls : Dict[int, List]
-        Cluster boundary polygons
+        Polígonos de límites de clústeres
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
     color_col : str
-        Color column for anchor status (default: 'anchor_color')
+        Columna de color para estado de ancla (por defecto: 'anchor_color')
 
-    Returns
+    Retorna
     -------
     pdk.Deck
-        Interactive gap opportunity map
+        Mapa interactivo de oportunidades de brecha
     """
-    # Viewport
+    # Vista
     viewport = pdk.ViewState(
         latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
     )
 
-    # Points colored by anchor status
+    # Puntos coloreados por estado de ancla
     points_layer = pdk.Layer(
         "ScatterplotLayer",
         data=df,
@@ -208,7 +208,7 @@ def create_pydeck_gap_map(
         get_radius=150,
     )
 
-    # Hull polygons
+    # Polígonos de envolventes
     hull_features = []
     for cluster_id, hull_coords in cluster_hulls.items():
         hull_features.append(
@@ -244,19 +244,19 @@ def create_folium_map(
     center_lat: float = -35.6751, center_lon: float = -71.5430
 ) -> folium.Map:
     """
-    Create base Folium map of Chile.
+    Crea un mapa base Folium de Chile.
 
-    Parameters
+    Parámetros
     ----------
     center_lat : float
-        Center latitude (default: Chile center)
+        Latitud central (por defecto: centro de Chile)
     center_lon : float
-        Center longitude (default: Chile center)
+        Longitud central (por defecto: centro de Chile)
 
-    Returns
+    Retorna
     -------
     folium.Map
-        Base Folium map object
+        Objeto de mapa base Folium
     """
     map_obj = folium.Map(
         location=[center_lat, center_lon],
@@ -275,27 +275,27 @@ def add_attractions_to_folium(
     name: str = "Attractions",
 ) -> folium.Map:
     """
-    Add attraction points to Folium map.
+    Agrega puntos de atractivos al mapa Folium.
 
-    Parameters
+    Parámetros
     ----------
     map_obj : folium.Map
-        Folium map to add to
+        Mapa Folium al que agregar
     df : pd.DataFrame
-        Attractions dataframe
+        Dataframe de atractivos
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
     color_col : str
-        Color column (default: 'color')
+        Columna de color (por defecto: 'color')
     name : str
-        Feature group name (default: 'Attractions')
+        Nombre del grupo de características (por defecto: 'Attractions')
 
-    Returns
+    Retorna
     -------
     folium.Map
-        Updated map object
+        Objeto de mapa actualizado
     """
     fg = folium.FeatureGroup(name=name)
 
@@ -324,27 +324,27 @@ def add_polygons_to_folium(
     name: str = "Regions",
 ) -> folium.Map:
     """
-    Add polygon boundaries to Folium map.
+    Agrega límites poligonales al mapa Folium.
 
-    Parameters
+    Parámetros
     ----------
     map_obj : folium.Map
-        Folium map to add to
+        Mapa Folium al que agregar
     df : pd.DataFrame
-        Dataframe with polygon coordinates
+        Dataframe con coordenadas de polígonos
     coords_col : str
-        Coordinates column (default: 'coordinates')
+        Columna de coordenadas (por defecto: 'coordinates')
     name_col : str
-        Name/label column (default: 'nombre')
+        Columna de nombre/etiqueta (por defecto: 'nombre')
     color : str
-        Polygon color (default: 'blue')
+        Color del polígono (por defecto: 'blue')
     name : str
-        Feature group name (default: 'Regions')
+        Nombre del grupo de características (por defecto: 'Regions')
 
-    Returns
+    Retorna
     -------
     folium.Map
-        Updated map object
+        Objeto de mapa actualizado
     """
     fg = folium.FeatureGroup(name=name)
 
@@ -369,33 +369,33 @@ def plot_distribution_histograms(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
 ) -> plt.Figure:
     """
-    Create histograms of coordinate distributions.
+    Crea histogramas de distribución de coordenadas.
 
-    Parameters
+    Parámetros
     ----------
     df : pd.DataFrame
-        Attractions dataframe
+        Dataframe de atractivos
     lat_col : str
-        Latitude column (default: 'POINT_Y')
+        Columna de latitud (por defecto: 'POINT_Y')
     lon_col : str
-        Longitude column (default: 'POINT_X')
+        Columna de longitud (por defecto: 'POINT_X')
 
-    Returns
+    Retorna
     -------
     plt.Figure
-        Matplotlib figure with histograms
+        Figura de matplotlib con histogramas
     """
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
     axes[0].hist(df[lon_col], bins=50, color="steelblue", edgecolor="black")
-    axes[0].set_xlabel("Longitude")
-    axes[0].set_ylabel("Count")
-    axes[0].set_title("Distribution of Attractions by Longitude")
+    axes[0].set_xlabel("Longitud")
+    axes[0].set_ylabel("Cantidad")
+    axes[0].set_title("Distribución de Atractivos por Longitud")
 
     axes[1].hist(df[lat_col], bins=50, color="steelblue", edgecolor="black")
-    axes[1].set_xlabel("Latitude")
-    axes[1].set_ylabel("Count")
-    axes[1].set_title("Distribution of Attractions by Latitude")
+    axes[1].set_xlabel("Latitud")
+    axes[1].set_ylabel("Cantidad")
+    axes[1].set_title("Distribución de Atractivos por Latitud")
 
     plt.tight_layout()
     return fig
@@ -403,19 +403,19 @@ def plot_distribution_histograms(
 
 def plot_cluster_bar_chart(summary_df: pd.DataFrame, n_top: int = 15) -> plt.Figure:
     """
-    Create horizontal bar chart of attractions per cluster.
+    Crea gráfico de barras horizontal de atractivos por clúster.
 
-    Parameters
+    Parámetros
     ----------
     summary_df : pd.DataFrame
-        Cluster summary dataframe
+        Dataframe resumen de clústeres
     n_top : int
-        Number of top clusters to show (default: 15)
+        Número de clústeres principales a mostrar (por defecto: 15)
 
-    Returns
+    Retorna
     -------
     plt.Figure
-        Matplotlib figure with bar chart
+        Figura de matplotlib con gráfico de barras
     """
     top = summary_df.head(n_top).sort_values("n_attractions")
 
@@ -423,8 +423,8 @@ def plot_cluster_bar_chart(summary_df: pd.DataFrame, n_top: int = 15) -> plt.Fig
     ax.barh(range(len(top)), top["n_attractions"], color="steelblue", edgecolor="black")
     ax.set_yticks(range(len(top)))
     ax.set_yticklabels([f"Cluster {i}" for i in top.index])
-    ax.set_xlabel("Number of Attractions")
-    ax.set_title(f"Top {n_top} Clusters by Attraction Count")
+    ax.set_xlabel("Número de Atractivos")
+    ax.set_title(f"Top {n_top} Clústeres por Cantidad de Atractivos")
     ax.grid(axis="x", alpha=0.3)
 
     plt.tight_layout()
@@ -435,19 +435,19 @@ def plot_anchor_distribution(
     summary_df: pd.DataFrame, color_map: Optional[Dict] = None
 ) -> plt.Figure:
     """
-    Create donut chart of cluster anchor status distribution.
+    Crea gráfico de dona de distribución de estado de ancla de clústeres.
 
-    Parameters
+    Parámetros
     ----------
     summary_df : pd.DataFrame
-        Cluster summary with anchor_status column
+        Resumen de clústeres con columna anchor_status
     color_map : Dict, optional
-        Color mapping for anchor status (uses default if not provided)
+        Mapeo de colores para estado de ancla (usa valores por defecto si no se proporciona)
 
-    Returns
+    Retorna
     -------
     plt.Figure
-        Matplotlib figure with donut chart
+        Figura de matplotlib con gráfico de dona
     """
     if color_map is None:
         color_map = preprocessing.get_anchor_color_map()
@@ -465,42 +465,42 @@ def plot_anchor_distribution(
         startangle=90,
     )
 
-    # Create donut hole
+    # Crear agujero de dona
     centre_circle = plt.Circle((0, 0), 0.70, fc="white")
     ax.add_artist(centre_circle)
 
-    ax.set_title("Cluster Distribution by Anchor Status")
+    ax.set_title("Distribución de Clústeres por Estado de Ancla")
     plt.tight_layout()
     return fig
 
 
 def save_pydeck_html(deck: pdk.Deck, filepath: str) -> None:
     """
-    Save PyDeck map to HTML file.
+    Guarda un mapa PyDeck en archivo HTML.
 
-    Parameters
+    Parámetros
     ----------
     deck : pdk.Deck
-        PyDeck deck object
+        Objeto deck de PyDeck
     filepath : str
-        Output file path
+        Ruta del archivo de salida
     """
     html = deck.to_html()
     with open(filepath, "w") as f:
         f.write(html)
-    print(f"Map saved to {filepath}")
+    print(f"Mapa guardado en {filepath}")
 
 
 def save_folium_html(map_obj: folium.Map, filepath: str) -> None:
     """
-    Save Folium map to HTML file.
+    Guarda un mapa Folium en archivo HTML.
 
-    Parameters
+    Parámetros
     ----------
     map_obj : folium.Map
-        Folium map object
+        Objeto de mapa Folium
     filepath : str
-        Output file path
+        Ruta del archivo de salida
     """
     map_obj.save(filepath)
-    print(f"Map saved to {filepath}")
+    print(f"Mapa guardado en {filepath}")

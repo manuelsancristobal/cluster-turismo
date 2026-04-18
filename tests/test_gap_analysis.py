@@ -1,4 +1,4 @@
-"""Tests for gap_analysis module."""
+"""Tests para el módulo de análisis de brechas."""
 
 import pandas as pd
 import pytest
@@ -9,7 +9,7 @@ from cluster_turismo import gap_analysis
 
 @pytest.fixture
 def cluster_summary():
-    """Create sample cluster summary data."""
+    """Crear datos de resumen de clústeres de ejemplo."""
     return pd.DataFrame(
         {
             "n_internacional": [2, 0, 1, 0],
@@ -22,30 +22,30 @@ def cluster_summary():
 
 
 def test_classify_anchor_status_with_internacional(cluster_summary):
-    """Test classification of cluster with international anchor."""
+    """Verificar clasificación de clúster con ancla internacional."""
     df = gap_analysis.classify_anchor_status(cluster_summary)
 
     assert df.loc[0, "anchor_status"] == "Con ancla internacional"
 
 
 def test_classify_anchor_status_solo_nacional(cluster_summary):
-    """Test classification of cluster with only national anchor."""
+    """Verificar clasificación de clúster con solo ancla nacional."""
     df = gap_analysis.classify_anchor_status(cluster_summary)
 
     assert df.loc[1, "anchor_status"] == "Solo ancla nacional"
-    # Cluster 2 has n_internacional=1, so it's "Con ancla internacional"
+    # Clúster 2 tiene n_internacional=1, así que es "Con ancla internacional"
     assert df.loc[2, "anchor_status"] == "Con ancla internacional"
 
 
 def test_classify_anchor_status_sin_ancla(cluster_summary):
-    """Test classification of cluster with no anchor."""
+    """Verificar clasificación de clúster sin ancla."""
     df = gap_analysis.classify_anchor_status(cluster_summary)
 
     assert df.loc[3, "anchor_status"] == "Sin ancla"
 
 
 def test_classify_anchor_status_all_have_status(cluster_summary):
-    """Test that all clusters get classified."""
+    """Verificar que todos los clústeres se clasifiquen."""
     df = gap_analysis.classify_anchor_status(cluster_summary)
 
     assert df["anchor_status"].notna().all()
@@ -53,7 +53,7 @@ def test_classify_anchor_status_all_have_status(cluster_summary):
 
 
 def test_identify_investment_opportunities(cluster_summary):
-    """Test opportunity identification."""
+    """Verificar identificación de oportunidades."""
     attractions_data = {
         "NOMBRE": [f"Atr{i}" for i in range(20)],
         "CLUSTER": [0] * 10 + [1] * 5 + [2] * 3 + [3] * 2,
@@ -66,19 +66,19 @@ def test_identify_investment_opportunities(cluster_summary):
     df_class = gap_analysis.classify_anchor_status(cluster_summary)
     opportunities = gap_analysis.identify_investment_opportunities(df_attr, df_class)
 
-    # Should exclude clusters with international anchor (0 and 2)
+    # Debe excluir clústeres con ancla internacional (0 y 2)
     assert 0 not in opportunities.index
     assert 2 not in opportunities.index
 
-    # Should include clusters without international anchor
+    # Debe incluir clústeres sin ancla internacional
     assert 1 in opportunities.index or 3 in opportunities.index
 
-    # Should have priority column
+    # Debe tener columna de prioridad
     assert "priority" in opportunities.columns
 
 
 def test_identify_investment_opportunities_priority():
-    """Test that opportunities are prioritized correctly."""
+    """Verificar que las oportunidades se prioricen correctamente."""
     summary_data = {
         "n_internacional": [0, 0, 0],
         "n_nacional": [0, 5, 0],
@@ -99,15 +99,15 @@ def test_identify_investment_opportunities_priority():
     df_class = gap_analysis.classify_anchor_status(summary_df)
     opp = gap_analysis.identify_investment_opportunities(df_attr, df_class)
 
-    # Priority 1 (Sin ancla) should come first
+    # Prioridad 1 (Sin ancla) debe ir primero
     assert opp.iloc[0]["anchor_status"] == "Sin ancla"
-    # Priority 2 (Solo nacional) should come last (there are 2 Sin ancla clusters)
+    # Prioridad 2 (Solo nacional) debe ir al final (hay 2 clústeres Sin ancla)
     assert opp.iloc[-1]["anchor_status"] == "Solo ancla nacional"
 
 
 def test_compute_lagging_overlap_type_contained():
-    """Test overlap classification for fully contained cluster."""
-    # Small polygon inside large polygon
+    """Verificar clasificación de superposición para clúster completamente contenido."""
+    # Polígono pequeño dentro de polígono grande
     lagging = Polygon([(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1)])
     official = Polygon(
         [(-71.0, -32.0), (-69.0, -32.0), (-69.0, -34.0), (-71.0, -34.0)]
@@ -118,7 +118,7 @@ def test_compute_lagging_overlap_type_contained():
 
 
 def test_compute_lagging_overlap_type_partial():
-    """Test overlap classification for partially overlapping clusters."""
+    """Verificar clasificación de superposición para clústeres parcialmente superpuestos."""
     lagging = Polygon([(-70.0, -33.0), (-70.3, -33.0), (-70.3, -33.3), (-70.0, -33.3)])
     official = Polygon(
         [(-70.2, -33.0), (-70.5, -33.0), (-70.5, -33.3), (-70.2, -33.3)]
@@ -129,7 +129,7 @@ def test_compute_lagging_overlap_type_partial():
 
 
 def test_compute_lagging_overlap_type_separate():
-    """Test overlap classification for separate clusters."""
+    """Verificar clasificación de superposición para clústeres separados."""
     lagging = Polygon([(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1)])
     official = Polygon(
         [(-70.5, -34.0), (-70.6, -34.0), (-70.6, -34.1), (-70.5, -34.1)]
@@ -140,23 +140,23 @@ def test_compute_lagging_overlap_type_separate():
 
 
 def test_compute_cluster_overlap_analysis():
-    """Test overlap analysis with actual polygon computation."""
-    # Create attractions data with clusters
+    """Verificar análisis de superposición con cálculo real de polígonos."""
+    # Crear datos de atractivos con clústeres
     df = pd.DataFrame({
         "NOMBRE": [f"A{i}" for i in range(6)],
         "CLUSTER": [0, 0, 0, 1, 1, 1],
         "REGION": ["R1"] * 6,
         "JERARQUIA": ["NACIONAL"] * 3 + ["LOCAL"] * 3,
-        "nombre": [None] * 6,  # All "lagging" (no destination match)
+        "nombre": [None] * 6,  # Todos "rezagados" (sin coincidencia de destino)
     })
 
-    # Cluster hulls — cluster 0 contained inside dest, cluster 1 separate
+    # Cascos de clúster — clúster 0 contenido en destino, clúster 1 separado
     cluster_hulls = {
         0: [(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1), (-70.0, -33.0)],
         1: [(-75.0, -50.0), (-75.1, -50.0), (-75.1, -50.1), (-75.0, -50.1), (-75.0, -50.0)],
     }
 
-    # Destination polygons — large area around cluster 0
+    # Polígonos de destino — área grande alrededor del clúster 0
     dest_polygons = {
         "DestA": Polygon([(-71, -32), (-69, -32), (-69, -34), (-71, -34)]),
     }
@@ -169,25 +169,25 @@ def test_compute_cluster_overlap_analysis():
     assert "overlap_type" in result.columns
     assert "nearest_destination" in result.columns
 
-    # Cluster 0 should be "Contenido" (inside DestA)
+    # Clúster 0 debe ser "Contenido" (dentro de DestA)
     row0 = result[result["cluster_id"] == 0].iloc[0]
     assert row0["overlap_type"] == "Contenido"
     assert row0["nearest_destination"] == "DestA"
 
-    # Cluster 1 should be "Separado" or "Genuinamente rezagado" (far away)
+    # Clúster 1 debe ser "Separado" o "Genuinamente rezagado" (lejos)
     row1 = result[result["cluster_id"] == 1].iloc[0]
     assert row1["overlap_type"] in ("Separado", "Genuinamente rezagado")
 
 
 def test_generate_opportunity_report(cluster_summary):
-    """Test opportunity report generation."""
+    """Verificar generación del reporte de oportunidades."""
     df_class = gap_analysis.classify_anchor_status(cluster_summary)
     report = gap_analysis.generate_opportunity_report(df_class)
 
-    # Should have aggregations by region
+    # Debe tener agregaciones por región
     assert len(report) > 0
 
-    # Should have expected columns
+    # Debe tener las columnas esperadas
     assert "n_opportunity_clusters" in report.columns
     assert "total_attractions" in report.columns
     assert "n_sin_ancla" in report.columns
