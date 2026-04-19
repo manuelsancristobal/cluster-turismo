@@ -18,7 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = PROJECT_ROOT / "assets"
 ASSETS_IMG_DIR = ASSETS_DIR / "img"
 
-_default_jekyll = Path.home() / "manuelsancristobal.github.io"
+_default_jekyll = Path.home() / "OneDrive" / "Documentos" / "manuelsancristobal.github.io"
 JEKYLL_REPO = Path(os.getenv("JEKYLL_REPO", str(_default_jekyll)))
 JEKYLL_BASE = JEKYLL_REPO / "proyectos" / "cluster-turismo"
 JEKYLL_ASSETS_DIR = JEKYLL_BASE / "assets"
