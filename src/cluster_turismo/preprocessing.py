@@ -1,6 +1,5 @@
 """Funciones de preprocesamiento y validación de datos."""
 
-
 import matplotlib
 import pandas as pd
 

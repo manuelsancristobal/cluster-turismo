@@ -28,7 +28,6 @@ dependencies = [
     "numpy>=1.24",
     "matplotlib>=3.7",
     "seaborn>=0.12",
-    "hdbscan>=0.8.33",
     "pydeck>=0.8",
     "folium>=0.14",
     "shapely>=2.0",

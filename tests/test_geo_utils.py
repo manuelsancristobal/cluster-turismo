@@ -73,7 +73,7 @@ def test_point_in_polygon_check():
     assert result.iloc[0]["in_destination"]
     assert result.iloc[0]["destination_name"] == "Dest1"
     assert not result.iloc[1]["in_destination"]
-    assert result.iloc[1]["destination_name"] is None
+    assert pd.isna(result.iloc[1]["destination_name"])
 
 
 def test_compute_cluster_centroid():

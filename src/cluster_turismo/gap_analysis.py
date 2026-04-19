@@ -1,6 +1,5 @@
 """Funciones de análisis de brechas e identificación de oportunidades."""
 
-
 import pandas as pd
 from shapely.geometry import Polygon
 

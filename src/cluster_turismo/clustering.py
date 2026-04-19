@@ -2,7 +2,6 @@
 
 from typing import Dict, List, Tuple
 
-import hdbscan
 import numpy as np
 import pandas as pd
 from scipy.spatial import ConvexHull
@@ -45,7 +44,9 @@ def run_hdbscan_spatial(
     coords = np.radians(df[[lat_col, lon_col]].values)
 
     # Ejecutar HDBSCAN con métrica haversine (apropiada para lat/lon)
-    clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, metric="haversine")
+    from sklearn.cluster import HDBSCAN
+
+    clusterer = HDBSCAN(min_cluster_size=min_cluster_size, metric="haversine")
     cluster_labels = clusterer.fit_predict(coords)
 
     # Añadir etiquetas de clúster al dataframe
