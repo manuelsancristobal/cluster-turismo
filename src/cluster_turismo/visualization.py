@@ -4,10 +4,8 @@ from typing import Dict, List, Optional
 
 import folium
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import pydeck as pdk
-from matplotlib import cm
 
 from . import preprocessing
 
@@ -19,8 +17,7 @@ def create_pydeck_hierarchy_map(
     color_col: str = "color",
     radius_col: str = "radius",
 ) -> pdk.Deck:
-    """
-    Crea un mapa de dispersión PyDeck coloreado por jerarquía de atractivos.
+    """Crea un mapa de dispersión PyDeck coloreado por jerarquía de atractivos.
 
     Parámetros
     ----------
@@ -41,9 +38,7 @@ def create_pydeck_hierarchy_map(
         Objeto de mapa PyDeck interactivo
     """
     # Calcular vista centrada en Chile
-    viewport = pdk.ViewState(
-        latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
-    )
+    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
 
     # Crear capa de dispersión
     layer = pdk.Layer(
@@ -85,8 +80,7 @@ def create_pydeck_cluster_map(
     lon_col: str = "POINT_X",
     cluster_col: str = "CLUSTER",
 ) -> pdk.Deck:
-    """
-    Crea un mapa PyDeck mostrando clústeres con límites de envolvente convexa.
+    """Crea un mapa PyDeck mostrando clústeres con límites de envolvente convexa.
 
     Parámetros
     ----------
@@ -107,9 +101,7 @@ def create_pydeck_cluster_map(
         Mapa interactivo con puntos y límites poligonales
     """
     # Calcular vista
-    viewport = pdk.ViewState(
-        latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
-    )
+    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
 
     # Capa de dispersión para puntos
     points_layer = pdk.Layer(
@@ -169,8 +161,7 @@ def create_pydeck_gap_map(
     lon_col: str = "POINT_X",
     color_col: str = "anchor_color",
 ) -> pdk.Deck:
-    """
-    Crea un mapa PyDeck mostrando brechas de inversión por estado de ancla.
+    """Crea un mapa PyDeck mostrando brechas de inversión por estado de ancla.
 
     Parámetros
     ----------
@@ -191,9 +182,7 @@ def create_pydeck_gap_map(
         Mapa interactivo de oportunidades de brecha
     """
     # Vista
-    viewport = pdk.ViewState(
-        latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0
-    )
+    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
 
     # Puntos coloreados por estado de ancla
     points_layer = pdk.Layer(
@@ -240,11 +229,8 @@ def create_pydeck_gap_map(
     return deck
 
 
-def create_folium_map(
-    center_lat: float = -35.6751, center_lon: float = -71.5430
-) -> folium.Map:
-    """
-    Crea un mapa base Folium de Chile.
+def create_folium_map(center_lat: float = -35.6751, center_lon: float = -71.5430) -> folium.Map:
+    """Crea un mapa base Folium de Chile.
 
     Parámetros
     ----------
@@ -274,8 +260,7 @@ def add_attractions_to_folium(
     color_col: str = "color",
     name: str = "Attractions",
 ) -> folium.Map:
-    """
-    Agrega puntos de atractivos al mapa Folium.
+    """Agrega puntos de atractivos al mapa Folium.
 
     Parámetros
     ----------
@@ -323,8 +308,7 @@ def add_polygons_to_folium(
     color: str = "blue",
     name: str = "Regions",
 ) -> folium.Map:
-    """
-    Agrega límites poligonales al mapa Folium.
+    """Agrega límites poligonales al mapa Folium.
 
     Parámetros
     ----------
@@ -365,11 +349,8 @@ def add_polygons_to_folium(
     return map_obj
 
 
-def plot_distribution_histograms(
-    df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
-) -> plt.Figure:
-    """
-    Crea histogramas de distribución de coordenadas.
+def plot_distribution_histograms(df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X") -> plt.Figure:
+    """Crea histogramas de distribución de coordenadas.
 
     Parámetros
     ----------
@@ -402,8 +383,7 @@ def plot_distribution_histograms(
 
 
 def plot_cluster_bar_chart(summary_df: pd.DataFrame, n_top: int = 15) -> plt.Figure:
-    """
-    Crea gráfico de barras horizontal de atractivos por clúster.
+    """Crea gráfico de barras horizontal de atractivos por clúster.
 
     Parámetros
     ----------
@@ -431,11 +411,8 @@ def plot_cluster_bar_chart(summary_df: pd.DataFrame, n_top: int = 15) -> plt.Fig
     return fig
 
 
-def plot_anchor_distribution(
-    summary_df: pd.DataFrame, color_map: Optional[Dict] = None
-) -> plt.Figure:
-    """
-    Crea gráfico de dona de distribución de estado de ancla de clústeres.
+def plot_anchor_distribution(summary_df: pd.DataFrame, color_map: Optional[Dict] = None) -> plt.Figure:
+    """Crea gráfico de dona de distribución de estado de ancla de clústeres.
 
     Parámetros
     ----------
@@ -475,8 +452,7 @@ def plot_anchor_distribution(
 
 
 def save_pydeck_html(deck: pdk.Deck, filepath: str) -> None:
-    """
-    Guarda un mapa PyDeck en archivo HTML.
+    """Guarda un mapa PyDeck en archivo HTML.
 
     Parámetros
     ----------
@@ -492,8 +468,7 @@ def save_pydeck_html(deck: pdk.Deck, filepath: str) -> None:
 
 
 def save_folium_html(map_obj: folium.Map, filepath: str) -> None:
-    """
-    Guarda un mapa Folium en archivo HTML.
+    """Guarda un mapa Folium en archivo HTML.
 
     Parámetros
     ----------

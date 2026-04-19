@@ -72,41 +72,114 @@ cluster-turismo/
     └── images/                         # Capturas de pantalla
 ```
 
-## Instalación
+## Guía para Principiantes
 
-### Requisitos Previos
-- Python 3.10 o superior
-- pip o conda
+### ¿Qué es `make`?
 
-### Inicio Rápido
+`make` es una herramienta que ejecuta comandos predefinidos. En vez de recordar comandos largos, solo escribes `make` seguido de una palabra clave. Para ver todos los comandos disponibles:
 
 ```bash
-# Clonar repositorio
+make help
+```
+
+### Requisitos Previos
+
+1. **Python 3.10 o superior** — [Descargar aquí](https://www.python.org/downloads/)
+2. **Git** — [Descargar aquí](https://git-scm.com/downloads)
+3. **Make** — En Windows viene incluido con Git Bash. En macOS/Linux ya está instalado.
+
+### Instalación paso a paso
+
+```bash
+# 1. Clonar el repositorio
 git clone https://github.com/manuelsancristobal/cluster-turismo.git
 cd cluster-turismo
 
-# Instalar paquete en modo desarrollo
-make install-dev
+# 2. Crear un entorno virtual (aísla las dependencias de este proyecto)
+python -m venv .venv
 
-# Ejecutar tests
+# 3. Activar el entorno virtual
+source .venv/Scripts/activate   # Windows (Git Bash)
+# source .venv/bin/activate     # Linux / macOS
+
+# 4. Instalar el proyecto y sus dependencias (incluye herramientas de desarrollo)
+make install-dev
+```
+
+### Comandos principales
+
+Todos los comandos se ejecutan desde la carpeta raíz del proyecto, con el entorno virtual activado.
+
+```bash
+make help             # Muestra todos los comandos disponibles
+make test             # Ejecuta los tests para verificar que todo funciona
+make lint             # Verifica la calidad del código
+make coverage         # Tests + reporte de cobertura (abre htmlcov/index.html)
+make generate-assets  # Genera gráficos y mapa interactivo
+make deploy           # Genera assets + copia al repo Jekyll (portafolio web)
+make clean            # Elimina archivos temporales
+```
+
+### Flujo de trabajo típico
+
+```bash
+# 1. Verificar que todo funciona
 make test
 
-# Verificar código
-make lint
+# 2. Generar los gráficos y el mapa interactivo
+make generate-assets
+
+# 3. Si modificaste el análisis en jekyll/cluster-turismo.md:
+make deploy     # Genera assets y los copia al repo Jekyll
 ```
+
+### ¿Cómo actualizo el análisis en el portafolio web?
+
+```
+Tu proyecto                    Repo Jekyll                   Sitio web
+─────────────                  ──────────                    ─────────
+
+jekyll/cluster-turismo.md ──┐
+                            ├─ make deploy ──→  _projects/cluster-turismo.md
+assets/img/*.png          ──┘                  proyectos/cluster-turismo/assets/
+                                                      │
+                                                git push ──→  manuelsancristobal.github.io
+```
+
+**Para modificar texto de análisis:**
+
+1. Edita `jekyll/cluster-turismo.md` con los cambios que quieras
+2. Ejecuta `make deploy` (genera assets + copia todo al repo Jekyll local)
+3. Ve a la carpeta del repo Jekyll (`~/manuelsancristobal.github.io`)
+4. Ejecuta `git add . && git commit -m "actualizar análisis" && git push`
+5. Espera ~1 minuto y el cambio aparece en tu sitio web
+
+**Para agregar un gráfico nuevo:**
+
+1. Genera el gráfico con `make generate-assets` (los PNGs quedan en `assets/img/`)
+2. Edita `jekyll/cluster-turismo.md` y agrega la referencia al gráfico:
+   ```markdown
+   ![Descripción del gráfico](./assets/img/mi_grafico.png)
+   ```
+3. Ejecuta `make deploy` (copia el `.md`, los PNGs y el mapa al repo Jekyll)
+4. Ve al repo Jekyll, haz commit y push
+
+> **Importante:** `make deploy` solo copia archivos a tu computador. El sitio web no se actualiza hasta que haces `git push` en el repo Jekyll.
+
+---
 
 ### Configuración de Datos
 
-Descargar datos de SERNATUR:
-1. `ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx` → `data/`
-2. `Destinos_Nacional-Publico.kmz` → `data/`
+Descargar datos de SERNATUR y colocarlos en la carpeta `data/`:
+1. `ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx`
+2. `Destinos_Nacional-Publico.kmz`
 
 Luego ejecutar notebooks:
 ```bash
 jupyter lab notebooks/
 ```
 
-## Uso
+## Uso Avanzado
 
 ### API Python
 
@@ -129,20 +202,12 @@ summary = gap_analysis.classify_anchor_status(summary)
 opportunities = gap_analysis.identify_investment_opportunities(df_clustered, summary)
 ```
 
-### Línea de Comandos
+### Comandos adicionales
 
 ```bash
-# Ejecutar todos los tests
-make test
-
-# Generar reporte de cobertura
-make coverage
-
-# Exportar mapas interactivos
-make maps
-
-# Ejecutar notebooks
-make run-notebooks
+make coverage         # Tests con reporte de cobertura
+make maps             # Exportar notebooks como mapas HTML
+make run-notebooks    # Ejecutar todos los notebooks
 ```
 
 ## Metodología

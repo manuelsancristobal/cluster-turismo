@@ -1,6 +1,5 @@
 """Funciones de análisis de brechas e identificación de oportunidades."""
 
-from typing import Optional
 
 import pandas as pd
 from shapely.geometry import Polygon
@@ -13,9 +12,10 @@ def _hier_col(df: pd.DataFrame) -> str:
     return "JERARQUÍA"
 
 
-def classify_anchor_status(df: pd.DataFrame, n_int_col: str = "n_internacional", n_nat_col: str = "n_nacional") -> pd.DataFrame:
-    """
-    Clasifica clústeres según el estado de atractivo ancla.
+def classify_anchor_status(
+    df: pd.DataFrame, n_int_col: str = "n_internacional", n_nat_col: str = "n_nacional"
+) -> pd.DataFrame:
+    """Clasifica clústeres según el estado de atractivo ancla.
 
     Lógica de clasificación:
     - 'Con ancla internacional': Tiene 1+ atractivos de nivel internacional
@@ -36,7 +36,6 @@ def classify_anchor_status(df: pd.DataFrame, n_int_col: str = "n_internacional",
     pd.DataFrame
         Dataframe de entrada con columna 'anchor_status' agregada
     """
-
     for col in [n_int_col, n_nat_col]:
         if col not in df.columns:
             raise KeyError(f"Columna '{col}' no encontrada en el dataframe. Columnas disponibles: {list(df.columns)}")
@@ -60,8 +59,7 @@ def classify_anchor_status(df: pd.DataFrame, n_int_col: str = "n_internacional",
 
 
 def identify_investment_opportunities(df: pd.DataFrame, cluster_summary: pd.DataFrame) -> pd.DataFrame:
-    """
-    Identifica clústeres con oportunidades de inversión/desarrollo.
+    """Identifica clústeres con oportunidades de inversión/desarrollo.
 
     Prioridad 1 (Máxima): Sin ancla - Sin atractivos ancla
     Prioridad 2 (Alta): Solo ancla nacional - Solo anclas de nivel nacional
@@ -110,8 +108,7 @@ def identify_investment_opportunities(df: pd.DataFrame, cluster_summary: pd.Data
 
 
 def compute_lagging_overlap_type(lagging_poly: Polygon, official_poly: Polygon) -> str:
-    """
-    Clasifica cómo un clúster de atractivos rezagados se superpone con destinos oficiales.
+    """Clasifica cómo un clúster de atractivos rezagados se superpone con destinos oficiales.
 
     Clasificación:
     - 'Contenido': >90% dentro del destino oficial
@@ -150,8 +147,7 @@ def compute_cluster_overlap_analysis(
     df_destinations: pd.DataFrame,
     dest_polygons: dict,
 ) -> pd.DataFrame:
-    """
-    Analiza cómo los clústeres rezagados se superponen con destinos oficiales.
+    """Analiza cómo los clústeres rezagados se superponen con destinos oficiales.
 
     Parámetros
     ----------
@@ -204,7 +200,9 @@ def compute_cluster_overlap_analysis(
             {
                 "cluster_id": cluster_id,
                 "n_attractions": len(cluster_data),
-                "main_region": cluster_data["REGION"].value_counts().index[0] if len(cluster_data) > 0 and len(cluster_data["REGION"].value_counts()) > 0 else None,
+                "main_region": cluster_data["REGION"].value_counts().index[0]
+                if len(cluster_data) > 0 and len(cluster_data["REGION"].value_counts()) > 0
+                else None,
                 "overlap_type": best_overlap_type,
                 "nearest_destination": best_overlap,
                 "n_internacional": (cluster_data[_hier_col(cluster_data)] == "INTERNACIONAL").sum(),
@@ -215,11 +213,8 @@ def compute_cluster_overlap_analysis(
     return pd.DataFrame(results)
 
 
-def generate_opportunity_report(
-    opportunities: pd.DataFrame, region_col: str = "region_principal"
-) -> pd.DataFrame:
-    """
-    Genera resumen ejecutivo de oportunidades por región.
+def generate_opportunity_report(opportunities: pd.DataFrame, region_col: str = "region_principal") -> pd.DataFrame:
+    """Genera resumen ejecutivo de oportunidades por región.
 
     Parámetros
     ----------

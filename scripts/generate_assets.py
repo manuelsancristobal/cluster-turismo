@@ -1,26 +1,24 @@
-"""
-Generar assets del portafolio: mapas interactivos y gráficos estáticos.
+"""Generar assets del portafolio: mapas interactivos y gráficos estáticos.
 
 Ejecutar este script para crear todos los assets visuales.
 Salida: assets/
 """
 
-import sys
 import os
+import sys
 
 # Agregar proyecto al path
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "src"))
 
-import pandas as pd
-import numpy as np
 import matplotlib
+import pandas as pd
+
 matplotlib.use("Agg")  # Backend no interactivo
 import matplotlib.pyplot as plt
-import seaborn as sns
 from shapely.geometry import Polygon
 
-from cluster_turismo import clustering, preprocessing, gap_analysis, data_loader
+from cluster_turismo import clustering, data_loader, gap_analysis, preprocessing
 
 # ── Rutas ──────────────────────────────────────────────────────────────────
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
@@ -49,6 +47,7 @@ print("Resumiendo clústeres...")
 summary = clustering.summarize_clusters(df_clustered, hierarchy_col="JERARQUIA")
 summary_classified = gap_analysis.classify_anchor_status(summary)
 
+
 # Construir etiquetas de clúster desde comunas
 def _build_label(comunas_series):
     ranked = comunas_series.value_counts().index.tolist()
@@ -56,6 +55,7 @@ def _build_label(comunas_series):
     if len(ranked) >= 4:
         return f"{ranked[0]} y alrededores"
     return " - ".join(ranked)
+
 
 cluster_labels = {}
 for cluster_id in summary_classified.index:
@@ -96,14 +96,16 @@ else:
 hulls = clustering.compute_cluster_convex_hulls(df_clustered)
 
 # ── 4. Generar gráficos ────────────────────────────────────────────────────
-plt.rcParams.update({
-    "font.family": "sans-serif",
-    "font.size": 12,
-    "figure.facecolor": "white",
-    "axes.facecolor": "white",
-    "savefig.dpi": 150,
-    "savefig.bbox": "tight",
-})
+plt.rcParams.update(
+    {
+        "font.family": "sans-serif",
+        "font.size": 12,
+        "figure.facecolor": "white",
+        "axes.facecolor": "white",
+        "savefig.dpi": 150,
+        "savefig.bbox": "tight",
+    }
+)
 
 # ── Gráfico 1: Histogramas de distribución de coordenadas ──
 print("Generando histogramas...")
@@ -129,12 +131,16 @@ print("Generando gráfico de barras de clústeres...")
 top_clusters = summary.head(15).sort_values("n_attractions")
 
 fig, ax = plt.subplots(figsize=(10, 7))
-colors = ["#e74c3c" if summary_classified.loc[i, "anchor_status"] == "Sin ancla"
-          else "#f39c12" if summary_classified.loc[i, "anchor_status"] == "Solo ancla nacional"
-          else "#2ecc71" for i in top_clusters.index]
+colors = [
+    "#e74c3c"
+    if summary_classified.loc[i, "anchor_status"] == "Sin ancla"
+    else "#f39c12"
+    if summary_classified.loc[i, "anchor_status"] == "Solo ancla nacional"
+    else "#2ecc71"
+    for i in top_clusters.index
+]
 
-ax.barh(range(len(top_clusters)), top_clusters["n_attractions"],
-        color=colors, edgecolor="white")
+ax.barh(range(len(top_clusters)), top_clusters["n_attractions"], color=colors, edgecolor="white")
 ax.set_yticks(range(len(top_clusters)))
 ax.set_yticklabels([cluster_labels.get(i, f"Clúster {i}") for i in top_clusters.index])
 ax.set_xlabel("Cantidad de Atractivos")
@@ -143,6 +149,7 @@ ax.grid(axis="x", alpha=0.3)
 
 # Leyenda
 from matplotlib.patches import Patch
+
 legend_elements = [
     Patch(facecolor="#2ecc71", label="Con ancla internacional"),
     Patch(facecolor="#f39c12", label="Solo ancla nacional"),
@@ -208,8 +215,14 @@ ax.set_title("Atractivos por Nivel de Jerarquía")
 ax.grid(axis="y", alpha=0.3)
 
 for bar, count in zip(bars, hierarchy_counts.values):
-    ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 20,
-            str(count), ha="center", va="bottom", fontweight="bold")
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 20,
+        str(count),
+        ha="center",
+        va="bottom",
+        fontweight="bold",
+    )
 
 plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "jerarquias.png"))
@@ -325,12 +338,16 @@ if df_lagging_clustered is not None and len(summary) > 0:
     lagging_sizes = lagging_cluster_summary["n_attractions"].values
 
     fig, ax = plt.subplots(figsize=(8, 6))
-    bp = ax.boxplot([official_sizes, lagging_sizes], labels=["Destinos Oficiales", "Clústeres Rezagados"],
-                     patch_artist=True, widths=0.6)
+    bp = ax.boxplot(
+        [official_sizes, lagging_sizes],
+        labels=["Destinos Oficiales", "Clústeres Rezagados"],
+        patch_artist=True,
+        widths=0.6,
+    )
 
     # Colorear las cajas
     colors = ["#2ecc71", "#e74c3c"]
-    for patch, color in zip(bp['boxes'], colors):
+    for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
 
@@ -345,7 +362,7 @@ if df_lagging_clustered is not None and len(summary) > 0:
 # ── 5. Generar mapa interactivo Folium ─────────────────────────────────────
 print("Generando mapa interactivo Folium...")
 import folium
-from folium.plugins import MarkerCluster, Search, GroupedLayerControl
+from folium.plugins import GroupedLayerControl
 
 # Crear mapa base
 m = folium.Map(location=[-35.6751, -71.5430], zoom_start=5, tiles="CartoDB positron")
@@ -365,13 +382,13 @@ for hier in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
     subset = df_clustered[df_clustered["JERARQUIA"] == hier]
 
     for _, row in subset.iterrows():
-        cluster_name = cluster_labels.get(row.get('CLUSTER'), f"Clúster {row.get('CLUSTER', '?')}")
+        cluster_name = cluster_labels.get(row.get("CLUSTER"), f"Clúster {row.get('CLUSTER', '?')}")
         popup_html = f"""
         <div style="font-family: 'Inter', sans-serif; min-width: 200px;">
-            <b style="font-size: 13px;">{row.get('NOMBRE', 'N/A')}</b><br>
+            <b style="font-size: 13px;">{row.get("NOMBRE", "N/A")}</b><br>
             <span style="color: {HIER_COLORS[hier]}; font-weight: bold;">● {hier}</span><br>
-            <small>Categoría: {row.get('CATEGORIA', 'N/A')}</small><br>
-            <small>Región: {row.get('REGION', 'N/A')}</small><br>
+            <small>Categoría: {row.get("CATEGORIA", "N/A")}</small><br>
+            <small>Región: {row.get("REGION", "N/A")}</small><br>
             <small>Clúster: {cluster_name}</small>
         </div>
         """
@@ -395,8 +412,12 @@ for hier in ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]:
 fg_hulls = folium.FeatureGroup(name="Límites de Clústeres", show=False)
 
 for cluster_id, hull_coords in hulls.items():
-    anchor = summary_classified.loc[cluster_id, "anchor_status"] if cluster_id in summary_classified.index else "Sin ancla"
-    hull_color = {"Con ancla internacional": "#2ecc71", "Solo ancla nacional": "#f39c12", "Sin ancla": "#e74c3c"}.get(anchor, "#999")
+    anchor = (
+        summary_classified.loc[cluster_id, "anchor_status"] if cluster_id in summary_classified.index else "Sin ancla"
+    )
+    hull_color = {"Con ancla internacional": "#2ecc71", "Solo ancla nacional": "#f39c12", "Sin ancla": "#e74c3c"}.get(
+        anchor, "#999"
+    )
 
     folium.Polygon(
         locations=[[lat, lon] for lat, lon in hull_coords],
@@ -430,12 +451,12 @@ if df_lagging_clustered is not None and len(lagging_hulls) > 0:
     # Agregar puntos de atractivos rezagados como capa separada
     fg_lagging_points = folium.FeatureGroup(name="Atractivos sin Destino", show=False)
     for _, row in df_lagging_clustered.iterrows():
-        lagging_name = lagging_labels.get(row.get('CLUSTER'), f"Clúster {row.get('CLUSTER', '?')}")
+        lagging_name = lagging_labels.get(row.get("CLUSTER"), f"Clúster {row.get('CLUSTER', '?')}")
         popup_html = f"""
         <div style="font-family: 'Inter', sans-serif; min-width: 200px;">
-            <b style="font-size: 13px;">{row.get('NOMBRE', 'N/A')}</b><br>
+            <b style="font-size: 13px;">{row.get("NOMBRE", "N/A")}</b><br>
             <span style="color: #555; font-weight: bold;">● Sin destino oficial</span><br>
-            <small>Región: {row.get('REGION', 'N/A')}</small><br>
+            <small>Región: {row.get("REGION", "N/A")}</small><br>
             <small>Clúster: {lagging_name}</small>
         </div>
         """
@@ -443,7 +464,7 @@ if df_lagging_clustered is not None and len(lagging_hulls) > 0:
             location=[row["POINT_Y"], row["POINT_X"]],
             radius=3,
             popup=folium.Popup(popup_html, max_width=300),
-            tooltip=row.get('NOMBRE', 'N/A'),
+            tooltip=row.get("NOMBRE", "N/A"),
             color="#2c3e50",
             fill=True,
             fillColor="#2c3e50",
@@ -460,8 +481,8 @@ if df_lagging_clustered is not None and len(lagging_hulls) > 0:
 
 GroupedLayerControl(
     groups={
-        'Destinos & Clústeres': cluster_layers,
-        'Atractivos por Jerarquía': hierarchy_groups,
+        "Destinos & Clústeres": cluster_layers,
+        "Atractivos por Jerarquía": hierarchy_groups,
     },
     exclusive_groups=False,
     collapsed=False,
@@ -503,7 +524,7 @@ print(f"  Clústeres encontrados: {n_clusters}")
 print(f"  Atractivos ruido/no asignados: {n_lagging} ({pct_lagging:.1f}%)")
 if df_lagging_clustered is not None:
     print(f"  Clústeres de ruido identificados: {len(lagging_hulls)}")
-print(f"  Distribución de anclas:")
+print("  Distribución de anclas:")
 for status, count in anchor_counts.items():
     print(f"    {status}: {count}")
 print("=" * 50)

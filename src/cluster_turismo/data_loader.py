@@ -8,8 +8,7 @@ import pandas as pd
 
 
 def load_attractions_excel(filepath: str) -> pd.DataFrame:
-    """
-    Cargar atractivos turísticos chilenos desde archivo Excel de SERNATUR.
+    """Cargar atractivos turísticos chilenos desde archivo Excel de SERNATUR.
 
     Parámetros
     ----------
@@ -26,8 +25,7 @@ def load_attractions_excel(filepath: str) -> pd.DataFrame:
 
 
 def load_kmz_destinations(filepath: str) -> pd.DataFrame:
-    """
-    Cargar destinos turísticos desde archivo KMZ (KML comprimido).
+    """Cargar destinos turísticos desde archivo KMZ (KML comprimido).
 
     Extrae el KML del archivo KMZ, analiza los elementos Placemark
     y retorna un DataFrame con los límites y metadatos de los destinos.
@@ -62,8 +60,7 @@ def load_kmz_destinations(filepath: str) -> pd.DataFrame:
 
 
 def extract_kml_from_kmz(kmz_path: str) -> str:
-    """
-    Extraer contenido KML de archivo KMZ (ZIP).
+    """Extraer contenido KML de archivo KMZ (ZIP).
 
     Parámetros
     ----------
@@ -86,8 +83,7 @@ def extract_kml_from_kmz(kmz_path: str) -> str:
 
 
 def parse_kml_placemarks(kml_string: str) -> List[Dict]:
-    """
-    Analizar elementos Placemark del KML para extraer metadatos y límites de destinos.
+    """Analizar elementos Placemark del KML para extraer metadatos y límites de destinos.
 
     Parámetros
     ----------
@@ -135,8 +131,7 @@ def parse_kml_placemarks(kml_string: str) -> List[Dict]:
 
 
 def extract_kml_field(pm_content: str, field_name: str) -> str:
-    """
-    Extraer valor de campo SimpleData de los datos extendidos del Placemark KML.
+    """Extraer valor de campo SimpleData de los datos extendidos del Placemark KML.
 
     Parámetros
     ----------
@@ -156,8 +151,7 @@ def extract_kml_field(pm_content: str, field_name: str) -> str:
 
 
 def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
-    """
-    Extraer pares de coordenadas del elemento KML LinearRing.
+    """Extraer pares de coordenadas del elemento KML LinearRing.
 
     Parámetros
     ----------
@@ -170,9 +164,7 @@ def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
         Lista de tuplas (lon, lat), o lista vacía si no se encuentra
     """
     # Buscar texto de coordenadas en LinearRing
-    coords_match = re.search(
-        r"<LinearRing>.*?<coordinates>(.*?)</coordinates>", pm_content, re.DOTALL
-    )
+    coords_match = re.search(r"<LinearRing>.*?<coordinates>(.*?)</coordinates>", pm_content, re.DOTALL)
     if not coords_match:
         return []
 
@@ -192,11 +184,8 @@ def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
     return coords_list
 
 
-def simplify_polygon_coordinates(
-    coordinates: List[tuple], max_points: int = 80
-) -> List[tuple]:
-    """
-    Simplificar polígono reduciendo el número de puntos de coordenadas.
+def simplify_polygon_coordinates(coordinates: List[tuple], max_points: int = 80) -> List[tuple]:
+    """Simplificar polígono reduciendo el número de puntos de coordenadas.
 
     Usa un algoritmo básico de raleo para reducir la complejidad preservando la forma.
 

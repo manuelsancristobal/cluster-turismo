@@ -1,22 +1,21 @@
 """Tests for data_loader module."""
 
-import os
-import tempfile
 import zipfile
 
 import pandas as pd
-import pytest
 
 from cluster_turismo import data_loader
 
 
 def test_load_attractions_excel(tmp_path):
     """Test loading attractions from Excel."""
-    df = pd.DataFrame({
-        "NOMBRE": ["A", "B"],
-        "POINT_Y": [-33.0, -34.0],
-        "POINT_X": [-70.0, -71.0],
-    })
+    df = pd.DataFrame(
+        {
+            "NOMBRE": ["A", "B"],
+            "POINT_Y": [-33.0, -34.0],
+            "POINT_X": [-70.0, -71.0],
+        }
+    )
     path = tmp_path / "test.xlsx"
     df.to_excel(path, index=False)
 

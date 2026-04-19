@@ -126,14 +126,18 @@ def test_assign_cluster_colors(sample_data):
 
 def test_merge_attractions_destinations():
     """Verificar la unión de atractivos con destinos."""
-    attractions = pd.DataFrame({
-        "NOMBRE": ["A", "B", "C"],
-        "COD_COM": ["01", "02", "03"],
-    })
-    destinations = pd.DataFrame({
-        "nombre": ["Dest1", "Dest2"],
-        "codigo": ["01", "02"],
-    })
+    attractions = pd.DataFrame(
+        {
+            "NOMBRE": ["A", "B", "C"],
+            "COD_COM": ["01", "02", "03"],
+        }
+    )
+    destinations = pd.DataFrame(
+        {
+            "nombre": ["Dest1", "Dest2"],
+            "codigo": ["01", "02"],
+        }
+    )
     result = preprocessing.merge_attractions_destinations(attractions, destinations)
     assert len(result) == 3
     assert result.iloc[0]["nombre"] == "Dest1"

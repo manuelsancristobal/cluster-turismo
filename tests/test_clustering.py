@@ -18,9 +18,7 @@ def sample_data():
 
 def test_run_hdbscan_spatial_output_shape(sample_data):
     """Verificar que HDBSCAN retorne la cantidad correcta de etiquetas."""
-    df = clustering.run_hdbscan_spatial(
-        sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=3
-    )
+    df = clustering.run_hdbscan_spatial(sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=3)
 
     # Debe tener la misma longitud
     assert len(df) == len(sample_data)
@@ -34,9 +32,7 @@ def test_run_hdbscan_spatial_output_shape(sample_data):
 
 def test_run_hdbscan_spatial_cluster_range(sample_data):
     """Verificar que el clustering produzca un número razonable de clústeres."""
-    df = clustering.run_hdbscan_spatial(
-        sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=2
-    )
+    df = clustering.run_hdbscan_spatial(sample_data, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=2)
 
     unique_clusters = set(df["CLUSTER"].unique())
     # Quitar ruido (-1) para contar
@@ -57,17 +53,13 @@ def test_run_hdbscan_spatial_with_geographic_data():
     # Crear datos con dos clústeres geográficos distintos
     data = {
         "NOMBRE": [f"A{i}" for i in range(20)],
-        "POINT_Y": (
-            [-33.0] * 10 + [-45.0] * 10
-        ),  # Dos regiones de latitud distintas
+        "POINT_Y": ([-33.0] * 10 + [-45.0] * 10),  # Dos regiones de latitud distintas
         "POINT_X": [-70.5] * 10 + [-72.5] * 10,  # Dos regiones de longitud distintas
         "JERARQUÍA": ["NACIONAL"] * 20,
     }
     df = pd.DataFrame(data)
 
-    df_clustered = clustering.run_hdbscan_spatial(
-        df, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=5
-    )
+    df_clustered = clustering.run_hdbscan_spatial(df, lat_col="POINT_Y", lon_col="POINT_X", min_cluster_size=5)
 
     # Debe encontrar al menos 2 clústeres
     unique_clusters = set(df_clustered["CLUSTER"].unique())
@@ -132,8 +124,15 @@ def test_summarize_clusters(sample_data):
     assert len(summary) > 0
 
     # Debe tener las columnas esperadas
-    expected_cols = ["n_attractions", "region_principal", "categoria_principal",
-                     "n_internacional", "n_nacional", "pct_internacional", "pct_nacional"]
+    expected_cols = [
+        "n_attractions",
+        "region_principal",
+        "categoria_principal",
+        "n_internacional",
+        "n_nacional",
+        "pct_internacional",
+        "pct_nacional",
+    ]
     for col in expected_cols:
         assert col in summary.columns, f"Falta columna: {col}"
 

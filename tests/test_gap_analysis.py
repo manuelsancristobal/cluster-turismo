@@ -109,9 +109,7 @@ def test_compute_lagging_overlap_type_contained():
     """Verificar clasificación de superposición para clúster completamente contenido."""
     # Polígono pequeño dentro de polígono grande
     lagging = Polygon([(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1)])
-    official = Polygon(
-        [(-71.0, -32.0), (-69.0, -32.0), (-69.0, -34.0), (-71.0, -34.0)]
-    )
+    official = Polygon([(-71.0, -32.0), (-69.0, -32.0), (-69.0, -34.0), (-71.0, -34.0)])
 
     result = gap_analysis.compute_lagging_overlap_type(lagging, official)
     assert result == "Contenido"
@@ -120,9 +118,7 @@ def test_compute_lagging_overlap_type_contained():
 def test_compute_lagging_overlap_type_partial():
     """Verificar clasificación de superposición para clústeres parcialmente superpuestos."""
     lagging = Polygon([(-70.0, -33.0), (-70.3, -33.0), (-70.3, -33.3), (-70.0, -33.3)])
-    official = Polygon(
-        [(-70.2, -33.0), (-70.5, -33.0), (-70.5, -33.3), (-70.2, -33.3)]
-    )
+    official = Polygon([(-70.2, -33.0), (-70.5, -33.0), (-70.5, -33.3), (-70.2, -33.3)])
 
     result = gap_analysis.compute_lagging_overlap_type(lagging, official)
     assert result == "Parcialmente superpuesto"
@@ -131,9 +127,7 @@ def test_compute_lagging_overlap_type_partial():
 def test_compute_lagging_overlap_type_separate():
     """Verificar clasificación de superposición para clústeres separados."""
     lagging = Polygon([(-70.0, -33.0), (-70.1, -33.0), (-70.1, -33.1), (-70.0, -33.1)])
-    official = Polygon(
-        [(-70.5, -34.0), (-70.6, -34.0), (-70.6, -34.1), (-70.5, -34.1)]
-    )
+    official = Polygon([(-70.5, -34.0), (-70.6, -34.0), (-70.6, -34.1), (-70.5, -34.1)])
 
     result = gap_analysis.compute_lagging_overlap_type(lagging, official)
     assert result == "Separado"
@@ -142,13 +136,15 @@ def test_compute_lagging_overlap_type_separate():
 def test_compute_cluster_overlap_analysis():
     """Verificar análisis de superposición con cálculo real de polígonos."""
     # Crear datos de atractivos con clústeres
-    df = pd.DataFrame({
-        "NOMBRE": [f"A{i}" for i in range(6)],
-        "CLUSTER": [0, 0, 0, 1, 1, 1],
-        "REGION": ["R1"] * 6,
-        "JERARQUIA": ["NACIONAL"] * 3 + ["LOCAL"] * 3,
-        "nombre": [None] * 6,  # Todos "rezagados" (sin coincidencia de destino)
-    })
+    df = pd.DataFrame(
+        {
+            "NOMBRE": [f"A{i}" for i in range(6)],
+            "CLUSTER": [0, 0, 0, 1, 1, 1],
+            "REGION": ["R1"] * 6,
+            "JERARQUIA": ["NACIONAL"] * 3 + ["LOCAL"] * 3,
+            "nombre": [None] * 6,  # Todos "rezagados" (sin coincidencia de destino)
+        }
+    )
 
     # Cascos de clúster — clúster 0 contenido en destino, clúster 1 separado
     cluster_hulls = {
@@ -161,9 +157,7 @@ def test_compute_cluster_overlap_analysis():
         "DestA": Polygon([(-71, -32), (-69, -32), (-69, -34), (-71, -34)]),
     }
 
-    result = gap_analysis.compute_cluster_overlap_analysis(
-        df, cluster_hulls, pd.DataFrame(), dest_polygons
-    )
+    result = gap_analysis.compute_cluster_overlap_analysis(df, cluster_hulls, pd.DataFrame(), dest_polygons)
 
     assert len(result) == 2
     assert "overlap_type" in result.columns

@@ -1,40 +1,46 @@
 """Tests for visualization module."""
 
 import matplotlib
+
 matplotlib.use("Agg")  # Non-interactive backend for tests
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 
-from cluster_turismo import visualization, preprocessing
+from cluster_turismo import visualization
 
 
 @pytest.fixture
 def sample_styled_data():
     """Create sample dataframe with styling columns."""
-    df = pd.DataFrame({
-        "NOMBRE": ["A", "B", "C"],
-        "POINT_Y": [-33.0, -34.0, -35.0],
-        "POINT_X": [-70.0, -71.0, -72.0],
-        "JERARQUIA": ["INTERNACIONAL", "NACIONAL", "LOCAL"],
-        "CATEGORIA": ["Cultura", "Naturaleza", "Deporte"],
-        "CLUSTER": [0, 0, 1],
-        "color": [[220, 30, 120], [70, 130, 180], [180, 180, 180]],
-        "radius": [3, 2, 1],
-    })
+    df = pd.DataFrame(
+        {
+            "NOMBRE": ["A", "B", "C"],
+            "POINT_Y": [-33.0, -34.0, -35.0],
+            "POINT_X": [-70.0, -71.0, -72.0],
+            "JERARQUIA": ["INTERNACIONAL", "NACIONAL", "LOCAL"],
+            "CATEGORIA": ["Cultura", "Naturaleza", "Deporte"],
+            "CLUSTER": [0, 0, 1],
+            "color": [[220, 30, 120], [70, 130, 180], [180, 180, 180]],
+            "radius": [3, 2, 1],
+        }
+    )
     return df
 
 
 @pytest.fixture
 def sample_summary():
     """Create sample cluster summary with anchor status."""
-    df = pd.DataFrame({
-        "n_attractions": [10, 5, 3],
-        "anchor_status": ["Con ancla internacional", "Solo ancla nacional", "Sin ancla"],
-        "n_internacional": [3, 0, 0],
-        "n_nacional": [5, 3, 0],
-    }, index=[0, 1, 2])
+    df = pd.DataFrame(
+        {
+            "n_attractions": [10, 5, 3],
+            "anchor_status": ["Con ancla internacional", "Solo ancla nacional", "Sin ancla"],
+            "n_internacional": [3, 0, 0],
+            "n_nacional": [5, 3, 0],
+        },
+        index=[0, 1, 2],
+    )
     return df
 
 
@@ -54,10 +60,12 @@ def test_create_folium_map_custom_center():
 
 def test_plot_distribution_histograms():
     """Test histogram generation returns valid figure."""
-    df = pd.DataFrame({
-        "POINT_Y": [-33.0, -34.0, -35.0, -36.0],
-        "POINT_X": [-70.0, -71.0, -72.0, -73.0],
-    })
+    df = pd.DataFrame(
+        {
+            "POINT_Y": [-33.0, -34.0, -35.0, -36.0],
+            "POINT_X": [-70.0, -71.0, -72.0, -73.0],
+        }
+    )
     fig = visualization.plot_distribution_histograms(df)
     assert isinstance(fig, plt.Figure)
     assert len(fig.axes) == 2
@@ -66,9 +74,12 @@ def test_plot_distribution_histograms():
 
 def test_plot_cluster_bar_chart():
     """Test cluster bar chart generation."""
-    df = pd.DataFrame({
-        "n_attractions": [50, 30, 20, 10],
-    }, index=[0, 1, 2, 3])
+    df = pd.DataFrame(
+        {
+            "n_attractions": [50, 30, 20, 10],
+        },
+        index=[0, 1, 2, 3],
+    )
     fig = visualization.plot_cluster_bar_chart(df, n_top=3)
     assert isinstance(fig, plt.Figure)
     assert len(fig.axes) == 1
@@ -88,13 +99,15 @@ def test_plot_anchor_distribution(sample_summary):
 def test_add_attractions_to_folium():
     """Test adding attraction markers to Folium map."""
     m = visualization.create_folium_map()
-    df = pd.DataFrame({
-        "NOMBRE": ["A", "B"],
-        "POINT_Y": [-33.0, -34.0],
-        "POINT_X": [-70.0, -71.0],
-        "JERARQUIA": ["INTERNACIONAL", "NACIONAL"],
-        "color": ["red", "blue"],
-    })
+    df = pd.DataFrame(
+        {
+            "NOMBRE": ["A", "B"],
+            "POINT_Y": [-33.0, -34.0],
+            "POINT_X": [-70.0, -71.0],
+            "JERARQUIA": ["INTERNACIONAL", "NACIONAL"],
+            "color": ["red", "blue"],
+        }
+    )
     result = visualization.add_attractions_to_folium(m, df)
     assert result is not None
 
@@ -102,10 +115,12 @@ def test_add_attractions_to_folium():
 def test_add_polygons_to_folium():
     """Test adding polygon boundaries to Folium map."""
     m = visualization.create_folium_map()
-    df = pd.DataFrame({
-        "nombre": ["Region1"],
-        "coordinates": [[(-70, -33), (-71, -33), (-71, -34), (-70, -34), (-70, -33)]],
-    })
+    df = pd.DataFrame(
+        {
+            "nombre": ["Region1"],
+            "coordinates": [[(-70, -33), (-71, -33), (-71, -34), (-70, -34), (-70, -33)]],
+        }
+    )
     result = visualization.add_polygons_to_folium(m, df)
     assert result is not None
 

@@ -15,8 +15,7 @@ def run_hdbscan_spatial(
     lon_col: str = "POINT_X",
     min_cluster_size: int = 10,
 ) -> pd.DataFrame:
-    """
-    Realizar agrupamiento espacial HDBSCAN usando métrica haversine.
+    """Realizar agrupamiento espacial HDBSCAN usando métrica haversine.
 
     Convierte latitud/longitud a radianes y agrupa usando la métrica de distancia
     haversine, apropiada para coordenadas geográficas en una esfera.
@@ -57,7 +56,7 @@ def run_hdbscan_spatial(
     n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
     n_noise = list(cluster_labels).count(-1)
 
-    print(f"Resultados del agrupamiento:")
+    print("Resultados del agrupamiento:")
     print(f"  Número de clústeres: {n_clusters}")
     print(f"  Número de puntos de ruido: {n_noise}")
     print(f"  Porcentaje asignado: {((len(cluster_labels) - n_noise) / len(cluster_labels) * 100):.1f}%")
@@ -71,8 +70,7 @@ def compute_cluster_convex_hulls(
     lat_col: str = "POINT_Y",
     lon_col: str = "POINT_X",
 ) -> Dict[int, Polygon]:
-    """
-    Calcular el casco convexo para cada clúster.
+    """Calcular el casco convexo para cada clúster.
 
     Parámetros
     ----------
@@ -122,8 +120,7 @@ def compute_cluster_convex_hulls(
 
 
 def get_hull_as_geojson(hull_coords: List[Tuple[float, float]]) -> dict:
-    """
-    Convertir lista de coordenadas del casco a formato GeoJSON.
+    """Convertir lista de coordenadas del casco a formato GeoJSON.
 
     Parámetros
     ----------
@@ -148,8 +145,7 @@ def summarize_clusters(
     category_col: str = "CATEGORIA",
     hierarchy_col: str = "JERARQUIA",
 ) -> pd.DataFrame:
-    """
-    Generar estadísticas resumidas para cada clúster.
+    """Generar estadísticas resumidas para cada clúster.
 
     Calcula agregaciones por clúster incluyendo tamaño, región/categoría principal
     y porcentaje por nivel de jerarquía.
@@ -175,9 +171,18 @@ def summarize_clusters(
     # Contar atractivos por clúster
     summary = df.groupby(cluster_col).agg(
         n_attractions=("NOMBRE", "count"),
-        region_principal=(region_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
-        categoria_principal=(category_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
-        jerarquia_principal=(hierarchy_col, lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None),
+        region_principal=(
+            region_col,
+            lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None,
+        ),
+        categoria_principal=(
+            category_col,
+            lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None,
+        ),
+        jerarquia_principal=(
+            hierarchy_col,
+            lambda x: x.value_counts().index[0] if len(x) > 0 and len(x.value_counts()) > 0 else None,
+        ),
     )
 
     # Calcular conteos y porcentajes por nivel de jerarquía
@@ -185,16 +190,13 @@ def summarize_clusters(
         col_lower = level.lower()
         counts = df[df[hierarchy_col] == level].groupby(cluster_col).size()
         summary[f"n_{col_lower}"] = counts.reindex(summary.index, fill_value=0)
-        summary[f"pct_{col_lower}"] = (
-            (summary[f"n_{col_lower}"] / summary["n_attractions"]) * 100
-        ).round(1)
+        summary[f"pct_{col_lower}"] = ((summary[f"n_{col_lower}"] / summary["n_attractions"]) * 100).round(1)
 
     return summary.sort_values("n_attractions", ascending=False)
 
 
 def identify_cluster_quality(summary_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Clasificar la calidad del clúster según la distribución de jerarquía.
+    """Clasificar la calidad del clúster según la distribución de jerarquía.
 
     Parámetros
     ----------

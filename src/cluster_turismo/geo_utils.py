@@ -1,14 +1,13 @@
 """Funciones utilitarias geoespaciales usando Shapely."""
 
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 import pandas as pd
 from shapely.geometry import Point, Polygon
 
 
 def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") -> Dict[str, Polygon]:
-    """
-    Construir objetos Polygon de Shapely a partir de datos de coordenadas.
+    """Construir objetos Polygon de Shapely a partir de datos de coordenadas.
 
     Parámetros
     ----------
@@ -45,8 +44,7 @@ def point_in_polygon_check(
     lat_col: str = "POINT_Y",
     lon_col: str = "POINT_X",
 ) -> pd.DataFrame:
-    """
-    Determinar si cada punto de atractivo cae dentro de algún polígono de destino.
+    """Determinar si cada punto de atractivo cae dentro de algún polígono de destino.
 
     Parámetros
     ----------
@@ -93,8 +91,7 @@ def point_in_polygon_check(
 def compute_cluster_centroid(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
 ) -> Tuple[float, float]:
-    """
-    Calcular centroide (centro) de los puntos del clúster.
+    """Calcular centroide (centro) de los puntos del clúster.
 
     Parámetros
     ----------
@@ -115,11 +112,8 @@ def compute_cluster_centroid(
     return lat, lon
 
 
-def compute_geographic_bounds(
-    df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
-) -> dict:
-    """
-    Calcular el cuadro delimitador geográfico de los puntos.
+def compute_geographic_bounds(df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X") -> dict:
+    """Calcular el cuadro delimitador geográfico de los puntos.
 
     Parámetros
     ----------
@@ -143,11 +137,8 @@ def compute_geographic_bounds(
     }
 
 
-def haversine_distance(
-    lat1: float, lon1: float, lat2: float, lon2: float
-) -> float:
-    """
-    Calcular distancia haversine entre dos pares de coordenadas.
+def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calcular distancia haversine entre dos pares de coordenadas.
 
     Parámetros
     ----------
