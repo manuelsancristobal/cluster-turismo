@@ -26,16 +26,15 @@ Los datos provienen del registro oficial de atractivos turísticos 2020 del [Ser
 
 El mapa a continuación muestra los 3.996 atractivos coloreados por jerarquía. Haz click en cualquier punto para ver su detalle, o activa capas adicionales desde el panel de checkboxes. Más abajo encontrarás el análisis completo.
 
-{::nomarkdown}
-<div style="position: relative; width: 100%; padding-bottom: 75%; overflow: hidden; margin: 2rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-    <iframe
-        src="assets/mapa_interactivo.html"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-        loading="lazy"
-        title="Mapa interactivo de atractivos turísticos de Chile">
-    </iframe>
+<div style="position: relative; width: 100%; padding-bottom: 75%; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  <iframe
+    src="/proyectos/cluster-turismo/assets/mapa_interactivo.html"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+    loading="lazy"
+    title="Mapa interactivo de atractivos turísticos de Chile"
+    allowfullscreen>
+  </iframe>
 </div>
-{:/nomarkdown}
 
 ## 1. Exploración Inicial
 
@@ -159,9 +158,7 @@ El análisis de dos capas — clústeres principales + clústeres rezagados — 
 - **Fondos para especialización:** Dirigidos a clústeres "parcialmente superpuestos", para desarrollar nichos turísticos diferenciados.
 
 
-{::nomarkdown}
 <div class="methodology-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--secondary);">
     <p style="margin: 0; font-size: 0.95rem;">📓 <strong>Metodología completa:</strong> El detalle del análisis, incluyendo la comparación con destinos oficiales de SERNATUR y el diagnóstico de atractivos rezagados, está disponible en el
     <a href="https://colab.research.google.com/drive/1S8SzY1u5VMOl1POjpBA1c02yPm-uK5r1?usp=sharing" target="_blank" style="color: var(--secondary); font-weight: 600;">notebook de Google Colab</a>.</p>
 </div>
-{:/nomarkdown}
