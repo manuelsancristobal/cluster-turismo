@@ -47,3 +47,6 @@ Thumbs.db
 # Cobertura
 .coverage
 htmlcov/
+
+# Claude Code
+.claude/
