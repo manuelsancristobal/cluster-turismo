@@ -21,8 +21,11 @@ ASSETS_IMG_DIR = ASSETS_DIR / "img"
 _jekyll_env = os.getenv("JEKYLL_REPO")
 if not _jekyll_env:
     raise OSError(
-        "Variable JEKYLL_REPO no definida. "
-        "Exporta la ruta al repo Jekyll: export JEKYLL_REPO=/path/to/repo"
+        "\n"
+        "================================================================================\n"
+        "ERROR: Variable de entorno 'JEKYLL_REPO' no definida.\n"
+        "Para realizar el deploy, debes configurar la ruta hacia tu repositorio local.\n"
+        "================================================================================"
     )
 JEKYLL_REPO = Path(_jekyll_env)
 JEKYLL_BASE = JEKYLL_REPO / "proyectos" / "cluster-turismo"
