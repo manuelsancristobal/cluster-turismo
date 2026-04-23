@@ -46,7 +46,9 @@ def run_hdbscan_spatial(
     # Ejecutar HDBSCAN con métrica haversine (apropiada para lat/lon)
     from sklearn.cluster import HDBSCAN
 
-    clusterer = HDBSCAN(min_cluster_size=min_cluster_size, metric="haversine")
+    from cluster_turismo.config import HDBSCAN_METRIC
+
+    clusterer = HDBSCAN(min_cluster_size=min_cluster_size, metric=HDBSCAN_METRIC)
     cluster_labels = clusterer.fit_predict(coords)
 
     # Añadir etiquetas de clúster al dataframe

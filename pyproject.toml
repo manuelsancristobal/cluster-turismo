@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cluster-turismo"
-version = "0.1.0"
+version = "1.0.0"
 description = "Clustering espacial y análisis de brechas de atractivos turísticos chilenos usando HDBSCAN"
 readme = "README.md"
 license = {text = "MIT"}
@@ -13,7 +13,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -42,23 +42,7 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.1",
-    "nbstripout>=0.6",
     "pre-commit>=3.0",
-]
-notebooks = [
-    "jupyterlab>=4.0",
-    "nbconvert>=7.0",
-    "ipykernel>=6.20",
-]
-all = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "ruff>=0.1",
-    "nbstripout>=0.6",
-    "pre-commit>=3.0",
-    "jupyterlab>=4.0",
-    "nbconvert>=7.0",
-    "ipykernel>=6.20",
 ]
 
 [project.urls]
@@ -72,6 +56,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "--cov=src/cluster_turismo --cov-report=term-missing --cov-report=html"
 python_files = "test_*.py"
 
@@ -99,4 +84,3 @@ ignore = ["D100", "D104", "D203", "D213"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*" = ["D100", "D101", "D102", "D103"]
-"scripts/*" = ["D100", "E402"]

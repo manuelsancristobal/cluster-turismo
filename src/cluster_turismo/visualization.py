@@ -8,6 +8,7 @@ import pandas as pd
 import pydeck as pdk
 
 from . import preprocessing
+from .config import CHILE_LAT, CHILE_LON, CHILE_ZOOM
 
 
 def create_pydeck_hierarchy_map(
@@ -38,7 +39,7 @@ def create_pydeck_hierarchy_map(
         Objeto de mapa PyDeck interactivo
     """
     # Calcular vista centrada en Chile
-    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
+    viewport = pdk.ViewState(latitude=CHILE_LAT, longitude=CHILE_LON, zoom=CHILE_ZOOM, pitch=0, bearing=0)
 
     # Crear capa de dispersión
     layer = pdk.Layer(
@@ -101,7 +102,7 @@ def create_pydeck_cluster_map(
         Mapa interactivo con puntos y límites poligonales
     """
     # Calcular vista
-    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
+    viewport = pdk.ViewState(latitude=CHILE_LAT, longitude=CHILE_LON, zoom=CHILE_ZOOM, pitch=0, bearing=0)
 
     # Capa de dispersión para puntos
     points_layer = pdk.Layer(
@@ -182,7 +183,7 @@ def create_pydeck_gap_map(
         Mapa interactivo de oportunidades de brecha
     """
     # Vista
-    viewport = pdk.ViewState(latitude=-35.6751, longitude=-71.5430, zoom=4, pitch=0, bearing=0)
+    viewport = pdk.ViewState(latitude=CHILE_LAT, longitude=CHILE_LON, zoom=CHILE_ZOOM, pitch=0, bearing=0)
 
     # Puntos coloreados por estado de ancla
     points_layer = pdk.Layer(
@@ -229,7 +230,7 @@ def create_pydeck_gap_map(
     return deck
 
 
-def create_folium_map(center_lat: float = -35.6751, center_lon: float = -71.5430) -> folium.Map:
+def create_folium_map(center_lat: float = CHILE_LAT, center_lon: float = CHILE_LON) -> folium.Map:
     """Crea un mapa base Folium de Chile.
 
     Parámetros

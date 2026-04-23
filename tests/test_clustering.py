@@ -1,19 +1,9 @@
 """Tests para el módulo de clustering."""
 
-import os
-
 import numpy as np
 import pandas as pd
-import pytest
 
 from cluster_turismo import clustering
-
-
-@pytest.fixture
-def sample_data():
-    """Cargar CSV de atractivos de ejemplo."""
-    fixtures_dir = os.path.dirname(__file__)
-    return pd.read_csv(os.path.join(fixtures_dir, "fixtures/sample_attractions.csv"))
 
 
 def test_run_hdbscan_spatial_output_shape(sample_data):

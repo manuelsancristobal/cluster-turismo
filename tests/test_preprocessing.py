@@ -1,18 +1,8 @@
 """Tests para el módulo de preprocesamiento."""
 
-import os
-
 import pandas as pd
-import pytest
 
 from cluster_turismo import preprocessing
-
-
-@pytest.fixture
-def sample_data():
-    """Cargar CSV de atractivos de ejemplo."""
-    fixtures_dir = os.path.dirname(__file__)
-    return pd.read_csv(os.path.join(fixtures_dir, "fixtures/sample_attractions.csv"))
 
 
 def test_filter_permanent_attractions(sample_data):

@@ -126,15 +126,17 @@ def compute_lagging_overlap_type(lagging_poly: Polygon, official_poly: Polygon) 
     str
         Clasificación del tipo de superposición
     """
+    from cluster_turismo.config import OVERLAP_THRESHOLD_CONTAINED, OVERLAP_THRESHOLD_PARTIAL
+
     if not lagging_poly.intersects(official_poly):
         return "Separado"
 
     intersection = lagging_poly.intersection(official_poly)
     overlap_pct = intersection.area / lagging_poly.area if lagging_poly.area > 0 else 0
 
-    if overlap_pct > 0.9:
+    if overlap_pct > OVERLAP_THRESHOLD_CONTAINED:
         return "Contenido"
-    elif overlap_pct > 0.1:
+    elif overlap_pct > OVERLAP_THRESHOLD_PARTIAL:
         return "Parcialmente superpuesto"
     else:
         return "Genuinamente rezagado"

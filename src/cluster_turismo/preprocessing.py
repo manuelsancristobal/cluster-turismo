@@ -3,6 +3,19 @@
 import matplotlib
 import pandas as pd
 
+from cluster_turismo.config import (
+    CHILE_LAT_MAX,
+    CHILE_LAT_MIN,
+    CHILE_LON_MAX,
+    CHILE_LON_MIN,
+)
+
+
+def _hex_to_rgb(hex_str: str) -> list[int]:
+    """Convierte color hex a lista RGB de enteros."""
+    h = hex_str.lstrip("#")
+    return [int(h[i : i + 2], 16) for i in (0, 2, 4)]
+
 
 def filter_permanent_attractions(df: pd.DataFrame) -> pd.DataFrame:
     """Filtra atractivos temporales y conserva solo los permanentes.
@@ -45,9 +58,10 @@ def validate_coordinates(df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: st
     pd.DataFrame
         Dataframe con solo filas de coordenadas válidas
     """
-    # Límites continentales de Chile
-    lat_min, lat_max = -56, -17
-    lon_min, lon_max = -75, -66
+    # Filtro de límites continentales de Chile
+    lat_min, lat_max = CHILE_LAT_MIN, CHILE_LAT_MAX
+    lon_min, lon_max = CHILE_LON_MIN, CHILE_LON_MAX
+
 
     mask = (df[lat_col] >= lat_min) & (df[lat_col] <= lat_max) & (df[lon_col] >= lon_min) & (df[lon_col] <= lon_max)
 
@@ -120,12 +134,9 @@ def get_hierarchy_color_map() -> dict:
     dict
         Mapeo de nivel de jerarquía a triplete de color RGB
     """
-    return {
-        "LOCAL": [180, 180, 180],
-        "REGIONAL": [130, 170, 210],
-        "NACIONAL": [70, 130, 180],
-        "INTERNACIONAL": [220, 30, 120],
-    }
+    from cluster_turismo.config import HIER_COLORS_HEX
+
+    return {level: _hex_to_rgb(color) for level, color in HIER_COLORS_HEX.items()}
 
 
 def get_hierarchy_radius_map() -> dict:
@@ -237,9 +248,6 @@ def get_anchor_color_map() -> dict:
     dict
         Mapeo de estado de ancla a valores RGB
     """
-    return {
-        "Con ancla internacional": [46, 204, 113],  # Verde
-        "Solo ancla nacional": [243, 156, 18],  # Naranja
-        "Sin ancla": [231, 76, 60],  # Rojo
-        "Ruido": [150, 150, 150],  # Gris
-    }
+    from cluster_turismo.config import ANCHOR_COLORS_HEX
+
+    return {status: _hex_to_rgb(color) for status, color in ANCHOR_COLORS_HEX.items()}

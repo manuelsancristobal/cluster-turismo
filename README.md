@@ -19,7 +19,7 @@ Este proyecto analiza **~3,996 atractivos turísticos permanentes** del registro
 - **79 clústeres territoriales** identificados a partir de ~3,996 atractivos permanentes
 - **52 clústeres con ancla internacional** - mercados turísticos maduros
 - **26 clústeres con solo ancla nacional** - potencial de desarrollo moderado
-- **2 clústeres sin atractivos ancla** - prioridad máxima para inversión
+- **1 clúster sin atractivos ancla** - prioridad máxima para inversión
 - **~33% de los atractivos no asignados a ningún clúster** - brecha estratégica
 
 ## Stack Tecnológico
