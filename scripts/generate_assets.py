@@ -96,12 +96,13 @@ else:
 hulls = clustering.compute_cluster_convex_hulls(df_clustered)
 
 # ── 4. Generar gráficos ────────────────────────────────────────────────────
+plt.style.use("seaborn-v0_8-whitegrid")
 plt.rcParams.update(
     {
-        "font.family": "sans-serif",
-        "font.size": 12,
-        "figure.facecolor": "white",
-        "axes.facecolor": "white",
+        "figure.dpi": 150,
+        "axes.titlesize": 14,
+        "axes.labelsize": 12,
+        "font.size": 10,
         "savefig.dpi": 150,
         "savefig.bbox": "tight",
     }
@@ -109,18 +110,16 @@ plt.rcParams.update(
 
 # ── Gráfico 1: Histogramas de distribución de coordenadas ──
 print("Generando histogramas...")
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-axes[0].hist(df["POINT_X"], bins=50, color="#2980b9", edgecolor="white", alpha=0.9)
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+axes[0].hist(df["POINT_X"], bins=50, color="#2171b5", edgecolor="white", alpha=0.9)
 axes[0].set_xlabel("Longitud (°O)")
 axes[0].set_ylabel("Cantidad")
 axes[0].set_title("Distribución por Longitud")
-axes[0].grid(axis="y", alpha=0.3)
 
-axes[1].hist(df["POINT_Y"], bins=50, color="#2980b9", edgecolor="white", alpha=0.9)
+axes[1].hist(df["POINT_Y"], bins=50, color="#2171b5", edgecolor="white", alpha=0.9)
 axes[1].set_xlabel("Latitud (°S)")
 axes[1].set_ylabel("Cantidad")
 axes[1].set_title("Distribución por Latitud")
-axes[1].grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "histogramas_coordenadas.png"))
@@ -130,13 +129,13 @@ plt.close(fig)
 print("Generando gráfico de barras de clústeres...")
 top_clusters = summary.head(15).sort_values("n_attractions")
 
-fig, ax = plt.subplots(figsize=(10, 7))
+fig, ax = plt.subplots(figsize=(14, 8))
 colors = [
-    "#e74c3c"
+    "#cb181d"
     if summary_classified.loc[i, "anchor_status"] == "Sin ancla"
-    else "#f39c12"
+    else "#f59322"
     if summary_classified.loc[i, "anchor_status"] == "Solo ancla nacional"
-    else "#2ecc71"
+    else "#2ca02c"
     for i in top_clusters.index
 ]
 
@@ -145,17 +144,17 @@ ax.set_yticks(range(len(top_clusters)))
 ax.set_yticklabels([cluster_labels.get(i, f"Clúster {i}") for i in top_clusters.index])
 ax.set_xlabel("Cantidad de Atractivos")
 ax.set_title("Top 15 Clústeres por Cantidad de Atractivos")
-ax.grid(axis="x", alpha=0.3)
 
 # Leyenda
 from matplotlib.patches import Patch
 
 legend_elements = [
-    Patch(facecolor="#2ecc71", label="Con ancla internacional"),
-    Patch(facecolor="#f39c12", label="Solo ancla nacional"),
-    Patch(facecolor="#e74c3c", label="Sin ancla"),
+    Patch(facecolor="#2ca02c", label="Con ancla internacional"),
+    Patch(facecolor="#f59322", label="Solo ancla nacional"),
+    Patch(facecolor="#cb181d", label="Sin ancla"),
 ]
-ax.legend(handles=legend_elements, loc="lower right")
+legend = ax.legend(handles=legend_elements, loc="lower right")
+legend.get_frame().set_alpha(0.9)
 
 plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "top_clusters.png"))
@@ -166,13 +165,13 @@ print("Generando gráfico donut de anclas...")
 anchor_counts = summary_classified["anchor_status"].value_counts()
 
 color_map = {
-    "Con ancla internacional": "#2ecc71",
-    "Solo ancla nacional": "#f39c12",
-    "Sin ancla": "#e74c3c",
+    "Con ancla internacional": "#2ca02c",
+    "Solo ancla nacional": "#f59322",
+    "Sin ancla": "#cb181d",
 }
 donut_colors = [color_map.get(s, "#999") for s in anchor_counts.index]
 
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(9, 7))
 wedges, texts, autotexts = ax.pie(
     anchor_counts.values,
     labels=anchor_counts.index,
@@ -187,7 +186,7 @@ for autotext in autotexts:
 
 centre_circle = plt.Circle((0, 0), 0.70, fc="white")
 ax.add_artist(centre_circle)
-ax.set_title(f"Distribución de {n_clusters} Clústeres por Categoría de Ancla", fontsize=14, fontweight="bold")
+ax.set_title(f"Distribución de {n_clusters} Clústeres por Categoría de Ancla")
 
 plt.tight_layout()
 fig.savefig(os.path.join(IMG_DIR, "donut_anclas.png"))
@@ -197,13 +196,13 @@ plt.close(fig)
 print("Generando gráfico de jerarquías...")
 hierarchy_counts = df["JERARQUIA"].value_counts()
 hier_colors = {
-    "LOCAL": "#bdc3c7",
-    "REGIONAL": "#82b1d4",
-    "NACIONAL": "#4682b4",
+    "LOCAL": "#c9c9c9",
+    "REGIONAL": "#6baed6",
+    "NACIONAL": "#2171b5",
     "INTERNACIONAL": "#dc1e78",
 }
 
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(10, 6))
 bars = ax.bar(
     hierarchy_counts.index,
     hierarchy_counts.values,
@@ -212,7 +211,6 @@ bars = ax.bar(
 )
 ax.set_ylabel("Cantidad de Atractivos")
 ax.set_title("Atractivos por Nivel de Jerarquía")
-ax.grid(axis="y", alpha=0.3)
 
 for bar, count in zip(bars, hierarchy_counts.values):
     ax.text(
@@ -282,7 +280,7 @@ if df_lagging_clustered is not None:
         overlap_counts = {k: v for k, v in overlap_counts.items() if v > 0}
         donut_colors_overlap = [color_map_overlap.get(k, "#999") for k in overlap_counts.keys()]
 
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(9, 7))
         wedges, texts, autotexts = ax.pie(
             overlap_counts.values(),
             labels=overlap_counts.keys(),
@@ -297,7 +295,7 @@ if df_lagging_clustered is not None:
 
         centre_circle = plt.Circle((0, 0), 0.70, fc="white")
         ax.add_artist(centre_circle)
-        ax.set_title("Clasificación de Clústeres Rezagados por Tipo de Superposición", fontsize=14, fontweight="bold")
+        ax.set_title("Clasificación de Clústeres Rezagados por Tipo de Superposición")
 
         plt.tight_layout()
         fig.savefig(os.path.join(IMG_DIR, "donut_superposicion.png"))
@@ -310,13 +308,12 @@ if df_lagging_clustered is not None:
     print("Generando gráfico de atractivos rezagados por región...")
     region_counts = df_lagging["REGION"].value_counts().head(12)
 
-    fig, ax = plt.subplots(figsize=(10, 7))
-    bars = ax.barh(range(len(region_counts)), region_counts.values, color="#e74c3c", edgecolor="white")
+    fig, ax = plt.subplots(figsize=(14, 8))
+    bars = ax.barh(range(len(region_counts)), region_counts.values, color="#cb181d", edgecolor="white")
     ax.set_yticks(range(len(region_counts)))
     ax.set_yticklabels(region_counts.index)
     ax.set_xlabel("Cantidad de Atractivos Rezagados")
     ax.set_title("Top 12 Regiones con Atractivos sin Destino Oficial")
-    ax.grid(axis="x", alpha=0.3)
 
     # Agregar etiquetas de valor
     for i, (bar, count) in enumerate(zip(bars, region_counts.values)):
@@ -337,7 +334,7 @@ if df_lagging_clustered is not None and len(summary) > 0:
     lagging_cluster_summary = clustering.summarize_clusters(df_lagging_clustered, hierarchy_col="JERARQUIA")
     lagging_sizes = lagging_cluster_summary["n_attractions"].values
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
     bp = ax.boxplot(
         [official_sizes, lagging_sizes],
         labels=["Destinos Oficiales", "Clústeres Rezagados"],
@@ -346,14 +343,13 @@ if df_lagging_clustered is not None and len(summary) > 0:
     )
 
     # Colorear las cajas
-    colors = ["#2ecc71", "#e74c3c"]
+    colors = ["#2ca02c", "#cb181d"]
     for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
 
     ax.set_ylabel("Cantidad de Atractivos por Clúster")
     ax.set_title("Comparación: Tamaño de Destinos Oficiales vs Clústeres Rezagados")
-    ax.grid(axis="y", alpha=0.3)
 
     plt.tight_layout()
     fig.savefig(os.path.join(IMG_DIR, "comparativa_boxplot.png"))
