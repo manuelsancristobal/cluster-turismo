@@ -163,6 +163,6 @@ El análisis de dos capas — clústeres principales + clústeres emergentes —
 
 
 <div class="methodology-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--secondary);">
-    <p style="margin: 0; font-size: 0.95rem;">📓 <strong>Metodología completa:</strong> El detalle del análisis, incluyendo la comparación con destinos oficiales de SERNATUR y el diagnóstico de atractivos rezagados, está disponible en el
-    <a href="https://colab.research.google.com/drive/1S8SzY1u5VMOl1POjpBA1c02yPm-uK5r1?usp=sharing" target="_blank" style="color: var(--secondary); font-weight: 600;">notebook de Google Colab</a>.</p>
+    <p style="margin: 0; font-size: 0.95rem;">📌 <strong>Sobre este proyecto:</strong> Esta es la segunda versión del análisis, rediseñada como aplicación interactiva. El proyecto original, desarrollado como notebook exploratorio, está disponible en
+    <a href="https://colab.research.google.com/drive/1S8SzY1u5VMOl1POjpBA1c02yPm-uK5r1?usp=sharing" target="_blank" style="color: var(--secondary); font-weight: 600;">Google Colab</a>.</p>
 </div>

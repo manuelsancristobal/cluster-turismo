@@ -1,13 +1,19 @@
-.PHONY: help install-dev lint test generate-assets deploy clean
+.PHONY: help install install-dev lint test coverage assets deploy ver clean
 
 help:
 	@echo "Comandos disponibles:"
+	@echo "  make install          Instalar dependencias del proyecto"
 	@echo "  make install-dev      Instalar proyecto + dependencias de desarrollo"
 	@echo "  make lint             Ejecutar linting y formateo con ruff"
 	@echo "  make test             Ejecutar tests con pytest"
-	@echo "  make generate-assets  Generar todos los gráficos y mapas"
+	@echo "  make coverage         Ejecutar tests con reporte de cobertura"
+	@echo "  make assets           Generar todos los gráficos y mapas"
 	@echo "  make deploy           Copiar assets al repo Jekyll"
+	@echo "  make ver              Abrir servidor local"
 	@echo "  make clean            Eliminar archivos generados y caché"
+
+install:
+	pip install -e .
 
 install-dev:
 	pip install -e ".[dev]"
@@ -15,16 +21,23 @@ install-dev:
 
 lint:
 	ruff check src/ tests/
-	ruff format src/ tests/
+	ruff format --check src/ tests/
 
 test:
 	pytest tests/ -v
 
-generate-assets:
-	python run.py generate-assets
+coverage:
+	pytest tests/ -v --cov=src/cluster_turismo --cov-report=html --cov-report=term-missing
+	@echo "\nReporte de cobertura generado en htmlcov/index.html"
+
+assets:
+	python run.py assets
 
 deploy:
 	python run.py deploy
+
+ver:
+	python run.py ver
 
 clean:
 	rm -rf build/ dist/ src/*.egg-info
