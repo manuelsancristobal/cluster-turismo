@@ -13,8 +13,8 @@ ASSETS_IMG_DIR = ASSETS_DIR / "img"
 
 EXCEL_FILENAME = "ATRACTIVOS_TURÍSTICOS_NACIONAL_2020.xlsx"
 KMZ_FILENAME = "Destinos_Nacional-Publico.kmz"
-EXCEL_PATH = DATA_DIR / EXCEL_FILENAME
-KMZ_PATH = DATA_DIR / KMZ_FILENAME
+EXCEL_PATH = DATA_DIR / "raw" / EXCEL_FILENAME
+KMZ_PATH = DATA_DIR / "raw" / KMZ_FILENAME
 
 _jekyll_env = os.getenv("JEKYLL_REPO")
 JEKYLL_REPO: Path | None = Path(_jekyll_env) if _jekyll_env else None

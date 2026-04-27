@@ -1,6 +1,5 @@
 """Funciones de agrupamiento espacial usando HDBSCAN con métrica haversine."""
 
-from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -72,7 +71,7 @@ def compute_cluster_convex_hulls(
     cluster_col: str = "CLUSTER",
     lat_col: str = "POINT_Y",
     lon_col: str = "POINT_X",
-) -> Dict[int, Polygon]:
+) -> dict[int, Polygon]:
     """Calcular el casco convexo para cada clúster.
 
     Parámetros
@@ -122,7 +121,7 @@ def compute_cluster_convex_hulls(
     return hulls
 
 
-def get_hull_as_geojson(hull_coords: List[Tuple[float, float]]) -> dict:
+def get_hull_as_geojson(hull_coords: list[tuple[float, float]]) -> dict:
     """Convertir lista de coordenadas del casco a formato GeoJSON.
 
     Parámetros

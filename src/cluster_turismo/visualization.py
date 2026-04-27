@@ -1,6 +1,5 @@
 """Funciones de visualización para mapas y gráficos."""
 
-from typing import Dict, List, Optional
 
 import folium
 import matplotlib.pyplot as plt
@@ -76,7 +75,7 @@ def create_pydeck_hierarchy_map(
 
 def create_pydeck_cluster_map(
     df: pd.DataFrame,
-    cluster_hulls: Dict[int, List],
+    cluster_hulls: dict[int, list],
     lat_col: str = "POINT_Y",
     lon_col: str = "POINT_X",
     cluster_col: str = "CLUSTER",
@@ -157,7 +156,7 @@ def create_pydeck_cluster_map(
 
 def create_pydeck_gap_map(
     df: pd.DataFrame,
-    cluster_hulls: Dict[int, List],
+    cluster_hulls: dict[int, list],
     lat_col: str = "POINT_Y",
     lon_col: str = "POINT_X",
     color_col: str = "anchor_color",
@@ -412,7 +411,7 @@ def plot_cluster_bar_chart(summary_df: pd.DataFrame, n_top: int = 15) -> plt.Fig
     return fig
 
 
-def plot_anchor_distribution(summary_df: pd.DataFrame, color_map: Optional[Dict] = None) -> plt.Figure:
+def plot_anchor_distribution(summary_df: pd.DataFrame, color_map: dict | None = None) -> plt.Figure:
     """Crea gráfico de dona de distribución de estado de ancla de clústeres.
 
     Parámetros

@@ -1,5 +1,4 @@
-"""
-Punto de entrada del proyecto Cluster Turismo.
+\"\"\"Punto de entrada del proyecto Cluster Turismo.
 
 Uso:
     python run.py              Ver comandos disponibles
@@ -8,7 +7,7 @@ Uso:
     python run.py ver          Abre servidor local
     python run.py test         Ejecuta tests + linting
     python run.py all          Pipeline completo: assets -> deploy
-"""
+\"\"\"
 
 from __future__ import annotations
 
@@ -22,9 +21,7 @@ _PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # --- Colores ANSI (se desactivan si la terminal no soporta) -----------
 
 def _supports_color() -> bool:
-    if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
-        return False
-    return True
+    return hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
 _COLOR = _supports_color()
 
@@ -60,18 +57,21 @@ def _run(cmd: list[str], label: str) -> bool:
 
 
 def cmd_assets() -> bool:
+    \"\"\"Genera los assets del proyecto (gráficos y mapas).\"\"\"
     return _run([sys.executable, "-m", "cluster_turismo.cli.generate"], "Assets - Generando gráficos y mapas")
 
 
 def cmd_deploy() -> bool:
+    \"\"\"Despliega los assets al repositorio Jekyll.\"\"\"
     return _run([sys.executable, "-m", "cluster_turismo.cli.deploy"], "Deploy - Copiando al repo Jekyll")
 
 
 def cmd_ver() -> bool:
+    \"\"\"Abre un servidor local para previsualizar los resultados.\"\"\"
     url = "http://127.0.0.1:8000/assets/mapa_interactivo.html"
     print(f"\n{_cyan('>')} {_bold('Servidor local')}")
     print(f"  Abriendo {url} en el navegador...")
-    print(f"  Presiona Ctrl+C para detener el servidor.\n")
+    print("  Presiona Ctrl+C para detener el servidor.\n")
     webbrowser.open(url)
     try:
         subprocess.run(
@@ -84,12 +84,14 @@ def cmd_ver() -> bool:
 
 
 def cmd_test() -> bool:
+    \"\"\"Ejecuta la suite de pruebas y el linter.\"\"\"
     ok1 = _run([sys.executable, "-m", "pytest", "tests/", "-v"], "Tests - pytest")
     ok2 = _run([sys.executable, "-m", "ruff", "check", "src/", "tests/"], "Linting - ruff")
     return ok1 and ok2
 
 
 def cmd_all() -> bool:
+    \"\"\"Ejecuta el pipeline completo de generación y despliegue.\"\"\"
     if not cmd_assets():
         return False
     return cmd_deploy()
@@ -105,7 +107,8 @@ COMMANDS = {
 
 
 def cmd_help() -> None:
-    print(f"""
+    \"\"\"Muestra la ayuda de los comandos disponibles.\"\"\"
+    print(f\"\"\"
 {_bold('Cluster Turismo - Comandos disponibles')}
 
   python run.py {_green('assets')}   Genera gráficos y mapas interactivos
@@ -115,10 +118,11 @@ def cmd_help() -> None:
   python run.py {_green('all')}      Pipeline completo: assets -> deploy
 
 {_yellow('Ejemplo:')} python run.py all
-""")
+\"\"\")
 
 
 def main() -> None:
+    \"\"\"Punto de entrada principal de la CLI.\"\"\"
     args = sys.argv[1:]
     if not args or args[0] in ("-h", "--help", "help"):
         cmd_help()

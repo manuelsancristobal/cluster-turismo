@@ -217,7 +217,7 @@ def generate() -> None:
         overlap_counts = {"Contenido": 0, "Parcialmente superpuesto": 0, "Genuinamente rezagado": 0}
         overlap_rank = {"Contenido": 3, "Parcialmente superpuesto": 2, "Genuinamente rezagado": 1, "Separado": 0}
 
-        for cluster_id in lagging_hulls.keys():
+        for cluster_id in lagging_hulls:
             try:
                 lagging_poly = Polygon(lagging_hulls[cluster_id])
                 if not lagging_poly.is_valid:

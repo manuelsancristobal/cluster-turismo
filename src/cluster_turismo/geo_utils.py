@@ -1,12 +1,11 @@
 """Funciones utilitarias geoespaciales usando Shapely."""
 
-from typing import Dict, Tuple
 
 import pandas as pd
 from shapely.geometry import Point, Polygon
 
 
-def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") -> Dict[str, Polygon]:
+def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") -> dict[str, Polygon]:
     """Construir objetos Polygon de Shapely a partir de datos de coordenadas.
 
     Parámetros
@@ -90,7 +89,7 @@ def point_in_polygon_check(
 
 def compute_cluster_centroid(
     df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: str = "POINT_X"
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Calcular centroide (centro) de los puntos del clúster.
 
     Parámetros

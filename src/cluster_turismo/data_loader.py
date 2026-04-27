@@ -2,7 +2,6 @@
 
 import re
 import zipfile
-from typing import Dict, List
 
 import pandas as pd
 
@@ -82,7 +81,7 @@ def extract_kml_from_kmz(kmz_path: str) -> str:
     return kml_bytes.decode("utf-8")
 
 
-def parse_kml_placemarks(kml_string: str) -> List[Dict]:
+def parse_kml_placemarks(kml_string: str) -> list[dict]:
     """Analizar elementos Placemark del KML para extraer metadatos y límites de destinos.
 
     Parámetros
@@ -150,7 +149,7 @@ def extract_kml_field(pm_content: str, field_name: str) -> str:
     return match.group(1) if match else None
 
 
-def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
+def extract_coordinates_from_linearring(pm_content: str) -> list[tuple]:
     """Extraer pares de coordenadas del elemento KML LinearRing.
 
     Parámetros
@@ -184,7 +183,7 @@ def extract_coordinates_from_linearring(pm_content: str) -> List[tuple]:
     return coords_list
 
 
-def simplify_polygon_coordinates(coordinates: List[tuple], max_points: int = 80) -> List[tuple]:
+def simplify_polygon_coordinates(coordinates: list[tuple], max_points: int = 80) -> list[tuple]:
     """Simplificar polígono reduciendo el número de puntos de coordenadas.
 
     Usa un algoritmo básico de raleo para reducir la complejidad preservando la forma.
