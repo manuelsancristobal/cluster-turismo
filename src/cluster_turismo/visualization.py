@@ -284,7 +284,7 @@ def add_attractions_to_folium(
     """
     fg = folium.FeatureGroup(name=name)
 
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         popup = f"{row.get('NOMBRE')}<br/>Jerarquía: {row.get('JERARQUIA', row.get('JERARQUÍA'))}"
         folium.CircleMarker(
             location=[row[lat_col], row[lon_col]],
@@ -332,7 +332,7 @@ def add_polygons_to_folium(
     """
     fg = folium.FeatureGroup(name=name)
 
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         coords = row.get(coords_col)
         polygon_name = row.get(name_col)
 

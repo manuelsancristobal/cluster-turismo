@@ -73,7 +73,7 @@ def test_compute_cluster_convex_hulls(sample_data):
     assert len(hulls) > 0
 
     # Cada casco debe ser un polígono cerrado de tuplas de coordenadas
-    for hull_id, hull_coords in hulls.items():
+    for _hull_id, hull_coords in hulls.items():
         assert isinstance(hull_coords, list)
         assert len(hull_coords) >= 4  # Al menos 3 vértices + punto de cierre
         assert all(isinstance(coord, tuple) for coord in hull_coords)

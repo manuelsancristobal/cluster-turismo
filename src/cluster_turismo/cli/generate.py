@@ -244,7 +244,7 @@ def generate() -> None:
                 overlap_counts.values(),
                 labels=overlap_counts.keys(),
                 autopct="%1.1f%%",
-                colors=[OVERLAP_COLORS_HEX.get(k, "#999") for k in overlap_counts.keys()],
+                colors=[OVERLAP_COLORS_HEX.get(k, "#999") for k in overlap_counts],
                 startangle=90,
             )
             ax.add_artist(plt.Circle((0, 0), 0.70, fc="white"))

@@ -202,10 +202,7 @@ def get_cluster_color_palette(n_clusters: int) -> dict:
     cmap_b = matplotlib.colormaps.get_cmap("tab20b")
 
     for i in range(n_clusters):
-        if i < 20:
-            rgba = cmap_a(i)
-        else:
-            rgba = cmap_b(i - 20)
+        rgba = cmap_a(i) if i < 20 else cmap_b(i - 20)
 
         # Convertir RGBA a RGB en rango 0-255
         rgb = [int(rgba[j] * 255) for j in range(3)]

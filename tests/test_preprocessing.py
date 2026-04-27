@@ -99,7 +99,7 @@ def test_get_cluster_color_palette():
     assert len(colors) == 31
     assert -1 in colors
     # Verificar formato
-    for cluster_id, color in colors.items():
+    for _cluster_id, color in colors.items():
         assert len(color) == 3
 
 

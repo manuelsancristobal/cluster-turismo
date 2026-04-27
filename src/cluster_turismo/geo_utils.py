@@ -22,7 +22,7 @@ def build_shapely_polygons(df: pd.DataFrame, coords_col: str = "coordinates") ->
     """
     polygons = {}
 
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         name = row.get("nombre")
         coords = row.get(coords_col)
 
@@ -68,7 +68,7 @@ def point_in_polygon_check(
     in_destination_list = []
     destination_names = []
 
-    for idx, row in df_points.iterrows():
+    for _idx, row in df_points.iterrows():
         point = Point(row[lon_col], row[lat_col])
 
         found_dest = None
