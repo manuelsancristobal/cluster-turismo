@@ -1,6 +1,5 @@
 """Funciones utilitarias geoespaciales usando Shapely."""
 
-
 import pandas as pd
 from shapely.geometry import Point, Polygon
 

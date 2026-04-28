@@ -42,47 +42,47 @@ HDBSCAN_METRIC = "haversine"
 # Colores jerarquía (hex canónico)
 HIER_COLORS_HEX: dict[str, str] = {
     "INTERNACIONAL": "#dc1e78",  # [220, 30, 120]
-    "NACIONAL":      "#4682b4",  # [70, 130, 180]
-    "REGIONAL":      "#82aad2",  # [130, 170, 210]
-    "LOCAL":         "#b4b4b4",  # [180, 180, 180]
+    "NACIONAL": "#4682b4",  # [70, 130, 180]
+    "REGIONAL": "#82aad2",  # [130, 170, 210]
+    "LOCAL": "#b4b4b4",  # [180, 180, 180]
 }
 
 # Colores estado de ancla (hex canónico)
 ANCHOR_COLORS_HEX: dict[str, str] = {
     "Con ancla internacional": "#2ecc71",  # [46, 204, 113]
-    "Solo ancla nacional":     "#f39c12",  # [243, 156, 18]
-    "Sin ancla":               "#e74c3c",  # [231, 76, 60]
-    "Ruido":                   "#969696",  # [150, 150, 150]
+    "Solo ancla nacional": "#f39c12",  # [243, 156, 18]
+    "Sin ancla": "#e74c3c",  # [231, 76, 60]
+    "Ruido": "#969696",  # [150, 150, 150]
 }
 
 # Colores barras matplotlib
-BAR_COLOR_PRIMARY     = "#2171b5"
-BAR_COLOR_SIN_ANCLA   = "#cb181d"
+BAR_COLOR_PRIMARY = "#2171b5"
+BAR_COLOR_SIN_ANCLA = "#cb181d"
 BAR_COLOR_SOLO_NACION = "#f59322"
-BAR_COLOR_CON_ANCLA   = "#2ca02c"
+BAR_COLOR_CON_ANCLA = "#2ca02c"
 
 # Colores cascos Folium
 HULL_COLORS_HEX: dict[str, str] = {
     "Con ancla internacional": "#2ecc71",
-    "Solo ancla nacional":     "#f39c12",
-    "Sin ancla":               "#e74c3c",
+    "Solo ancla nacional": "#f39c12",
+    "Sin ancla": "#e74c3c",
 }
 
 # Colores clusters rezagados
-LAGGING_HULL_COLOR  = "#9b59b6"
+LAGGING_HULL_COLOR = "#9b59b6"
 LAGGING_POINT_COLOR = "#2c3e50"
 
 # Colores superposición
 OVERLAP_COLORS_HEX: dict[str, str] = {
-    "Contenido":                 "#a8e6cf",
-    "Parcialmente superpuesto":  "#ffd3b6",
-    "Genuinamente rezagado":     "#ffaaa5",
+    "Contenido": "#a8e6cf",
+    "Parcialmente superpuesto": "#ffd3b6",
+    "Genuinamente rezagado": "#ffaaa5",
 }
 
 # Umbrales de análisis de brechas
 OVERLAP_THRESHOLD_CONTAINED = 0.9
-OVERLAP_THRESHOLD_PARTIAL   = 0.1
+OVERLAP_THRESHOLD_PARTIAL = 0.1
 
 # Estilo gráficos
 PLOT_STYLE = "seaborn-v0_8-whitegrid"
-PLOT_DPI   = 150
+PLOT_DPI = 150

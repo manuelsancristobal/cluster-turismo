@@ -1,7 +1,12 @@
 # Cluster Turismo - Análisis Espacial de Atractivos
 
+## Contexto
+Este proyecto nació el año 2026, con la intención de identificar dónde había más atractivos turísticos, pero luego de un momento de revisión se transformó en una interesante forma de ver qué destinos tenían atractivos con potencial.
+
 ## Impacto y Valor del Proyecto
-Este proyecto aplica técnicas avanzadas de clustering espacial (HDBSCAN) para identificar concentraciones naturales de atractivos turísticos en Chile y contrastarlas con los destinos oficiales definidos por el Estado. La herramienta permite detectar brechas de gobernanza, identificando "clústeres de mercado" que carecen de reconocimiento formal y destinos oficiales con baja densidad de atractivos ancla. Es un insumo crítico para la priorización de inversiones en infraestructura y la planificación estratégica del territorio.
+Este proyecto aplica técnicas de clustering espacial (HDBSCAN) para identificar concentraciones naturales de atractivos turísticos y contrastarlas con los destinos oficiales definidos por el Estado de Chile. La herramienta te permite detectar brechas de gobernanza, identificando "clústeres de mercado" que carecen de reconocimiento formal y destinos oficiales con baja densidad de atractivos ancla.
+
+El espíritu de este trabajo es que puedas priorizar inversiones en infraestructura y planificar estratégicamente el territorio.
 
 ## Stack Tecnológico
 - **Lenguaje**: Python 3.10+

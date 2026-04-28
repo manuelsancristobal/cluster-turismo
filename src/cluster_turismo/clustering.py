@@ -1,6 +1,5 @@
 """Funciones de agrupamiento espacial usando HDBSCAN con métrica haversine."""
 
-
 import numpy as np
 import pandas as pd
 from scipy.spatial import ConvexHull

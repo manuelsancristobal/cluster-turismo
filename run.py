@@ -105,24 +105,24 @@ def cmd_all() -> bool:
 COMMANDS = {
     "assets": lambda _: cmd_assets(),
     "deploy": lambda _: cmd_deploy(),
-    "ver":    lambda _: cmd_ver(),
-    "test":   lambda _: cmd_test(),
-    "all":    lambda _: cmd_all(),
+    "ver": lambda _: cmd_ver(),
+    "test": lambda _: cmd_test(),
+    "all": lambda _: cmd_all(),
 }
 
 
 def cmd_help() -> None:
     """Muestra la ayuda de los comandos disponibles."""
     print(f"""
-{_bold('Cluster Turismo - Comandos disponibles')}
+{_bold("Cluster Turismo - Comandos disponibles")}
 
-  python run.py {_green('assets')}   Genera gráficos y mapas interactivos
-  python run.py {_green('deploy')}   Copia archivos al repo Jekyll
-  python run.py {_green('ver')}      Abre servidor local
-  python run.py {_green('test')}     Ejecuta tests (pytest) + linting (ruff)
-  python run.py {_green('all')}      Pipeline completo: assets -> deploy
+  python run.py {_green("assets")}   Genera gráficos y mapas interactivos
+  python run.py {_green("deploy")}   Copia archivos al repo Jekyll
+  python run.py {_green("ver")}      Abre servidor local
+  python run.py {_green("test")}     Ejecuta tests (pytest) + linting (ruff)
+  python run.py {_green("all")}      Pipeline completo: assets -> deploy
 
-{_yellow('Ejemplo:')} python run.py all
+{_yellow("Ejemplo:")} python run.py all
 """)
 
 

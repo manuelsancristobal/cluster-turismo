@@ -62,7 +62,6 @@ def validate_coordinates(df: pd.DataFrame, lat_col: str = "POINT_Y", lon_col: st
     lat_min, lat_max = CHILE_LAT_MIN, CHILE_LAT_MAX
     lon_min, lon_max = CHILE_LON_MIN, CHILE_LON_MAX
 
-
     mask = (df[lat_col] >= lat_min) & (df[lat_col] <= lat_max) & (df[lon_col] >= lon_min) & (df[lon_col] <= lon_max)
 
     df_valid = df[mask].copy()

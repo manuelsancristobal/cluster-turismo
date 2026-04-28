@@ -1,6 +1,5 @@
 """Funciones de visualización para mapas y gráficos."""
 
-
 import folium
 import matplotlib.pyplot as plt
 import pandas as pd
