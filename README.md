@@ -1,5 +1,7 @@
 # Cluster Turismo - Análisis Espacial de Atractivos
 
+[![CI](https://github.com/manuelsancristobal/cluster-turismo/actions/workflows/ci.yml/badge.svg)](https://github.com/manuelsancristobal/cluster-turismo/actions/workflows/ci.yml)
+
 ## Contexto
 Este proyecto nació el año 2026, con la intención de identificar dónde había más atractivos turísticos, pero luego de un momento de revisión se transformó en una interesante forma de ver qué destinos tenían atractivos con potencial.
 
