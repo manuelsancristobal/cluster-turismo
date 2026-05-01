@@ -70,7 +70,7 @@ Respecto del parámetro `min_cluster_size=10`, definí que grupo de al menos 10 
 
 El concepto proviene del **retail**: en un centro comercial, la tienda ancla es aquella marca de alto reconocimiento que genera el flujo de visitantes del que se benefician todas las demás tiendas. En turismo, la lógica es la misma: un **atractivo ancla** es aquel de jerarquía superior cuyo reconocimiento motiva el desplazamiento de turistas hacia un destino, beneficiando al resto de la oferta turística local.
 
-Esta idea se formaliza en la *anchor-point theory* [(Golledge, 1978)](# Golledge, R. G. (1978). Learning about urban environments. En T. Carlstein, D. Parkes, & N. Thrift (Eds.), Timing space and spacing time: Vol. 1. Making sense of time (pp. 76–98). Edward Arnold.), que propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
+Esta idea se formaliza en la <abbr title="Golledge, R. G. (1978). Learning about urban environments. En T. Carlstein, D. Parkes, & N. Thrift (Eds.), Timing space and spacing time: Vol. 1. Making sense of time (pp. 76–98). Edward Arnold.">*anchor-Point Theory*</abbr> que explica cómo mapeamos la ciudad, esta propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
 
 ### Clasificación de clústeres
 
