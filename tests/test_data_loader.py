@@ -80,23 +80,47 @@ def test_extract_kml_field():
     assert data_loader.extract_kml_field(content, "nonexistent") is None
 
 
-def test_extract_coordinates_from_linearring():
-    """Test coordinate extraction from LinearRing."""
-    content = """
+def test_extract_coordinates_from_kml():
+    """Test coordinate extraction from LinearRing or Point."""
+    # Test LinearRing
+    content_lr = """
     <LinearRing>
         <coordinates>-70.0,-33.0,0 -71.0,-34.0,0 -72.0,-35.0,0</coordinates>
     </LinearRing>
     """
-    coords = data_loader.extract_coordinates_from_linearring(content)
+    coords = data_loader.extract_kml_coordinates(content_lr)
     assert len(coords) == 3
     assert coords[0] == (-70.0, -33.0)
     assert coords[1] == (-71.0, -34.0)
 
+    # Test Point
+    content_pt = """
+    <Point>
+        <coordinates>-70.5,-33.5,0</coordinates>
+    </Point>
+    """
+    coords_pt = data_loader.extract_kml_coordinates(content_pt)
+    assert len(coords_pt) == 1
+    assert coords_pt[0] == (-70.5, -33.5)
 
-def test_extract_coordinates_from_linearring_empty():
-    """Test coordinate extraction with no LinearRing."""
-    coords = data_loader.extract_coordinates_from_linearring("<Point></Point>")
+
+def test_extract_coordinates_from_kml_empty():
+    """Test coordinate extraction with no geometry."""
+    coords = data_loader.extract_kml_coordinates("<None></None>")
     assert coords == []
+
+
+def test_extract_from_html_table():
+    """Test metadata extraction from HTML table in description."""
+    html = """
+    <table>
+        <tr><td>Nombre</td><td>Lugar X</td></tr>
+        <tr><td>Región</td><td>Región Y</td></tr>
+    </table>
+    """
+    assert data_loader.extract_from_html_table(html, "Nombre") == "Lugar X"
+    assert data_loader.extract_from_html_table(html, "Región") == "Región Y"
+    assert data_loader.extract_from_html_table(html, "Missing") is None
 
 
 def test_simplify_polygon_coordinates_noop():

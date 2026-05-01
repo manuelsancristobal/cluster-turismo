@@ -48,6 +48,18 @@ def _yellow(text: str) -> str:
     return f"\033[93m{text}\033[0m" if _COLOR else text
 
 
+def _check_install() -> None:
+    """Verifica que el paquete esté instalado en el entorno actual."""
+    try:
+        # Intentamos importar un módulo clave para verificar la instalación
+        import cluster_turismo  # noqa: F401
+    except ImportError:
+        print(f"\n{_red('Error:')} El módulo {_bold('cluster_turismo')} no está instalado.")
+        print(f"  Para solucionar esto, ejecuta: {_green('pip install -e .')}")
+        print(f"  O usa el comando: {_green('make install')}\n")
+        sys.exit(1)
+
+
 def _run(cmd: list[str], label: str) -> bool:
     """Ejecuta un comando y muestra su progreso."""
     print(f"\n{_cyan('>')} {_bold(label)}")
@@ -138,6 +150,9 @@ def main() -> None:
         print(f"{_red('Error:')} Comando desconocido '{command}'")
         cmd_help()
         sys.exit(1)
+
+    # Validamos instalación para todos los comandos excepto ayuda
+    _check_install()
 
     ok = COMMANDS[command](args[1:])
     sys.exit(0 if ok else 1)

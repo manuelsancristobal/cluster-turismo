@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
+import stat
+import time
+from pathlib import Path
 
 from cluster_turismo.config import (
     ASSETS_DIR,
@@ -18,6 +22,32 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(na
 logger = logging.getLogger(__name__)
 
 
+def _on_rm_error(func, path, exc_info):
+    """Manejador de errores para shutil.rmtree (maneja archivos de solo lectura)."""
+    try:
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+    except Exception:
+        pass
+
+
+def _robust_rmtree(path: Path, max_retries: int = 3, delay: float = 0.5) -> None:
+    """Elimina un directorio de forma robusta, reintentando en caso de bloqueos (Windows)."""
+    if not path.exists():
+        return
+
+    for i in range(max_retries):
+        try:
+            # Usamos onerror para compatibilidad con Python < 3.12
+            shutil.rmtree(path, onerror=_on_rm_error)
+            return
+        except Exception as e:
+            if i < max_retries - 1:
+                time.sleep(delay)
+                continue
+            logger.warning(f"No se pudo eliminar completamente {path} tras {max_retries} intentos: {e}")
+
+
 def deploy() -> None:
     """Copia assets y .md al repo Jekyll. El push es manual."""
     if JEKYLL_REPO is None:
@@ -30,8 +60,7 @@ def deploy() -> None:
 
     # 1. Limpiar y crear directorios
     logger.info(f"Usando repo Jekyll en: {JEKYLL_REPO}")
-    if JEKYLL_ASSETS_DIR.exists():
-        shutil.rmtree(JEKYLL_ASSETS_DIR)
+    _robust_rmtree(JEKYLL_ASSETS_DIR)
     JEKYLL_IMG_DIR.mkdir(parents=True, exist_ok=True)
 
     # 2. Copiar assets (PNGs y Mapas HTML)

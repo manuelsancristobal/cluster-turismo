@@ -202,34 +202,41 @@ def generate() -> None:
     fig.savefig(ASSETS_IMG_DIR / "jerarquias.png")
     plt.close(fig)
 
-    # Gráfico 5: Superposición clústeres rezagados
-    if df_lagging_clustered is not None:
-        print("Generando gráfico donut de superposición...")
-        main_hulls_polys = {}
-        for cid, coords in hulls.items():
-            try:
-                poly = Polygon(coords)
-                if poly.is_valid:
-                    main_hulls_polys[cid] = poly
-            except Exception:
-                pass
+    # Gráfico 5: Superposición clústeres rezagados con destinos oficiales
+    if df_lagging_clustered is not None and not df_destinations.empty:
+        print("Generando gráfico donut de superposición con destinos oficiales...")
+        official_polys = []
+        for _, row in df_destinations.iterrows():
+            coords = row["coordinates"]
+            if len(coords) >= 3:
+                try:
+                    # KMZ viene en (lon, lat), hulls viene en (lat, lon)
+                    # Normalizamos a (lat, lon) para consistencia con hulls actuales
+                    poly = Polygon([(lat, lon) for lon, lat in coords])
+                    if poly.is_valid:
+                        official_polys.append(poly)
+                except Exception:
+                    continue
 
         overlap_counts = {"Contenido": 0, "Parcialmente superpuesto": 0, "Genuinamente rezagado": 0}
         overlap_rank = {"Contenido": 3, "Parcialmente superpuesto": 2, "Genuinamente rezagado": 1, "Separado": 0}
 
         for cluster_id in lagging_hulls:
             try:
+                # hulls ya está en (lat, lon)
                 lagging_poly = Polygon(lagging_hulls[cluster_id])
                 if not lagging_poly.is_valid:
                     continue
+
                 best_type = "Genuinamente rezagado"
                 best_score = 0
-                for main_poly in main_hulls_polys.values():
-                    otype = gap_analysis.compute_lagging_overlap_type(lagging_poly, main_poly)
+                for official_poly in official_polys:
+                    otype = gap_analysis.compute_lagging_overlap_type(lagging_poly, official_poly)
                     score = overlap_rank.get(otype, 0)
                     if score > best_score:
                         best_score = score
                         best_type = otype
+
                 if best_type == "Separado":
                     best_type = "Genuinamente rezagado"
                 if best_type in overlap_counts:
@@ -238,17 +245,19 @@ def generate() -> None:
                 continue
 
         if sum(overlap_counts.values()) > 0:
-            overlap_counts = {k: v for k, v in overlap_counts.items() if v > 0}
+            # Filtrar solo categorías con valores > 0 para el gráfico
+            plot_data = {k: v for k, v in overlap_counts.items() if v > 0}
             fig, ax = plt.subplots(figsize=(9, 7))
             ax.pie(
-                overlap_counts.values(),
-                labels=overlap_counts.keys(),
+                plot_data.values(),
+                labels=plot_data.keys(),
                 autopct="%1.1f%%",
-                colors=[OVERLAP_COLORS_HEX.get(k, "#999") for k in overlap_counts],
+                colors=[OVERLAP_COLORS_HEX.get(k, "#999") for k in plot_data],
                 startangle=90,
+                textprops={"fontsize": 11},
             )
             ax.add_artist(plt.Circle((0, 0), 0.70, fc="white"))
-            ax.set_title("Clasificación de Clústeres Rezagados por Tipo de Superposición")
+            ax.set_title("Relación de Clústeres Rezagados con Destinos Oficiales")
             plt.tight_layout()
             fig.savefig(ASSETS_IMG_DIR / "donut_superposicion.png")
             plt.close(fig)
@@ -286,12 +295,41 @@ def generate() -> None:
             fill=True,
             fillOpacity=0.15,
             weight=2,
-            popup=f"{cluster_labels.get(cluster_id)} — {anchor}",
+            popup=f"<b>Clúster {cluster_id}</b><br>{cluster_labels.get(cluster_id)}<br>Estado: {anchor}",
         ).add_to(fg_hulls)
     fg_hulls.add_to(m)
 
+    # 5b. Agregar destinos oficiales (si existen)
+    fg_destinations = folium.FeatureGroup(name="Destinos Oficiales (KMZ)", show=False)
+    if not df_destinations.empty:
+        for _, row in df_destinations.iterrows():
+            coords = row["coordinates"]
+            if len(coords) >= 3:  # Solo polígonos
+                folium.Polygon(
+                    locations=[[lat, lon] for lon, lat in coords],
+                    color="#2c3e50",
+                    fill=True,
+                    fillOpacity=0.1,
+                    weight=1,
+                    dash_array="5, 5",
+                    popup=f"<b>Destino Oficial</b><br>{row['nombre']}<br>Región: {row.get('region', 'N/A')}",
+                ).add_to(fg_destinations)
+            elif len(coords) == 1:  # Puntos
+                folium.CircleMarker(
+                    location=[coords[0][1], coords[0][0]],
+                    radius=4,
+                    color="#2c3e50",
+                    fill=True,
+                    fillOpacity=0.4,
+                    popup=f"<b>Destino Oficial (Punto)</b><br>{row['nombre']}",
+                ).add_to(fg_destinations)
+    fg_destinations.add_to(m)
+
     GroupedLayerControl(
-        groups={"Destinos & Clústeres": [fg_hulls], "Atractivos por Jerarquía": hierarchy_groups},
+        groups={
+            "Destinos & Clústeres": [fg_hulls, fg_destinations],
+            "Atractivos por Jerarquía": hierarchy_groups,
+        },
         collapsed=False,
     ).add_to(m)
 

@@ -96,24 +96,34 @@ def parse_kml_placemarks(kml_string: str) -> list[dict]:
     """
     placemarks = []
 
-    # Buscar todos los bloques Placemark
-    placemark_pattern = r"<Placemark>(.*?)</Placemark>"
+    # Buscar todos los bloques Placemark (soportando atributos como id)
+    placemark_pattern = r"<Placemark.*?>(.*?)</Placemark>"
     placemark_matches = re.finditer(placemark_pattern, kml_string, re.DOTALL)
 
     for match in placemark_matches:
         pm_content = match.group(1)
 
-        # Extraer nombre
+        # Extraer nombre (tag estándar o desde el contenido si no hay tag)
         name_match = re.search(r"<name>(.*?)</name>", pm_content)
         nombre = name_match.group(1) if name_match else None
 
-        # Extraer campos de datos extendidos (códigos, regiones de elementos SimpleData)
+        # Intentar extraer desde SimpleData (schema original)
         codigo = extract_kml_field(pm_content, "codigo")
         region = extract_kml_field(pm_content, "region")
         tipo = extract_kml_field(pm_content, "tipo")
 
-        # Extraer coordenadas de LinearRing
-        coords = extract_coordinates_from_linearring(pm_content)
+        # Fallback: extraer desde tabla HTML en description si es necesario
+        if not region or not tipo:
+            desc_match = re.search(r"<description>(.*?)</description>", pm_content, re.DOTALL)
+            if desc_match:
+                desc_content = desc_match.group(1)
+                if not region:
+                    region = extract_from_html_table(desc_content, "Región")
+                if not tipo:
+                    tipo = extract_from_html_table(desc_content, "Tipología")
+
+        # Extraer coordenadas (Polygon/LinearRing o Point)
+        coords = extract_kml_coordinates(pm_content)
 
         if nombre and coords:  # Solo incluir si tiene nombre y geometría
             placemarks.append(
@@ -127,6 +137,17 @@ def parse_kml_placemarks(kml_string: str) -> list[dict]:
             )
 
     return placemarks
+
+
+def extract_from_html_table(html_content: str, field_name: str) -> str | None:
+    """Extraer valor de una tabla HTML simple (formato SERNATUR)."""
+    pattern = rf"<td>{field_name}</td>\s*<td>(.*?)</td>"
+    match = re.search(pattern, html_content, re.IGNORECASE | re.DOTALL)
+    if match:
+        # Limpiar posibles tags HTML residuales
+        val = re.sub(r"<.*?>", "", match.group(1)).strip()
+        return val
+    return None
 
 
 def extract_kml_field(pm_content: str, field_name: str) -> str:
@@ -149,28 +170,36 @@ def extract_kml_field(pm_content: str, field_name: str) -> str:
     return match.group(1) if match else None
 
 
-def extract_coordinates_from_linearring(pm_content: str) -> list[tuple]:
-    """Extraer pares de coordenadas del elemento KML LinearRing.
+def extract_kml_coordinates(pm_content: str) -> list[tuple]:
+    """Extraer pares de coordenadas de elementos KML LinearRing o Point.
 
     Parámetros
     ----------
     pm_content : str
-        Contenido XML del Placemark con Polygon/LinearRing
+        Contenido XML del Placemark
 
     Retorna
     -------
     List[tuple]
         Lista de tuplas (lon, lat), o lista vacía si no se encuentra
     """
-    # Buscar texto de coordenadas en LinearRing
+    # Intentar primero LinearRing (Polígonos)
     coords_match = re.search(r"<LinearRing>.*?<coordinates>(.*?)</coordinates>", pm_content, re.DOTALL)
+
+    # Si no hay LinearRing, intentar Point
+    if not coords_match:
+        coords_match = re.search(r"<Point>.*?<coordinates>(.*?)</coordinates>", pm_content, re.DOTALL)
+
     if not coords_match:
         return []
 
     coords_text = coords_match.group(1).strip()
     coords_list = []
 
-    for coord_str in coords_text.split():
+    # El texto puede estar separado por espacios o saltos de línea
+    for coord_str in re.split(r"\s+", coords_text):
+        if not coord_str:
+            continue
         parts = coord_str.split(",")
         if len(parts) >= 2:
             try:

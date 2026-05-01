@@ -20,7 +20,7 @@ tech_stack:
 
 Chile cuenta con diversos atractivos turísticos distribuidos a lo largo de su territorio. Algunos cuentan con atractivos de jerarquía internacional que funcionan como **anclas** que "tiran" la oferta turística del territorio. En este análisis identifico qué proporción de los clústeres turísticos carecen de estas anclas, qué caracteriza a esas agrupaciones y cuáles representan oportunidades de inversión.
 
-Mediante clustering espacial (**HDBSCAN** con métrica Haversine) sobre las coordenadas de **3.996 atractivos permanentes**, identifiqué **79 clústeres territoriales**. El hallazgo principal: **uno de cada tres clústeres identificados** ya posee masa crítica turística reconocida a nivel nacional, pero carece de un atractivo de proyección internacional — representando oportunidades concretas de inversión para elevar la competitividad de esos destinos.
+Mediante clustering espacial [**HDBSCAN** con métrica Haversine](https://hdbscan.readthedocs.io/en/latest/basic_hdbscan.html) sobre las coordenadas de **3.996 atractivos permanentes**, identifiqué **79 clústeres territoriales**. El hallazgo principal: **uno de cada tres clústeres identificados** ya posee masa crítica turística reconocida a nivel nacional, pero carece de un atractivo de proyección internacional lo que representa oportunidades concretas de inversión para elevar la competitividad de esos destinos.
 
 Los datos provienen del registro oficial de atractivos turísticos 2020 del [Servicio Nacional de Turismo de Chile](https://www.sernatur.cl).
 
@@ -38,13 +38,13 @@ El mapa a continuación muestra los 3.996 atractivos coloreados por jerarquía. 
 
 ## 1. Exploración Inicial
 
-El dataset contiene 4.048 atractivos turísticos. Para este análisis nos centramos en los **atractivos permanentes**, descartando los "Acontecimientos Programados" (eventos temporales). Tras validar coordenadas dentro de los límites continentales de Chile, quedamos con **3.996 registros**.
+El dataset contiene 4.048 atractivos turísticos. Para este análisis nos centramos en los **atractivos permanentes**, descartando los "Acontecimientos Programados" (eventos temporales), y luego de validar coordenadas dentro de los límites continentales de Chile, nos quedamos con **3.996 registros**.
 
 Cada atractivo está clasificado por jerarquía: Local, Regional, Nacional o Internacional.
 
 ![Distribución de atractivos por jerarquía](./assets/img/jerarquias.png)
 
-Los histogramas de coordenadas confirman la cobertura esperada: Chile continental entre -17° y -56° de latitud, y -66° a -75° de longitud. Se identifican también los registros de las islas Robinson Crusoe y Rapa Nui.
+Los histogramas de coordenadas confirman la cobertura esperada, los atractivos se distribuyen en Chile continental entre -17° y -56° de latitud, y -66° a -75° de longitud, y también se identifican atarctuvis en las islas Robinson Crusoe y Rapa Nui.
 
 ![Distribución geográfica de coordenadas](./assets/img/histogramas_coordenadas.png)
 
@@ -52,11 +52,11 @@ Los histogramas de coordenadas confirman la cobertura esperada: Chile continenta
 
 ### ¿Por qué HDBSCAN?
 
-Los atractivos turísticos en Chile presentan densidades muy variables — zonas densas como Santiago versus zonas dispersas como Aysén. Utilicé **HDBSCAN** porque se adapta automáticamente a diferentes niveles de densidad sin necesidad de fijar un radio de búsqueda ni la cantidad de clústeres.
+Los atractivos turísticos en Chile presentan densidades muy variables — zonas densas como Santiago versus zonas dispersas como Aysén. Utilicé **HDBSCAN** porque se adapta a diferentes niveles de densidad sin necesidad de fijar un radio de búsqueda ni cantidad de clústeres.
 
 Respecto a la métrica de distancia, inicialmente probé K-means, pero los clústeres resultantes mostraban puntos lejanos como agrupados. Esto ocurre porque K-means usa distancia euclidiana, que no considera la curvatura de la Tierra. La **métrica Haversine** calcula la distancia esférica real entre coordenadas geográficas.
 
-Para el parámetro `min_cluster_size=10`, un grupo de al menos 10 atractivos constituye un clúster territorial relevante.
+Respecto del parámetro `min_cluster_size=10`, definí que grupo de al menos 10 atractivos constituye un clúster territorial relevante.
 
 **Resultado:** 79 clústeres identificados. El 33.2% de los atractivos no se asigna a ningún clúster — estos puntos de ruido requieren un análisis más profundo que abordamos en la sección 5.
 
@@ -70,11 +70,11 @@ Para el parámetro `min_cluster_size=10`, un grupo de al menos 10 atractivos con
 
 El concepto proviene del **retail**: en un centro comercial, la tienda ancla es aquella marca de alto reconocimiento que genera el flujo de visitantes del que se benefician todas las demás tiendas. En turismo, la lógica es la misma: un **atractivo ancla** es aquel de jerarquía superior cuyo reconocimiento motiva el desplazamiento de turistas hacia un destino, beneficiando al resto de la oferta turística local.
 
-Esta idea se formaliza en la *anchor-point theory* (Golledge, 1978), que propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
+Esta idea se formaliza en la *anchor-point theory* [(Golledge, 1978)](Golledge, R. G. (1978). Learning about urban environments. En T. Carlstein, D. Parkes, & N. Thrift (Eds.), Timing space and spacing time: Vol. 1. Making sense of time (pp. 76–98). Edward Arnold.), que propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
 
 ### Clasificación de clústeres
 
-Definí tres categorías según la presencia de atractivos de jerarquía superior para los 79 clústeres:
+En este sentido, definí tres categorías según la presencia de atractivos con jerarquía superior para los 79 clústeres:
 
 | Categoría | Definición | N° Clústeres |
 |---|---|---|
@@ -82,7 +82,7 @@ Definí tres categorías según la presencia de atractivos de jerarquía superio
 | **Solo ancla nacional** | Al menos 1 NACIONAL, pero 0 INTERNACIONAL | 26 |
 | **Sin ancla** | Sin atractivos NACIONAL ni INTERNACIONAL | 1 |
 
-Los clústeres **"solo ancla nacional"** (33% del total) son los más interesantes para la política pública: ya tienen masa crítica turística reconocida a nivel país, pero carecen de un atractivo de proyección internacional. Estos representan **oportunidades de inversión** claras para elevar su competitividad.
+Los clústeres **"solo ancla nacional"** (33% del total) son los más interesantes desde una perspectiva de política pública, ya tienen masa crítica turística reconocida a nivel país, pero carecen de un atractivo de proyección internacional. Estos representan **oportunidades de inversión** para elevar su competitividad.
 
 ![Distribución de clústeres por categoría de ancla](./assets/img/donut_anclas.png)
 
@@ -163,6 +163,6 @@ El análisis de dos capas — clústeres principales + clústeres emergentes —
 
 
 <div class="methodology-box" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--secondary);">
-    <p style="margin: 0; font-size: 0.95rem;">📌 <strong>Sobre este proyecto:</strong> Esta es la segunda versión del análisis, rediseñada como aplicación interactiva. El proyecto original, desarrollado como notebook exploratorio, está disponible en
+    <p style="margin: 0; font-size: 0.95rem;">📌 <strong>Sobre este proyecto:</strong> Esta es una versión mejorada del análisis original, rediseñado como aplicación interactiva. El proyecto original está disponible en
     <a href="https://colab.research.google.com/drive/1S8SzY1u5VMOl1POjpBA1c02yPm-uK5r1?usp=sharing" target="_blank" style="color: var(--secondary); font-weight: 600;">Google Colab</a>.</p>
 </div>
