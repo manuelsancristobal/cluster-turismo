@@ -70,7 +70,7 @@ Respecto del parámetro `min_cluster_size=10`, definí que grupo de al menos 10 
 
 El concepto proviene del **retail**: en un centro comercial, la tienda ancla es aquella marca de alto reconocimiento que genera el flujo de visitantes del que se benefician todas las demás tiendas. En turismo, la lógica es la misma: un **atractivo ancla** es aquel de jerarquía superior cuyo reconocimiento motiva el desplazamiento de turistas hacia un destino, beneficiando al resto de la oferta turística local.
 
-Esta idea se formaliza en la *anchor-point theory* [(Golledge, 1978)](Golledge, R. G. (1978). Learning about urban environments. En T. Carlstein, D. Parkes, & N. Thrift (Eds.), Timing space and spacing time: Vol. 1. Making sense of time (pp. 76–98). Edward Arnold.), que propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
+Esta idea se formaliza en la *anchor-point theory* [(Golledge, 1978)](# Golledge, R. G. (1978). Learning about urban environments. En T. Carlstein, D. Parkes, & N. Thrift (Eds.), Timing space and spacing time: Vol. 1. Making sense of time (pp. 76–98). Edward Arnold.), que propone que las personas organizan su conocimiento espacial de forma jerárquica alrededor de puntos ancla de mayor importancia.
 
 ### Clasificación de clústeres
 
@@ -81,6 +81,7 @@ En este sentido, definí tres categorías según la presencia de atractivos con 
 | **Con ancla internacional** | Al menos 1 atractivo de jerarquía INTERNACIONAL | 52 |
 | **Solo ancla nacional** | Al menos 1 NACIONAL, pero 0 INTERNACIONAL | 26 |
 | **Sin ancla** | Sin atractivos NACIONAL ni INTERNACIONAL | 1 |
+
 
 Los clústeres **"solo ancla nacional"** (33% del total) son los más interesantes desde una perspectiva de política pública, ya tienen masa crítica turística reconocida a nivel país, pero carecen de un atractivo de proyección internacional. Estos representan **oportunidades de inversión** para elevar su competitividad.
 
