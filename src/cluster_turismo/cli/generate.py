@@ -6,9 +6,10 @@ import folium
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 from folium.plugins import GroupedLayerControl
 from matplotlib.patches import Patch
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
 
 from cluster_turismo import clustering, data_loader, gap_analysis, preprocessing
 from cluster_turismo.config import (
@@ -24,6 +25,7 @@ from cluster_turismo.config import (
     HIER_COLORS_HEX,
     HULL_COLORS_HEX,
     KMZ_PATH,
+    LAGGING_HULL_COLOR,
     OVERLAP_COLORS_HEX,
     PLOT_DPI,
     PLOT_STYLE,
@@ -162,7 +164,7 @@ def generate() -> None:
         "Sin ancla": BAR_COLOR_SIN_ANCLA,
     }
     donut_colors = [color_map.get(s, "#999") for s in anchor_counts.index]
-    fig, ax = plt.subplots(figsize=(9, 7))
+    fig, ax = plt.subplots(figsize=(7, 5))
     ax.pie(
         anchor_counts.values,
         labels=anchor_counts.index,
@@ -179,8 +181,11 @@ def generate() -> None:
 
     # Gráfico 4: Jerarquías
     print("Generando gráfico de jerarquías...")
-    hierarchy_counts = df["JERARQUIA"].value_counts()
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Ordenar por importancia: Internacional -> Local
+    order = ["INTERNACIONAL", "NACIONAL", "REGIONAL", "LOCAL"]
+    hierarchy_counts = df["JERARQUIA"].value_counts().reindex(order).fillna(0)
+
+    fig, ax = plt.subplots(figsize=(7, 4))
     bars = ax.bar(
         hierarchy_counts.index,
         hierarchy_counts.values,
@@ -189,6 +194,7 @@ def generate() -> None:
     )
     ax.set_ylabel("Cantidad de Atractivos")
     ax.set_title("Atractivos por Nivel de Jerarquía")
+    ax.set_ylim(0, 1600)
     for bar in bars:
         ax.text(
             bar.get_x() + bar.get_width() / 2,
@@ -247,7 +253,7 @@ def generate() -> None:
         if sum(overlap_counts.values()) > 0:
             # Filtrar solo categorías con valores > 0 para el gráfico
             plot_data = {k: v for k, v in overlap_counts.items() if v > 0}
-            fig, ax = plt.subplots(figsize=(9, 7))
+            fig, ax = plt.subplots(figsize=(7, 5))
             ax.pie(
                 plot_data.values(),
                 labels=plot_data.keys(),
@@ -261,6 +267,65 @@ def generate() -> None:
             plt.tight_layout()
             fig.savefig(ASSETS_IMG_DIR / "donut_superposicion.png")
             plt.close(fig)
+
+    # Gráfico 6: Comparativa de Tamaños (Boxplot)
+    print("Generando gráfico boxplot comparativo...")
+    boxplot_data = []
+
+    # 1. Clústeres Principales
+    for count in summary["n_attractions"]:
+        boxplot_data.append({"Categoría": "Clústeres\nPrincipales", "Cantidad": count})
+
+    # 2. Clústeres Emergentes (Rezagados)
+    if df_lagging_clustered is not None:
+        emerging_counts = df_lagging_clustered[df_lagging_clustered["CLUSTER"] != -1]["CLUSTER"].value_counts()
+        for count in emerging_counts:
+            boxplot_data.append({"Categoría": "Clústeres\nEmergentes", "Cantidad": count})
+
+    # 3. Destinos Oficiales (Cálculo espacial)
+    if not df_destinations.empty:
+        points = [Point(y, x) for x, y in zip(df["POINT_X"], df["POINT_Y"])]
+        for _, row in df_destinations.iterrows():
+            coords = row["coordinates"]
+            if len(coords) >= 3:
+                try:
+                    poly = Polygon([(lat, lon) for lon, lat in coords])
+                    if poly.is_valid:
+                        count = sum(1 for p in points if poly.contains(p))
+                        if count > 0:
+                            boxplot_data.append({"Categoría": "Destinos\nOficiales", "Cantidad": count})
+                except Exception:
+                    continue
+
+    if boxplot_data:
+        df_box = pd.DataFrame(boxplot_data)
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Boxplot con escala logarítmica para mejor visibilidad de medianas
+        sns.boxplot(
+            data=df_box,
+            x="Categoría",
+            y="Cantidad",
+            ax=ax,
+            palette="Set2",
+            showfliers=False,  # Los outliers se verán con el stripplot
+        )
+        # Superponer puntos para ver la densidad real
+        sns.stripplot(data=df_box, x="Categoría", y="Cantidad", ax=ax, color=".3", alpha=0.4, jitter=True)
+
+        ax.set_yscale("log")
+        ax.set_title("Comparativa de Cantidad de Atractivos por Destino/Clúster")
+        ax.set_ylabel("Cantidad de Atractivos (Escala Log)")
+        ax.set_xlabel("")
+
+        # Añadir etiquetas de mediana
+        for i, cat in enumerate(df_box["Categoría"].unique()):
+            median = df_box[df_box["Categoría"] == cat]["Cantidad"].median()
+            ax.text(i, median, f"{median:.0f}", ha="center", va="bottom", fontweight="bold", color="white")
+
+        plt.tight_layout()
+        fig.savefig(ASSETS_IMG_DIR / "comparativa_boxplot.png")
+        plt.close(fig)
 
     # 5. Mapa Folium
     print("Generando mapa interactivo Folium...")
@@ -325,11 +390,27 @@ def generate() -> None:
                 ).add_to(fg_destinations)
     fg_destinations.add_to(m)
 
+    # 5c. Agregar clústeres emergentes (rezagados)
+    fg_lagging = folium.FeatureGroup(name="Clústeres Emergentes", show=False)
+    if lagging_hulls:
+        for cluster_id, hull_coords in lagging_hulls.items():
+            n_attr = len(df_lagging_clustered[df_lagging_clustered["CLUSTER"] == cluster_id])
+            folium.Polygon(
+                locations=[[lat, lon] for lat, lon in hull_coords],
+                color=LAGGING_HULL_COLOR,
+                fill=True,
+                fillOpacity=0.2,
+                weight=2,
+                popup=f"<b>Emergente {cluster_id}</b><br>{lagging_labels.get(cluster_id, '')}<br>Atractivos: {n_attr}",
+            ).add_to(fg_lagging)
+    fg_lagging.add_to(m)
+
     GroupedLayerControl(
         groups={
-            "Destinos & Clústeres": [fg_hulls, fg_destinations],
+            "Destinos & Clústeres": [fg_hulls, fg_destinations, fg_lagging],
             "Atractivos por Jerarquía": hierarchy_groups,
         },
+        exclusive_groups=False,
         collapsed=False,
     ).add_to(m)
 
